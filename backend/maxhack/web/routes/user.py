@@ -1,5 +1,5 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, HTTPException, status, Header
+from fastapi import APIRouter, HTTPException, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights

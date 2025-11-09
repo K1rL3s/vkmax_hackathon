@@ -1,12 +1,12 @@
 from dishka import AsyncContainer, Provider
-from maxo.integrations.dishka import setup_dishka
+from maxo import Dispatcher
 from maxo.dialogs import BgManagerFactory
+from maxo.integrations.dishka import setup_dishka
 
 from maxhack.bot.dp import init_dispatcher
 from maxhack.config import Config, load_config
 from maxhack.di import make_container
 from maxhack.logger import setup_logger
-from maxo import Dispatcher
 
 
 async def init_bot(

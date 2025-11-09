@@ -1,5 +1,5 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, HTTPException, status, Header
+from fastapi import APIRouter, HTTPException, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
@@ -17,7 +17,10 @@ from maxhack.web.schemas.group import (
     GroupUpdateRequest,
     GroupUserItem,
 )
-from maxhack.web.schemas.invite import InviteCreateResponse, InviteCreateRequest, InviteAcceptRequest
+from maxhack.web.schemas.invite import (
+    InviteCreateRequest,
+    InviteCreateResponse,
+)
 from maxhack.web.schemas.tag import (
     TagCreateRequest,
     TagResponse,
@@ -33,9 +36,9 @@ group_router = APIRouter(prefix="/groups", tags=["Groups"], route_class=DishkaRo
     description="Создание группы",
 )
 async def create_group_route(
-        body: GroupCreateRequest,
-        group_service: FromDishka[GroupService],
-        master_id: UserId = Header(...),
+    body: GroupCreateRequest,
+    group_service: FromDishka[GroupService],
+    master_id: UserId = Header(...),
 ) -> GroupResponse:
     try:
         group = await group_service.create_group(
@@ -55,10 +58,10 @@ async def create_group_route(
     description="Редактирование группы (только создатель)",
 )
 async def update_group_route(
-        group_id: GroupId,
-        body: GroupUpdateRequest,
-        group_service: FromDishka[GroupService],
-        master_id: UserId = Header(...),
+    group_id: GroupId,
+    body: GroupUpdateRequest,
+    group_service: FromDishka[GroupService],
+    master_id: UserId = Header(...),
 ) -> GroupResponse:
     try:
         group = await group_service.update_group(
@@ -74,15 +77,16 @@ async def update_group_route(
 
     return GroupResponse.model_validate(group)
 
+
 @group_router.patch(
     "/{group_id}/users/{user_id}",
     response_model=GroupMemberResponse,
     description="Редактирование связи пользователя и группы",
 )
 async def update_group_membership(
-        body: GroupMemberUpdateRequest,
-        group_service: FromDishka[GroupService],
-        master_id: UserId = Header(...),
+    body: GroupMemberUpdateRequest,
+    group_service: FromDishka[GroupService],
+    master_id: UserId = Header(...),
 ) -> GroupMemberResponse:
     try:
         membership = await group_service.update_membership(
@@ -111,9 +115,9 @@ async def update_group_membership(
     description="Получить список всех пользователей группы",
 )
 async def list_group_users_route(
-        group_id: GroupId,
-        group_service: FromDishka[GroupService],
-        master_id: UserId = Header(...),
+    group_id: GroupId,
+    group_service: FromDishka[GroupService],
+    master_id: UserId = Header(...),
 ) -> list[GroupUserItem]:
     try:
         group_users = await group_service.get_group_users(
@@ -145,10 +149,10 @@ async def list_group_users_route(
     description="Удаление участника из группы",
 )
 async def remove_group_member_route(
-        group_id: GroupId,
-        slave_id: UserId,
-        group_service: FromDishka[GroupService],
-        master_id: UserId = Header(...),
+    group_id: GroupId,
+    slave_id: UserId,
+    group_service: FromDishka[GroupService],
+    master_id: UserId = Header(...),
 ) -> None:
     try:
         await group_service.remove_user_from_group(
@@ -170,9 +174,9 @@ async def remove_group_member_route(
     description="Удаление группы (только администратор)",
 )
 async def delete_group_route(
-        group_id: GroupId,
-        group_service: FromDishka[GroupService],
-        master_id: UserId = Header(...),
+    group_id: GroupId,
+    group_service: FromDishka[GroupService],
+    master_id: UserId = Header(...),
 ) -> None:
     try:
         await group_service.delete_group(
@@ -192,11 +196,11 @@ async def delete_group_route(
     description="Создание тега",
 )
 async def create_tag_route(
-        group_id: GroupId,
-        body: TagCreateRequest,
-        tag_service: FromDishka[TagService],
-        session: FromDishka[AsyncSession],
-        master_id: UserId = Header(...),
+    group_id: GroupId,
+    body: TagCreateRequest,
+    tag_service: FromDishka[TagService],
+    session: FromDishka[AsyncSession],
+    master_id: UserId = Header(...),
 ) -> TagResponse:
     try:
         tag = await tag_service.create_tag(
@@ -220,13 +224,16 @@ async def create_tag_route(
     description="Создание приглашения в группу",
 )
 async def create_invite_route(
-        group_id: GroupId,
-        body: InviteCreateRequest,
-        invite_service: FromDishka[InviteService],
-        master_id: UserId = Header(...)
+    group_id: GroupId,
+    body: InviteCreateRequest,
+    invite_service: FromDishka[InviteService],
+    master_id: UserId = Header(...),
 ) -> InviteCreateResponse:
-    invite_obj = await invite_service.create_invite_link(group_id=group_id, creator_id=master_id,
-                                                         expires_at=body.expires_at)
+    invite_obj = await invite_service.create_invite_link(
+        group_id=group_id,
+        creator_id=master_id,
+        expires_at=body.expires_at,
+    )
     return await InviteCreateResponse.model_validate(invite_obj)
 
 
@@ -237,9 +244,9 @@ async def create_invite_route(
     description="Добавление пользователя в группу",
 )
 async def join_group(
-        body: GroupMemberAddRequest,
-        group_service: FromDishka[GroupService],
-        master_id: UserId = Header(...),
+    body: GroupMemberAddRequest,
+    group_service: FromDishka[GroupService],
+    master_id: UserId = Header(...),
 ) -> GroupMemberResponse:
     try:
         group = await group_service.join_group(

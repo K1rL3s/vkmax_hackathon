@@ -2,24 +2,24 @@ from typing import Any
 
 from dishka import FromDishka
 from magic_filter import F
-from maxo.integrations.dishka import inject
-from maxo.integrations.magic_filter import MagicData
-from maxo.routing.filters import AndFilter
-from maxo.routing.filters.exception import ExceptionTypeFilter
-from maxo.routing.signals.exception import ErrorEvent
-from maxo.types.update_context import UpdateContext
+from maxo import Router
 from maxo.dialogs import DialogManager, ShowMode, StartMode
 from maxo.dialogs.api.exceptions import (
     InvalidStackIdError,
     OutdatedIntent,
     UnknownIntent,
 )
+from maxo.integrations.dishka import inject
+from maxo.integrations.magic_filter import MagicData
+from maxo.routing.filters import AndFilter
+from maxo.routing.filters.exception import ExceptionTypeFilter
+from maxo.routing.signals.exception import ErrorEvent
+from maxo.types.update_context import UpdateContext
 
 from maxhack.bot.states import Errors
 from maxhack.core.exceptions import MaxHackError
 from maxhack.core.max import MaxSender
 from maxhack.logger import get_logger
-from maxo import Router
 
 logger = get_logger(__name__, groups=("aiogd", "errors"))
 

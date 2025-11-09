@@ -1,10 +1,10 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, HTTPException, status, Header
+from fastapi import APIRouter, HTTPException, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.event.service import EventService
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
-from maxhack.core.ids import EventId, GroupId, UserId, RespondId
+from maxhack.core.ids import EventId, GroupId, RespondId, UserId
 from maxhack.core.responds.service import RespondService
 from maxhack.web.schemas.event import (
     EventAddTagRequest,
@@ -12,7 +12,9 @@ from maxhack.web.schemas.event import (
     EventCreateRequest,
     EventResponse,
     EventUpdateRequest,
-    EventsResponse, RespondChangeResponse, RespondResponse,
+    EventsResponse,
+    RespondChangeResponse,
+    RespondResponse,
 )
 
 event_router = APIRouter(prefix="/events", tags=["Events"], route_class=DishkaRoute)
@@ -24,10 +26,10 @@ event_router = APIRouter(prefix="/events", tags=["Events"], route_class=DishkaRo
     description="Добавить тег для события (может только 1 и 2 роль)",
 )
 async def add_tag_to_event_route(
-        event_id: EventId,
-        body: EventAddTagRequest,
-        event_service: FromDishka[EventService],
-        master_id: UserId = Header(...),
+    event_id: EventId,
+    body: EventAddTagRequest,
+    event_service: FromDishka[EventService],
+    master_id: UserId = Header(...),
 ) -> None:
     try:
         await event_service.add_tag_to_event(
@@ -49,10 +51,10 @@ async def add_tag_to_event_route(
     description="Получить событие",
 )
 async def get_event_route(
-        event_id: EventId,
-        event_service: FromDishka[EventService],
-        session: FromDishka[AsyncSession],
-        master_id: UserId = Header(...),
+    event_id: EventId,
+    event_service: FromDishka[EventService],
+    session: FromDishka[AsyncSession],
+    master_id: UserId = Header(...),
 ) -> EventResponse:
     try:
         event = await event_service.get_event(event_id=event_id, user_id=master_id)
@@ -70,10 +72,10 @@ async def get_event_route(
     description="Создание события (может только 1 и 2 роль)",
 )
 async def create_event_route(
-        body: EventCreateRequest,
-        event_service: FromDishka[EventService],
-        session: FromDishka[AsyncSession],
-        master_id: UserId = Header(...),
+    body: EventCreateRequest,
+    event_service: FromDishka[EventService],
+    session: FromDishka[AsyncSession],
+    master_id: UserId = Header(...),
 ) -> EventResponse:
     try:
         event = await event_service.create_event(
@@ -98,11 +100,11 @@ async def create_event_route(
     description="Редактирование события (может только 1 и 2 роль)",
 )
 async def update_event_route(
-        event_id: EventId,
-        body: EventUpdateRequest,
-        event_service: FromDishka[EventService],
-        session: FromDishka[AsyncSession],
-        master_id: UserId = Header(...),
+    event_id: EventId,
+    body: EventUpdateRequest,
+    event_service: FromDishka[EventService],
+    session: FromDishka[AsyncSession],
+    master_id: UserId = Header(...),
 ) -> EventResponse:
     try:
         event = await event_service.update_event(
@@ -127,9 +129,9 @@ async def update_event_route(
     description="Удаление события (может только 1 и 2 роль)",
 )
 async def delete_event_route(
-        event_id: EventId,
-        event_service: FromDishka[EventService],
-        master_id: UserId = Header(...),
+    event_id: EventId,
+    event_service: FromDishka[EventService],
+    master_id: UserId = Header(...),
 ) -> None:
     try:
         await event_service.delete_event(event_id=event_id, user_id=master_id)
@@ -145,10 +147,10 @@ async def delete_event_route(
     description="Добавить пользователя для события (может только 1 и 2 роль)",
 )
 async def add_user_to_event_route(
-        event_id: EventId,
-        body: EventAddUserRequest,
-        event_service: FromDishka[EventService],
-        master_id: UserId = Header(...),
+    event_id: EventId,
+    body: EventAddUserRequest,
+    event_service: FromDishka[EventService],
+    master_id: UserId = Header(...),
 ) -> None:
     try:
         await event_service.add_user_to_event(
@@ -170,10 +172,10 @@ async def add_user_to_event_route(
     description="Просмотр всех событий группы (может только пользователь находящийся в этой группе)",
 )
 async def get_group_events_route(
-        group_id: GroupId,
-        event_service: FromDishka[EventService],
-        session: FromDishka[AsyncSession],
-        master_id: UserId = Header(...),
+    group_id: GroupId,
+    event_service: FromDishka[EventService],
+    session: FromDishka[AsyncSession],
+    master_id: UserId = Header(...),
 ) -> EventsResponse:
     try:
         events = await event_service.get_group_events(
@@ -196,9 +198,9 @@ async def get_group_events_route(
     description="Просмотр всех своих событий",
 )
 async def get_user_events_route(
-        event_service: FromDishka[EventService],
-        session: FromDishka[AsyncSession],
-        master_id: UserId = Header(...),
+    event_service: FromDishka[EventService],
+    session: FromDishka[AsyncSession],
+    master_id: UserId = Header(...),
 ) -> EventsResponse:
     try:
         events = await event_service.get_user_events(user_id=master_id)
@@ -216,17 +218,23 @@ async def get_user_events_route(
     description="Изменить статус отклика",
 )
 async def get_user_events_route(
-        respond_id: RespondId,
-        event_id: EventId,
-        body: RespondChangeResponse,
-        respond_service: FromDishka[RespondService],
-        master_id: UserId = Header(...),
+    respond_id: RespondId,
+    event_id: EventId,
+    body: RespondChangeResponse,
+    respond_service: FromDishka[RespondService],
+    master_id: UserId = Header(...),
 ) -> RespondResponse:
     try:
-        respond = await respond_service.update(respond_id, event_id, master_id, status=body.status)
+        respond = await respond_service.update(
+            respond_id,
+            event_id,
+            master_id,
+            status=body.status,
+        )
         return RespondResponse.model_validate(respond)
     except EntityNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
 
 # @event_router.get(
 #     "/users/{slave_id}/events",

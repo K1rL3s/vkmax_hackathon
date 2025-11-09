@@ -2,6 +2,7 @@ from typing import Any, cast
 
 from dishka import AsyncContainer
 from dishka.integrations.taskiq import CONTAINER_NAME
+from maxo import Ctx
 from maxo.routing.interfaces import BaseMiddleware, NextMiddleware
 from maxo.routing.middlewares.event_context import EVENT_FROM_USER_KEY
 from maxo.routing.signals import Update
@@ -11,7 +12,6 @@ from maxo.types import User as MaxUser
 from maxhack.core.ids import MaxId
 from maxhack.infra.database.repos.user import UserRepo
 from maxhack.logger import get_logger
-from maxo import Ctx
 
 logger = get_logger(__name__, groups=("maxo", "max", "middlewares"))
 

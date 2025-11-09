@@ -7,7 +7,6 @@ from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from maxhack.config import load_config
-
 from maxhack.di import make_container
 from maxhack.utils.log_config import set_logging
 from maxhack.web.routes import (
@@ -17,7 +16,6 @@ from maxhack.web.routes import (
     tag_router,
     user_router,
 )
-
 
 tags_metadata = [
     {
@@ -66,7 +64,10 @@ set_logging(
     app=app,
 )
 
-app.add_middleware(SessionMiddleware, secret_key=config.app.secret.encode("utf-8").hex())
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=config.app.secret.encode("utf-8").hex(),
+)
 
 default_errors = {
     401: {"description": "Unauthorized"},

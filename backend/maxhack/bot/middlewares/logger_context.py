@@ -1,9 +1,10 @@
 from typing import Any
 
+from maxo import Ctx
+from maxo.dialogs.api.internal import CONTEXT_KEY
 from maxo.routing.interfaces import BaseMiddleware, NextMiddleware
 from maxo.routing.middlewares.event_context import EVENT_FROM_USER_KEY
 from maxo.types import User
-from maxo.dialogs.api.internal import CONTEXT_KEY
 
 from maxhack.logger.bot.context_vars import (
     current_event_type,
@@ -12,7 +13,6 @@ from maxhack.logger.bot.context_vars import (
     current_user_end_state,
     current_user_start_state,
 )
-from maxo import Ctx
 
 
 class OuterLoggerContextMiddleware(BaseMiddleware[Any]):

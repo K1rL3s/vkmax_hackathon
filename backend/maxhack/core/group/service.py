@@ -18,11 +18,11 @@ from maxhack.infra.database.repos.users_to_groups import UsersToGroupsRepo
 
 class GroupService:
     def __init__(
-            self,
-            group_repo: GroupRepo,
-            user_repo: UserRepo,
-            invite_repo: InviteRepo,
-            users_to_groups_repo: UsersToGroupsRepo,
+        self,
+        group_repo: GroupRepo,
+        user_repo: UserRepo,
+        invite_repo: InviteRepo,
+        users_to_groups_repo: UsersToGroupsRepo,
     ) -> None:
         self._group_repo = group_repo
         self._users_to_groups_repo = users_to_groups_repo
@@ -30,10 +30,10 @@ class GroupService:
         self._invite_repo = invite_repo
 
     async def create_group(
-            self,
-            creator_id: UserId,
-            name: str,
-            description: str | None,
+        self,
+        creator_id: UserId,
+        name: str,
+        description: str | None,
     ) -> GroupModel:
         creator = await self._user_repo.get_by_id(creator_id)
         if creator is None:
@@ -46,17 +46,15 @@ class GroupService:
         )
 
     async def get_group(
-            self,
-            creator_id: UserId,
-            group_id: GroupId,
+        self,
+        creator_id: UserId,
+        group_id: GroupId,
     ) -> GroupModel:
         creator = await self._user_repo.get_by_id(creator_id)
         if creator is None:
             raise EntityNotFound("Пользователь не найден")
 
-        group = await self._group_repo.get_by_id(
-            group_id=group_id
-        )
+        group = await self._group_repo.get_by_id(group_id=group_id)
         if group is None:
             raise EntityNotFound("Группа не найдена")
 
@@ -65,16 +63,14 @@ class GroupService:
             group_id=group_id,
         )
 
-        return await self._group_repo.get_by_id(
-            group_id=group_id
-        )
+        return await self._group_repo.get_by_id(group_id=group_id)
 
     async def update_group(
-            self,
-            group_id: GroupId,
-            editor_id: UserId,
-            name: str,
-            description: str | None,
+        self,
+        group_id: GroupId,
+        editor_id: UserId,
+        name: str,
+        description: str | None,
     ) -> GroupModel:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
@@ -85,8 +81,8 @@ class GroupService:
             group_id=group_id,
         )
         if (
-                requester_membership is None
-                or requester_membership.role_id != CREATOR_ROLE_ID
+            requester_membership is None
+            or requester_membership.role_id != CREATOR_ROLE_ID
         ):
             raise NotEnoughRights("Недостаточно прав для редактирования группы")
 
@@ -97,9 +93,9 @@ class GroupService:
         )
 
     async def delete_group(
-            self,
-            group_id: GroupId,
-            editor_id: UserId,
+        self,
+        group_id: GroupId,
+        editor_id: UserId,
     ) -> None:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
@@ -110,17 +106,17 @@ class GroupService:
             group_id=group_id,
         )
         if (
-                requester_membership is None
-                or requester_membership.role_id != CREATOR_ROLE_ID
+            requester_membership is None
+            or requester_membership.role_id != CREATOR_ROLE_ID
         ):
             raise NotEnoughRights("Недостаточно прав для удаления группы")
 
         await self._group_repo.update(group_id, deleted_at=datetime_now())
 
     async def join_group(
-            self,
-            user_id: UserId,
-            invite_key: InviteKey,
+        self,
+        user_id: UserId,
+        invite_key: InviteKey,
     ) -> GroupModel:
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
@@ -148,11 +144,11 @@ class GroupService:
         return group
 
     async def update_membership(
-            self,
-            group_id: GroupId,
-            new_role_id: RoleId,
-            slave_id: UserId,
-            master_id: UserId,
+        self,
+        group_id: GroupId,
+        new_role_id: RoleId,
+        slave_id: UserId,
+        master_id: UserId,
     ) -> UsersToGroupsModel:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
@@ -177,9 +173,9 @@ class GroupService:
         return membership
 
     async def get_group_users(
-            self,
-            group_id: GroupId,
-            user_id: UserId,
+        self,
+        group_id: GroupId,
+        user_id: UserId,
     ) -> list[tuple[UserModel, RoleModel]]:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
@@ -195,10 +191,10 @@ class GroupService:
         return await self._users_to_groups_repo.group_users(group_id)
 
     async def remove_user_from_group(
-            self,
-            group_id: GroupId,
-            slave_id: UserId,
-            master_id: UserId,
+        self,
+        group_id: GroupId,
+        slave_id: UserId,
+        master_id: UserId,
     ) -> None:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:

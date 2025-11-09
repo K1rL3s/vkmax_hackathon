@@ -1,12 +1,12 @@
 import asyncio
 from typing import Any
 
+from maxo import Ctx
 from maxo.routing.interfaces import BaseMiddleware, NextMiddleware
 from maxo.routing.sentinels import REJECTED, UNHANDLED
 from maxo.routing.signals import Update
 
 from maxhack.logger import get_logger
-from maxo import Ctx
 
 logger = get_logger(__name__, groups=("maxo", "max", "middlewares"))
 

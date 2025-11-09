@@ -1,9 +1,9 @@
 from dishka import Provider, Scope, from_context, provide
+from maxo import Bot
 from maxo.dialogs import BgManagerFactory
 
 from maxhack.config import MaxConfig
 from maxhack.core.max import MaxMailer, MaxSender
-from maxo import Bot
 
 
 class MaxBotProvider(Provider):

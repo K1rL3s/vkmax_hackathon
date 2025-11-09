@@ -2,11 +2,11 @@ import asyncio
 import contextlib
 import sys
 
+from maxo import Bot
 from maxo.tools.long_polling import LongPolling
 
 from maxhack.bot.init_bot import init_bot
 from maxhack.logger import get_logger
-from maxo import Bot
 
 logger = get_logger(__name__, groups=("main", "tgbot"))
 

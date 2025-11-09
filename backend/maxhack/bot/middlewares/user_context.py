@@ -1,11 +1,11 @@
 from typing import Any
 
+from maxo.dialogs.api.entities import EVENT_CONTEXT_KEY, DialogUpdate
+from maxo.dialogs.context.intent_middleware import event_context_from_aiogd
 from maxo.routing.ctx import Ctx
 from maxo.routing.interfaces import BaseMiddleware, NextMiddleware
 from maxo.routing.middlewares.event_context import EVENT_FROM_USER_KEY
 from maxo.routing.signals import Update
-from maxo.dialogs.api.entities import EVENT_CONTEXT_KEY, DialogUpdate
-from maxo.dialogs.context.intent_middleware import event_context_from_aiogd
 
 
 class AiogdUserContextMiddleware(BaseMiddleware[Update]):

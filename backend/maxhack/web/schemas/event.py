@@ -1,4 +1,5 @@
-from ...core.ids import EventId, GroupId, TagId, UserId, RespondId
+from maxhack.core.ids import EventId, GroupId, RespondId, TagId, UserId
+
 from .core import Model
 
 

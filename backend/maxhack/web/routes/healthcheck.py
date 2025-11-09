@@ -1,12 +1,16 @@
 """Эндпоинт для проверки работоспособности сервиса."""
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
-healthcheck_router = APIRouter(prefix="/healthcheck", tags=["Healthcheck"], route_class=DishkaRoute)
+healthcheck_router = APIRouter(
+    prefix="/healthcheck",
+    tags=["Healthcheck"],
+    route_class=DishkaRoute,
+)
 
 
 @healthcheck_router.get(
@@ -14,6 +18,6 @@ healthcheck_router = APIRouter(prefix="/healthcheck", tags=["Healthcheck"], rout
     description="Проверка соединения с базой данных",
 )
 async def check_db_connection(
-        session: FromDishka[AsyncSession],
+    session: FromDishka[AsyncSession],
 ) -> None:
     await session.execute(text("select 1"))

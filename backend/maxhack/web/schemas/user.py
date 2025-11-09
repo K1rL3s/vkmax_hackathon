@@ -15,14 +15,12 @@ class UserUpdateRequest(Model):
     phone: str | None = None
 
 
-
 class UserResponse(Model):
     id: int
     max_id: int
     first_name: str
     last_name: str | None = None
     phone: str
-
 
 
 class UserGroupItem(Model):

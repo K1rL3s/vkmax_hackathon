@@ -1,9 +1,9 @@
 from typing import Any
 
-from sqlalchemy import select, update, func
-from sqlalchemy.exc import ProgrammingError, IntegrityError
+from sqlalchemy import func, select, update
+from sqlalchemy.exc import IntegrityError, ProgrammingError
 
-from maxhack.core.ids import RespondId, UserId, EventId
+from maxhack.core.ids import EventId, RespondId, UserId
 from maxhack.infra.database.models import RespondModel
 from maxhack.infra.database.repos.base import BaseAlchemyRepo
 
@@ -17,17 +17,13 @@ class RespondRepo(BaseAlchemyRepo):
         return await self._session.scalar(stmt)
 
     async def create(
-            self,
-            user_ids: list[UserId],
-            event_id: EventId,
-            status: str,
+        self,
+        user_ids: list[UserId],
+        event_id: EventId,
+        status: str,
     ) -> list[RespondModel]:
         events = [
-            RespondModel(
-                user_id=creator_id,
-                event_id=event_id,
-                status=status
-            )
+            RespondModel(user_id=creator_id, event_id=event_id, status=status)
             for creator_id in user_ids
         ]
 

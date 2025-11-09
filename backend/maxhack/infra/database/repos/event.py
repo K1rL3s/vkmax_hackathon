@@ -142,7 +142,11 @@ class EventRepo(BaseAlchemyRepo):
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
 
-    async def add_tag(self, event_id: EventId, tag_ids: list[TagId]) -> list[TagsToEvents]:
+    async def add_tag(
+        self,
+        event_id: EventId,
+        tag_ids: list[TagId],
+    ) -> list[TagsToEvents]:
         relations = []
 
         for tag_id_item in tag_ids:
@@ -183,10 +187,13 @@ class EventRepo(BaseAlchemyRepo):
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
 
-    async def add_user(self, event_id: EventId, user_ids: list[UserId]) -> list[UsersToEvents]:
+    async def add_user(
+        self,
+        event_id: EventId,
+        user_ids: list[UserId],
+    ) -> list[UsersToEvents]:
         relations = [
-            UsersToEvents(event_id=event_id, user_id=user_id)
-            for user_id in user_ids
+            UsersToEvents(event_id=event_id, user_id=user_id) for user_id in user_ids
         ]
 
         if not relations:

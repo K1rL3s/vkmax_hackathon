@@ -1,7 +1,6 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from urllib import parse
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -97,30 +96,32 @@ def load_config(env: str | Path | None = None) -> Config:
             database=int(os.getenv("REDIS_DB", 0)),
         ),
         app=AppConfig(
-            host=os.environ.get("HOST", "localhost"),
-            port=int(os.environ.get("PORT", 7001)),
-            portal_address=os.environ.get("PORTAL_ADDRESS"),
-            debug_mode=os.environ.get("DEBUG_MODE", "").lower() == "true",
+            host=os.getenv("HOST", "localhost"),
+            port=int(os.getenv("PORT", 7001)),
+            portal_address=os.getenv("PORTAL_ADDRESS"),
+            debug_mode=os.getenv("DEBUG_MODE", "").lower() == "true",
             cors_policy_disabled=(
-                os.environ.get("CORS_POLICY_DISABLED", "True").lower() == "true"
+                os.getenv("CORS_POLICY_DISABLED", "True").lower() == "true"
             ),
-            secret=os.environ.get("SECRET", "Pepa the pig"),
-            file_directory=os.environ.get("FILE_DIRECTORY", None),
-            additional_debug=os.environ.get("ADDITIONAL_DEBUG", "False").lower() == "true",
+            secret=os.getenv("SECRET", "Pepa the pig"),
+            file_directory=os.getenv("FILE_DIRECTORY", None),
+            additional_debug=os.getenv("ADDITIONAL_DEBUG", "False").lower() == "true",
         ),
         app_settings=AppSettings(
-            test_token=os.environ.get("TEST_TOKEN", None),
-            token_alive_hours=int(os.environ.get("TOKEN_ALIVE_HOURS", 4)),
+            test_token=os.getenv("TEST_TOKEN", None),
+            token_alive_hours=int(os.getenv("TOKEN_ALIVE_HOURS") or 4),
             refresh_token_alive_hours=int(
-                os.environ.get("REFRESH_TOKEN_ALIVE_HOURS", 24 * 7),
+                os.getenv("REFRESH_TOKEN_ALIVE_HOURS") or 24 * 7,
             ),
-            reset_password_alive_hours=int(os.environ.get("RESET_PASSWORD_ALIVE_HOURS", 2)),
-            reset_password_redirect_page=os.environ.get("RESET_PASSWORD_REDIRECT_PAGE"),
+            reset_password_alive_hours=int(
+                os.getenv("RESET_PASSWORD_ALIVE_HOURS") or 2,
+            ),
+            reset_password_redirect_page=os.getenv("RESET_PASSWORD_REDIRECT_PAGE"),
         ),
         swagger=SwaggerConfig(
-            root_path=os.environ.get("ROOT_PATH", ""),
-            testing_path=os.environ.get("TESTING_PATH", ""),
-            testing_description=os.environ.get("TESTING_DESCRIPTION", "Отсутствует"),
+            root_path=os.getenv("ROOT_PATH", ""),
+            testing_path=os.getenv("TESTING_PATH", ""),
+            testing_description=os.getenv("TESTING_DESCRIPTION", "Отсутствует"),
         ),
         log_level=os.getenv("LOG_LEVEL", "DEBUG"),
     )

@@ -1,6 +1,6 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
-from fastapi import APIRouter, HTTPException, status, Header
+from fastapi import APIRouter, HTTPException, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
@@ -168,7 +168,6 @@ async def list_group_tags_route(
     tag_service: FromDishka[TagService],
     session: FromDishka[AsyncSession],
     master_id: UserId = Header(...),
-
 ) -> list[TagResponse]:
     try:
         tags = await tag_service.list_group_tags(

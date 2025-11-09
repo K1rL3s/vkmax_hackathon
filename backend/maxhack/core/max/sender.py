@@ -1,15 +1,15 @@
 from collections.abc import Coroutine
 from typing import Any
 
+from maxo import Bot
 from maxo.bot.method_results import SendMessageResult
+from maxo.dialogs import BgManagerFactory, ShowMode, StartMode
 from maxo.errors import MaxBotBadRequestError, MaxBotForbiddenError, MaxBotNotFoundError
 from maxo.fsm import State
-from maxo.dialogs import BgManagerFactory, ShowMode, StartMode
 
 from maxhack.core.ids import MaxChatId, MaxId
 from maxhack.core.utils.rate_limiter import RateLimiter
 from maxhack.logger import get_logger
-from maxo import Bot
 
 logger = get_logger(__name__, groups=("maxo", "max"))
 
