@@ -1,0 +1,174 @@
+[build-system]
+requires = ["uv_build==0.9.7"]
+build-backend = "uv_build"
+
+[project]
+name = "maxhack"
+version = "0.1.0"
+description = "Бот макс"
+authors = [
+    { name = "Dyadechkov Ivan", email = "dyadechkoviv@uriit.ru" },
+    { name = "Lesovoy Kirill", email = "lesovoi.k@velobike.ru" },
+]
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "maxo[magic-filter] @ git+https://github.com/K1rL3s/maxo.git@cef6ec272f5dac9e0bacb4e1e0ad0b9f79f879a4",
+    "retejo[aiohttp] @ git+https://github.com/K1rL3s/retejo.git@0582f2a06fd7dc035e627c89bb293199f1622c42",
+    "dishka==1.7.2",
+    "sqlalchemy[asyncio]==2.0.44",
+    "psycopg[binary]==3.2.12",
+    "alembic==1.17.1",
+    "alembic_utils==0.8.8",
+    "orjson==3.11.4",
+    "pydantic==2.12.4",
+    "fastapi==0.121.0",
+    "aiomisc==17.9.6",
+    "uvicorn==0.38.0",
+    "itsdangerous==2.2.0",
+    "granian[reload]==2.5.7",
+    "uvloop==0.22.1; platform_system != 'Windows'",
+    "faststream==0.6.3",
+    "taskiq==0.11.20",
+    "taskiq-redis==1.1.2",
+    "redis==6.4.0",
+    "dotenv==0.9.9",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest~=8.3.2",
+    "pytest-asyncio~=1.2.0",
+]
+dev = [
+    "mypy~=1.16.0",
+    "ruff~=0.11.13",
+    "black~=25.9.0",
+    "python-dotenv==1.0.1"
+]
+
+[tool.uv.build-backend]
+module-root = ""
+
+[tool.mypy]
+files = ["maxhack", "migrations", "tests"]
+strict = true
+strict_bytes = true
+local_partial_types = true
+
+[tool.ruff]
+include = ["maxhack/**/*.py", "migrations/**/*.py", "tests/**/*.py", "pyproject.toml"]
+fix = true
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "AIR", # Airflow
+    "ERA", # eradicate
+    "FAST", # FastAPI
+    "YTT", # flake8-2020
+    "ANN", # flake8-annotations
+    "ASYNC", # flake8-async
+    "S", # flake8-bandit
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "COM", # flake8-commas
+    "C4", # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "T10", # flake8-debugger
+    "DJ", # flake8-django
+    "EXE", # flake8-executable
+    "FA", # flake8-future-annotations
+    "INT", # flake8-gettext
+    "ISC", # flake8-implicit-str-concat
+    "ICN", # flake8-import-conventions
+    "LOG", # flake8-logging
+    "G", # flake8-logging-format
+    "INP", # flake8-no-pep420
+    "PIE", # flake8-pie
+    "T20", # flake8-print
+    "PYI", # flake8-pyi
+    "PT", # flake8-pytest-style
+    "Q", # flake8-quotes
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SLF", # flake8-self
+    "SIM", # flake8-simplify
+    "SLOT", # flake8-slots
+    "TID", # flake8-tidy-imports
+    "TC", # flake8-type-checking
+    "ARG", # flake8-unused-arguments
+    "PTH", # flake8-use-pathlib
+    "FLY", # flynt
+    "I", # isort
+    "C90", # mccabe
+    "NPY", # NumPy-specific rules
+    "PD", # pandas-vet
+    "N", # pep8-naming
+    "PERF", # Perflint
+    "E", # pycodestyle
+    "W", # pycodestyle
+    "F", # Pyflakes
+    "PGH", # pygrep-hooks
+    "PL", # Pylint
+    "PLC", # Pylint
+    "PLE", # Pylint
+    "PLR", # Pylint
+    "PLW", # Pylint
+    "UP", # pyupgrade
+    "FURB", # refurb
+    "RUF", # Ruff-specific rules
+    "TRY", # tryceratops
+]
+ignore = [
+    "FIX", # flake8-fixme
+    "TD", # flake8-todos
+    "EM", # flake8-errmsg
+    "DOC", # pydoclint
+    "D", # pydocstyle
+    "FBT", # flake8-boolean-trap
+    "BLE001", # Do not catch blind exception: {name}
+    "CPY001", # Missing copyright notice at top of file
+    "ANN401", # any-type | Dynamically typed expressions (typing.Any) are disallowed in {name}
+    "UP038", # Use `X | Y` in `isinstance` call instead of `(X, Y)`
+    "B905", # `zip()` without an explicit `strict=` parameter
+    "RUF001", # ambiguous-unicode-character-string | String contains ambiguous {}. Did you mean {}?
+    "RUF002", # ambiguous-unicode-character-docstring | Docstring contains ambiguous {}. Did you mean {}?
+    "RUF003", # ambiguous-unicode-character-comment | Comment contains ambiguous {}. Did you mean {}?
+    "SIM102", # Use a single `if` statement instead of nested `if` statements
+    "T201", # `print` found
+    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+    "E712", # Avoid equality comparisons to `True`; use `if Bike.is_finished:` for truth checks
+    "DTZ007", # Naive datetime constructed using `datetime.datetime.strptime()` without %z
+    "PLR0913", # Too many arguments in function definition (6 > 5)
+    "PLR0911", # Too many return statements (7 > 6)
+    "TC001", # Move application import `{}` into a type-checking block
+    "TC002", # Move third-party import `{}` into a type-checking block
+    "TC003", # Move standard library import `{}` into a type-checking block
+    "TC006", # Add quotes to type expression in typing.cast()
+    "TRY300", # Consider moving this statement to an `else` block
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "A002", # Function argument `{}` is shadowing a Python builtin
+    "N818", # Exception name `{}` should be named with an Error suffix
+    "S311", #  Standard pseudo-random generators are not suitable for cryptographic purposes
+    "ARG002", #  Unused method argument: {}
+]
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+include = '\.py$'
+
+[tool.uv]
+package = true
