@@ -6,6 +6,11 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 5432
     command: [ "python", "-OOm", "maxhack.bot" ]
     depends_on:
       database:
@@ -22,6 +27,11 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 5432
     command: [ "python", "-OOm", "maxhack.scheduler" ]
     depends_on:
       database:
@@ -38,6 +48,11 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 5432
     command: [ "python", "-OOm", "maxhack.broker" ]
     depends_on:
       database:
@@ -54,6 +69,11 @@ services:
       dockerfile: Dockerfile
     restart: "no"
     env_file: .env
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 5432
     command: [ "alembic", "upgrade", "head" ]
     depends_on:
       database:
@@ -73,15 +93,16 @@ services:
     entrypoint: [ "python", "-OOm", "maxhack.web" ]
 
     volumes:
-#      - ${FILES_PATH_VOLUME}:/var/project/app/storage
+      # - ${FILES_PATH_VOLUME}:/var/project/app/storage
       - ./maxhack:/maxhack
 
     environment:
-      - HOST=0.0.0.0
-      - FILE_DIRECTORY=/var/project/app/storage
-      # если вы используете свои postgres/redis/centrifugo то вам нужно закомментировать эти переменные
-      - DB_HOST=database
-      - DB_PORT=5432
+      HOST: 0.0.0.0
+      FILE_DIRECTORY: /var/project/app/storage
+      DB_HOST: database
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 5432
 
   database:
     container_name: maxhack-db

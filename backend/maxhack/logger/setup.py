@@ -1,4 +1,3 @@
-import locale
 import logging
 
 from maxhack.logger.inject import InjectFilter
@@ -6,7 +5,6 @@ from maxhack.logger.inject import InjectFilter
 
 def setup_logger(log_level: str) -> None:
     logging.getLogger().setLevel(logging.getLevelName(log_level))
-    locale.setlocale(category=locale.LC_ALL, locale="ru_RU.UTF-8")
 
     # чтобы писались как все:
     get_logger("maxo", groups=("maxo", "max"))
