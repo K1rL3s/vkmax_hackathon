@@ -18,8 +18,6 @@ class GroupResponse(Model):
     name: str
     description: str | None = None
 
-    class Config(Model.Config):
-        orm_mode = True
 
 
 class GroupMemberAddRequest(Model):
@@ -37,8 +35,6 @@ class GroupMemberResponse(Model):
     group_id: GroupId
     role_id: RoleId
 
-    class Config(Model.Config):
-        orm_mode = True
 
 
 class GroupUserItem(Model):

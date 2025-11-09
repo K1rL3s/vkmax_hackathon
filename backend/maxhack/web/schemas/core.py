@@ -1,6 +1,7 @@
 from typing import Any, Self, TypeVar
 
 import pydantic
+from pydantic import ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
@@ -12,12 +13,12 @@ ModelT = TypeVar("ModelT", bound="Model")
 class Model(pydantic.BaseModel):
     """Промежуточная модель pydantic'а для унифицирования конфигов и удобного администрирования"""
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-        from_attributes = True
-        populate_by_name = True
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        validate_by_name=True,
+        from_attributes=True,
+        populate_by_name=True,
+    )
 
     # noinspection Pydantic
     @classmethod

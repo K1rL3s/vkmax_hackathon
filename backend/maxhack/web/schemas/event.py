@@ -29,8 +29,6 @@ class EventResponse(Model):
     creator_id: UserId
     group_id: GroupId | None = None
 
-    class Config(Model.Config):
-        orm_mode = True
 
 
 class EventAddTagRequest(Model):

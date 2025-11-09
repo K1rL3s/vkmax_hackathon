@@ -8,17 +8,12 @@ class UserCreateRequest(Model):
     last_name: str | None = None
     phone: str | None = None
 
-    class Config(Model.Config):
-        from_attributes = True
-
 
 class UserUpdateRequest(Model):
     first_name: str | None = None
     last_name: str | None = None
     phone: str | None = None
 
-    class Config(Model.Config):
-        from_attributes = True
 
 
 class UserResponse(Model):
@@ -28,8 +23,6 @@ class UserResponse(Model):
     last_name: str | None = None
     phone: str
 
-    class Config(Model.Config):
-        from_attributes = True
 
 
 class UserGroupItem(Model):
