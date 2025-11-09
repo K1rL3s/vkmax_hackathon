@@ -10,7 +10,7 @@ services:
       DB_HOST: database
       DB_PORT: 5432
       REDIS_HOST: redis
-      REDIS_PORT: 5432
+      REDIS_PORT: 6379
     command: [ "python", "-OOm", "maxhack.bot" ]
     depends_on:
       database:
