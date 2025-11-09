@@ -18,6 +18,7 @@ from maxhack.web.routes import (
     user_router,
 )
 
+
 tags_metadata = [
     {
         "name": "Healthcheck",

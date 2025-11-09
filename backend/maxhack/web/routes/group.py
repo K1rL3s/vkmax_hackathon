@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
 from maxhack.core.group.service import GroupService
 from maxhack.core.ids import GroupId, UserId
+from maxhack.core.invite.service import InviteService
 from maxhack.core.role.ids import MEMBER_ROLE_ID
 from maxhack.core.tag.service import TagService
 from maxhack.web.schemas.group import (
@@ -16,6 +17,7 @@ from maxhack.web.schemas.group import (
     GroupUpdateRequest,
     GroupUserItem,
 )
+from maxhack.web.schemas.invite import InviteCreateResponse, InviteCreateRequest, InviteAcceptRequest
 from maxhack.web.schemas.tag import (
     TagCreateRequest,
     TagResponse,
@@ -71,37 +73,6 @@ async def update_group_route(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
 
     return GroupResponse.model_validate(group)
-
-
-@group_router.post(
-    "/join",
-    response_model=GroupMemberResponse,
-    status_code=status.HTTP_201_CREATED,
-    description="Добавление пользователя в группу",
-)
-async def join_group(
-        body: GroupMemberAddRequest,
-        group_service: FromDishka[GroupService],
-        master_id: UserId = Header(...),
-) -> GroupMemberResponse:
-    try:
-        group = await group_service.join_group(
-            user_id=master_id,
-            invite_key=body.invite_key,
-        )
-    except EntityNotFound as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except NotEnoughRights as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
-    except InvalidValue as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
-
-    return GroupMemberResponse(
-        user_id=body.user_id,
-        group_id=group.id,
-        role_id=MEMBER_ROLE_ID,
-    )
-
 
 @group_router.patch(
     "/{group_id}/users/{user_id}",
@@ -240,3 +211,50 @@ async def create_tag_route(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except NotEnoughRights as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+
+
+@group_router.post(
+    "/{group_id}/invite",
+    response_model=InviteCreateResponse,
+    status_code=status.HTTP_201_CREATED,
+    description="Создание приглашения в группу",
+)
+async def create_invite_route(
+        group_id: GroupId,
+        body: InviteCreateRequest,
+        invite_service: FromDishka[InviteService],
+        master_id: UserId = Header(...)
+) -> InviteCreateResponse:
+    invite_obj = await invite_service.create_invite_link(group_id=group_id, creator_id=master_id,
+                                                         expires_at=body.expires_at)
+    return await InviteCreateResponse.model_validate(invite_obj)
+
+
+@group_router.post(
+    "/join",
+    response_model=GroupMemberResponse,
+    status_code=status.HTTP_201_CREATED,
+    description="Добавление пользователя в группу",
+)
+async def join_group(
+        body: GroupMemberAddRequest,
+        group_service: FromDishka[GroupService],
+        master_id: UserId = Header(...),
+) -> GroupMemberResponse:
+    try:
+        group = await group_service.join_group(
+            user_id=master_id,
+            invite_key=body.invite_key,
+        )
+    except EntityNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except NotEnoughRights as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+    except InvalidValue as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    return GroupMemberResponse(
+        user_id=body.user_id,
+        group_id=group.id,
+        role_id=MEMBER_ROLE_ID,
+    )
