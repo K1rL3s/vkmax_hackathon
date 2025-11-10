@@ -5,7 +5,6 @@ from maxhack.infra.database.models import (
     TagModel,
     UserModel,
     UsersToGroupsModel,
-    UsersToTagsModel,
 )
 from maxhack.infra.database.repos.group import GroupRepo
 from maxhack.infra.database.repos.tag import TagRepo

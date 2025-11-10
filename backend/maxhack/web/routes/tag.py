@@ -8,7 +8,6 @@ from maxhack.core.ids import GroupId, TagId, UserId
 from maxhack.core.tag.service import TagService
 from maxhack.web.schemas.tag import (
     TagAssignRequest,
-    TagAssignmentResponse,
     TagCreateRequest,
     TagResponse,
     TagUpdateRequest,

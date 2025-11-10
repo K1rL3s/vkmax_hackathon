@@ -1,8 +1,7 @@
-from maxo.dialogs import Dialog, Window
-from maxo.dialogs.widgets.text import Const
-
 from maxhack.bot.states import Groups
 from maxhack.bot.widgets.to_menu import TO_MENU_BUTTON
+from maxo.dialogs import Dialog, Window
+from maxo.dialogs.widgets.text import Const
 
 _groups = Window(
     Const("💤 Твои группы"),

@@ -1,8 +1,6 @@
 import logging
 from typing import cast
 
-from pydantic.v1 import NoneBytes
-
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
 from maxhack.core.ids import GroupId, InviteKey, RoleId, TagId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
@@ -237,7 +235,10 @@ class GroupService:
         await self._users_to_groups_repo.left(slave_id, group_id)
 
     async def get_member(
-        self, user_id: UserId, group_id: GroupId, master_id: UserId
+        self,
+        user_id: UserId,
+        group_id: GroupId,
+        master_id: UserId,
     ) -> UsersToGroupsModel:
         if not await self.is_member(user_id=master_id, group_id=group_id):
             raise NotEnoughRights("Недостаточно прав для получения участника")

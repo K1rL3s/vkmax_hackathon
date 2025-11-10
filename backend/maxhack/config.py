@@ -89,8 +89,7 @@ def load_config(env: str | Path | None = None) -> Config:
             user=os.environ["DB_USER"],
             password=os.environ["DB_PASSWORD"],
             db_name=os.environ["DB_NAME"],
-            protocol=os.environ["DB_PROTOCOL"]
-
+            protocol=os.getenv("DB_PROTOCOL", "postgresql+psycopg"),
         ),
         redis=RedisConfig(
             host=os.environ["REDIS_HOST"],
