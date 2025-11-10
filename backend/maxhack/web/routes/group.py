@@ -111,10 +111,13 @@ async def update_group_membership(
 
 @group_router.get("/{group_id}", description="Получить группу по идентификатору")
 async def get_group(
-    group_id: GroupId, group_service: FromDishka[GroupService]
+    *,
+    group_id: GroupId,
+    master_id: UserId = Header(...),
+    group_service: FromDishka[GroupService],
 ) -> GroupResponse:
     try:
-        group = await group_service.get_group(group_id=group_id)
+        group = await group_service.get_group(group_id=group_id, member_id=master_id)
         return GroupResponse.model_validate(group)
     except EntityNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
