@@ -14,22 +14,19 @@
 
  * OpenAPI spec version: 0.1.0
  */
-import { request } from '.././client';
+import { request } from '.././client'
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
-  /**
+/**
  * Проверка соединения с базой данных
  * @summary Check Db Connection
  */
 export const checkDbConnectionHealthcheckGet = (
-    
- options?: SecondParameter<typeof request<unknown>>,) => {
-      return request<unknown>(
-      {url: `/healthcheck`, method: 'GET'
-    },
-      options);
-    }
-  export type CheckDbConnectionHealthcheckGetResult = NonNullable<Awaited<ReturnType<typeof checkDbConnectionHealthcheckGet>>>
+  options?: SecondParameter<typeof request<unknown>>,
+) => {
+  return request<unknown>({ url: `/healthcheck`, method: 'GET' }, options)
+}
+export type CheckDbConnectionHealthcheckGetResult = NonNullable<
+  Awaited<ReturnType<typeof checkDbConnectionHealthcheckGet>>
+>

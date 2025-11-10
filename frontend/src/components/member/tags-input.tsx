@@ -1,4 +1,3 @@
-import type { TagResponse } from '@/lib/api/gen.schemas'
 import {
   CellHeader,
   CellList,
@@ -11,6 +10,7 @@ import { clsx } from 'clsx'
 import { Plus, X } from 'lucide-react'
 import { DropDown } from '../ui/dropdown'
 import { Card } from '../card'
+import type { TagResponse } from '@/lib/api/gen.schemas'
 
 export function TagsInput({
   value,
@@ -18,9 +18,9 @@ export function TagsInput({
   options,
   disabled,
 }: {
-  value?: TagResponse[] | undefined
+  value?: Array<TagResponse> | undefined
   onChange?: (tag: TagResponse) => void | undefined
-  options?: TagResponse[] | undefined
+  options?: Array<TagResponse> | undefined
   disabled?: boolean
 }) {
   const tagColorStyles = {
@@ -39,11 +39,12 @@ export function TagsInput({
           <CellSimple className="overflow-visible!" height="compact">
             <Flex direction="column" className="pb-2">
               <Flex wrap="wrap" className="py-1">
-                {disabled && value?.length === 0 && (
-                  <div className="mr-2 my-1 text-gray-500">
-                    <Typography.Body>Нет тегов</Typography.Body>
-                  </div>
-                )}
+                {disabled ||
+                  (value?.length === 0 && (
+                    <div className="mr-2 my-1 text-gray-500">
+                      <Typography.Body>Нет тегов</Typography.Body>
+                    </div>
+                  ))}
                 {value?.map((tag) => (
                   <div
                     onClick={() => !disabled && onChange?.(tag)}
@@ -82,13 +83,16 @@ export function TagsInput({
                           height="compact"
                         >
                           <Flex wrap="wrap" className="py-1">
-                            {disabled && value?.length === 0 && (
+                            {options?.length === 0 && (
                               <div className="mr-2 my-1 text-gray-500">
                                 <Typography.Body>Нет тегов</Typography.Body>
                               </div>
                             )}
                             {options
-                              ?.filter((option) => !value?.includes(option))
+                              ?.filter(
+                                (option) =>
+                                  !value?.map((v) => v.id).includes(option.id),
+                              )
                               .map((tag) => (
                                 <DropDown.Item key={tag.id}>
                                   <div

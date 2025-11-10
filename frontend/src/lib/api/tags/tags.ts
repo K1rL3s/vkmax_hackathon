@@ -14,123 +14,159 @@
 
  * OpenAPI spec version: 0.1.0
  */
+import { request } from '.././client'
 import type {
   TagAssignRequest,
   TagCreateRequest,
   TagResponse,
   TagUpdateRequest,
-  TagUserItem
-} from '../gen.schemas';
+  TagUserItem,
+} from '../gen.schemas'
 
-import { request } from '.././client';
-import type { BodyType } from '.././client';
+import type { BodyType } from '.././client'
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
-  /**
+/**
  * Создание тега
  * @summary Create Tag Route
  */
 export const createTagRouteGroupsGroupIdTagsPost = (
-    groupId: number,
-    tagCreateRequest: BodyType<TagCreateRequest>,
- options?: SecondParameter<typeof request<TagResponse>>,) => {
-      return request<TagResponse>(
-      {url: `/groups/${groupId}/tags`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: tagCreateRequest
+  groupId: number,
+  tagCreateRequest: BodyType<TagCreateRequest>,
+  options?: SecondParameter<typeof request<TagResponse>>,
+) => {
+  return request<TagResponse>(
+    {
+      url: `/groups/${groupId}/tags`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: tagCreateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Получить список тегов группы
  * @summary List Group Tags Route
  */
 export const listGroupTagsRouteGroupsGroupIdTagsGet = (
-    groupId: number,
- options?: SecondParameter<typeof request<TagResponse[]>>,) => {
-      return request<TagResponse[]>(
-      {url: `/groups/${groupId}/tags`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  groupId: number,
+  options?: SecondParameter<typeof request<Array<TagResponse>>>,
+) => {
+  return request<Array<TagResponse>>(
+    { url: `/groups/${groupId}/tags`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Редактирование тега
  * @summary Update Tag Route
  */
 export const updateTagRouteGroupsGroupIdTagsTagIdPatch = (
-    groupId: number,
-    tagId: number,
-    tagUpdateRequest: BodyType<TagUpdateRequest>,
- options?: SecondParameter<typeof request<TagResponse>>,) => {
-      return request<TagResponse>(
-      {url: `/groups/${groupId}/tags/${tagId}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: tagUpdateRequest
+  groupId: number,
+  tagId: number,
+  tagUpdateRequest: BodyType<TagUpdateRequest>,
+  options?: SecondParameter<typeof request<TagResponse>>,
+) => {
+  return request<TagResponse>(
+    {
+      url: `/groups/${groupId}/tags/${tagId}`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: tagUpdateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Удаление тега
  * @summary Delete Tag Route
  */
 export const deleteTagRouteGroupsGroupIdTagsTagIdDelete = (
-    groupId: number,
-    tagId: number,
- options?: SecondParameter<typeof request<void>>,) => {
-      return request<void>(
-      {url: `/groups/${groupId}/tags/${tagId}`, method: 'DELETE'
-    },
-      options);
-    }
-  /**
+  groupId: number,
+  tagId: number,
+  options?: SecondParameter<typeof request<void>>,
+) => {
+  return request<void>(
+    { url: `/groups/${groupId}/tags/${tagId}`, method: 'DELETE' },
+    options,
+  )
+}
+/**
  * Назначить тег пользователю
  * @summary Assign Tag To User Route
  */
 export const assignTagToUserRouteGroupsGroupIdTagsUsersPost = (
-    groupId: number,
-    tagAssignRequest: BodyType<TagAssignRequest>,
- options?: SecondParameter<typeof request<void>>,) => {
-      return request<void>(
-      {url: `/groups/${groupId}/tags/users`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: tagAssignRequest
+  groupId: number,
+  tagAssignRequest: BodyType<TagAssignRequest>,
+  options?: SecondParameter<typeof request<void>>,
+) => {
+  return request<void>(
+    {
+      url: `/groups/${groupId}/tags/users`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: tagAssignRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Удалить тег у пользователя
  * @summary Remove Tag From User Route
  */
 export const removeTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDelete = (
-    groupId: number,
-    userId: number,
-    tagId: number,
- options?: SecondParameter<typeof request<void>>,) => {
-      return request<void>(
-      {url: `/groups/${groupId}/tags/users/${userId}/${tagId}`, method: 'DELETE'
+  groupId: number,
+  userId: number,
+  tagId: number,
+  options?: SecondParameter<typeof request<void>>,
+) => {
+  return request<void>(
+    {
+      url: `/groups/${groupId}/tags/users/${userId}/${tagId}`,
+      method: 'DELETE',
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Получить список пользователей, у которых назначен тег
  * @summary List Tag Users Route
  */
 export const listTagUsersRouteGroupsGroupIdTagsTagIdUsersGet = (
-    groupId: number,
-    tagId: number,
- options?: SecondParameter<typeof request<TagUserItem[]>>,) => {
-      return request<TagUserItem[]>(
-      {url: `/groups/${groupId}/tags/${tagId}/users`, method: 'GET'
-    },
-      options);
-    }
-  export type CreateTagRouteGroupsGroupIdTagsPostResult = NonNullable<Awaited<ReturnType<typeof createTagRouteGroupsGroupIdTagsPost>>>
-export type ListGroupTagsRouteGroupsGroupIdTagsGetResult = NonNullable<Awaited<ReturnType<typeof listGroupTagsRouteGroupsGroupIdTagsGet>>>
-export type UpdateTagRouteGroupsGroupIdTagsTagIdPatchResult = NonNullable<Awaited<ReturnType<typeof updateTagRouteGroupsGroupIdTagsTagIdPatch>>>
-export type DeleteTagRouteGroupsGroupIdTagsTagIdDeleteResult = NonNullable<Awaited<ReturnType<typeof deleteTagRouteGroupsGroupIdTagsTagIdDelete>>>
-export type AssignTagToUserRouteGroupsGroupIdTagsUsersPostResult = NonNullable<Awaited<ReturnType<typeof assignTagToUserRouteGroupsGroupIdTagsUsersPost>>>
-export type RemoveTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDeleteResult = NonNullable<Awaited<ReturnType<typeof removeTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDelete>>>
-export type ListTagUsersRouteGroupsGroupIdTagsTagIdUsersGetResult = NonNullable<Awaited<ReturnType<typeof listTagUsersRouteGroupsGroupIdTagsTagIdUsersGet>>>
+  groupId: number,
+  tagId: number,
+  options?: SecondParameter<typeof request<Array<TagUserItem>>>,
+) => {
+  return request<Array<TagUserItem>>(
+    { url: `/groups/${groupId}/tags/${tagId}/users`, method: 'GET' },
+    options,
+  )
+}
+export type CreateTagRouteGroupsGroupIdTagsPostResult = NonNullable<
+  Awaited<ReturnType<typeof createTagRouteGroupsGroupIdTagsPost>>
+>
+export type ListGroupTagsRouteGroupsGroupIdTagsGetResult = NonNullable<
+  Awaited<ReturnType<typeof listGroupTagsRouteGroupsGroupIdTagsGet>>
+>
+export type UpdateTagRouteGroupsGroupIdTagsTagIdPatchResult = NonNullable<
+  Awaited<ReturnType<typeof updateTagRouteGroupsGroupIdTagsTagIdPatch>>
+>
+export type DeleteTagRouteGroupsGroupIdTagsTagIdDeleteResult = NonNullable<
+  Awaited<ReturnType<typeof deleteTagRouteGroupsGroupIdTagsTagIdDelete>>
+>
+export type AssignTagToUserRouteGroupsGroupIdTagsUsersPostResult = NonNullable<
+  Awaited<ReturnType<typeof assignTagToUserRouteGroupsGroupIdTagsUsersPost>>
+>
+export type RemoveTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDeleteResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof removeTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDelete
+      >
+    >
+  >
+export type ListTagUsersRouteGroupsGroupIdTagsTagIdUsersGetResult = NonNullable<
+  Awaited<ReturnType<typeof listTagUsersRouteGroupsGroupIdTagsTagIdUsersGet>>
+>

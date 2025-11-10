@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMember } from './members'
 import type { GroupCreateRequest } from '@/lib/api/gen.schemas'
 import {
   createGroupRouteGroupsPost,
@@ -32,4 +33,10 @@ export function useCreateGroup() {
       await queryClient.invalidateQueries({ queryKey: ['groups'] })
     },
   })
+}
+
+export function useMemberHasRole(groupId: number, rolesIds: Array<number>) {
+  const { id } = useMaxUser()
+  const { data } = useMember(groupId, id)
+  return data && rolesIds.includes(data.member.role.id)
 }

@@ -1,12 +1,13 @@
-import { useMaxUser } from '@/integrations/max-ui/hooks/max-user'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { GroupMemberUpdateRequest } from '@/lib/api/gen.schemas'
+import { useMaxUser } from '@/integrations/max-ui/hooks/max-user'
 import {
   getGroupUserRouteGroupsGroupIdUsersMemberIdGet,
   listGroupUsersRouteGroupsGroupIdUsersGet,
+  removeGroupMemberRouteGroupsGroupIdUsersSlaveIdDelete,
   updateGroupMembershipGroupsGroupIdUsersSlaveIdPatch,
 } from '@/lib/api/groups/groups'
 import { listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet } from '@/lib/api/users/users'
-import { useMutation, useQuery } from '@tanstack/react-query'
 
 export function useMembers(groupId: number) {
   const { id } = useMaxUser()
@@ -31,6 +32,7 @@ export function useMember(groupId: number, memberId: number) {
 }
 
 export function useEditMember() {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationKey: ['members', 'edit'],
     mutationFn: ({
@@ -47,5 +49,22 @@ export function useEditMember() {
         memberId,
         input,
       ),
+    onSuccess: async ({ groupId }) => {
+      await queryClient.invalidateQueries({ queryKey: ['members', groupId] })
+    },
+  })
+}
+
+export function useRemoveMember() {
+  return useMutation({
+    mutationKey: ['members', 'remove'],
+    mutationFn: ({
+      groupId,
+      memberId,
+    }: {
+      groupId: number
+      memberId: number
+    }) =>
+      removeGroupMemberRouteGroupsGroupIdUsersSlaveIdDelete(groupId, memberId),
   })
 }
