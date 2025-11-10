@@ -16,7 +16,7 @@ class GroupCreateRequest(Model):
 
 
 class GroupUpdateRequest(Model):
-    name: str | None = None
+    name: str
     description: str | None = None
 
 

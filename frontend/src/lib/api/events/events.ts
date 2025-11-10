@@ -20,7 +20,9 @@ import type {
   EventCreateRequest,
   EventResponse,
   EventUpdateRequest,
-  EventsResponse
+  EventsResponse,
+  RespondChangeResponse,
+  RespondResponse
 } from '../gen.schemas';
 
 import { request } from '.././client';
@@ -137,6 +139,22 @@ export const getUserEventsRouteEventsGet = (
     },
       options);
     }
+  /**
+ * Изменить статус отклика
+ * @summary Get User Events Route
+ */
+export const getUserEventsRouteEventsRespondRespondIdEventIdPatch = (
+    respondId: number,
+    eventId: number,
+    respondChangeResponse: BodyType<RespondChangeResponse>,
+ options?: SecondParameter<typeof request<RespondResponse>>,) => {
+      return request<RespondResponse>(
+      {url: `/events/respond/${respondId}/${eventId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: respondChangeResponse
+    },
+      options);
+    }
   export type AddTagToEventRouteEventsEventIdTagsPostResult = NonNullable<Awaited<ReturnType<typeof addTagToEventRouteEventsEventIdTagsPost>>>
 export type GetEventRouteEventsEventIdGetResult = NonNullable<Awaited<ReturnType<typeof getEventRouteEventsEventIdGet>>>
 export type UpdateEventRouteEventsEventIdPatchResult = NonNullable<Awaited<ReturnType<typeof updateEventRouteEventsEventIdPatch>>>
@@ -145,3 +163,4 @@ export type CreateEventRouteEventsPostResult = NonNullable<Awaited<ReturnType<ty
 export type AddUserToEventRouteEventsEventIdUsersPostResult = NonNullable<Awaited<ReturnType<typeof addUserToEventRouteEventsEventIdUsersPost>>>
 export type GetGroupEventsRouteEventsGroupsGroupIdGetResult = NonNullable<Awaited<ReturnType<typeof getGroupEventsRouteEventsGroupsGroupIdGet>>>
 export type GetUserEventsRouteEventsGetResult = NonNullable<Awaited<ReturnType<typeof getUserEventsRouteEventsGet>>>
+export type GetUserEventsRouteEventsRespondRespondIdEventIdPatchResult = NonNullable<Awaited<ReturnType<typeof getUserEventsRouteEventsRespondRespondIdEventIdPatch>>>

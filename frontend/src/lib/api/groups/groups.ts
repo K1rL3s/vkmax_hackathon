@@ -63,7 +63,7 @@ export const updateGroupRouteGroupsGroupIdPatch = (
       options);
     }
   /**
- * Получение группы по идентификатору
+ * Получить группу по идентификатору
  * @summary Get Group
  */
 export const getGroupGroupsGroupIdGet = (
@@ -90,25 +90,15 @@ export const deleteGroupRouteGroupsGroupIdDelete = (
  * Редактирование связи пользователя и группы
  * @summary Update Group Membership
  */
-export const updateGroupMembershipGroupsMembershipPatch = (
+export const updateGroupMembershipGroupsGroupIdUsersSlaveIdPatch = (
+    groupId: number,
+    slaveId: number,
     groupMemberUpdateRequest: BodyType<GroupMemberUpdateRequest>,
  options?: SecondParameter<typeof request<GroupMemberResponse>>,) => {
       return request<GroupMemberResponse>(
-      {url: `/groups/membership`, method: 'PATCH',
+      {url: `/groups/${groupId}/users/${slaveId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: groupMemberUpdateRequest
-    },
-      options);
-    }
-  /**
- * Получить список всех пользователей группы
- * @summary List Group Users Route
- */
-export const listGroupUsersRouteGroupsGroupIdUsersGet = (
-    groupId: number,
- options?: SecondParameter<typeof request<GroupUserItem[]>>,) => {
-      return request<GroupUserItem[]>(
-      {url: `/groups/${groupId}/users`, method: 'GET'
     },
       options);
     }
@@ -122,6 +112,31 @@ export const removeGroupMemberRouteGroupsGroupIdUsersSlaveIdDelete = (
  options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/groups/${groupId}/users/${slaveId}`, method: 'DELETE'
+    },
+      options);
+    }
+  /**
+ * Получить участника группы по идентификатору
+ * @summary Get Group User Route
+ */
+export const getGroupUserRouteGroupsGroupIdUsersMemberIdGet = (
+    groupId: number,
+    memberId: number,
+ options?: SecondParameter<typeof request<GroupUserItem>>,) => {
+      return request<GroupUserItem>(
+      {url: `/groups/${groupId}/users/${memberId}`, method: 'GET'
+    },
+      options);
+    }
+  /**
+ * Получить список всех пользователей группы
+ * @summary List Group Users Route
+ */
+export const listGroupUsersRouteGroupsGroupIdUsersGet = (
+    groupId: number,
+ options?: SecondParameter<typeof request<GroupUserItem[]>>,) => {
+      return request<GroupUserItem[]>(
+      {url: `/groups/${groupId}/users`, method: 'GET'
     },
       options);
     }
@@ -158,8 +173,9 @@ export const joinGroupGroupsJoinPost = (
 export type UpdateGroupRouteGroupsGroupIdPatchResult = NonNullable<Awaited<ReturnType<typeof updateGroupRouteGroupsGroupIdPatch>>>
 export type GetGroupGroupsGroupIdGetResult = NonNullable<Awaited<ReturnType<typeof getGroupGroupsGroupIdGet>>>
 export type DeleteGroupRouteGroupsGroupIdDeleteResult = NonNullable<Awaited<ReturnType<typeof deleteGroupRouteGroupsGroupIdDelete>>>
-export type UpdateGroupMembershipGroupsMembershipPatchResult = NonNullable<Awaited<ReturnType<typeof updateGroupMembershipGroupsMembershipPatch>>>
-export type ListGroupUsersRouteGroupsGroupIdUsersGetResult = NonNullable<Awaited<ReturnType<typeof listGroupUsersRouteGroupsGroupIdUsersGet>>>
+export type UpdateGroupMembershipGroupsGroupIdUsersSlaveIdPatchResult = NonNullable<Awaited<ReturnType<typeof updateGroupMembershipGroupsGroupIdUsersSlaveIdPatch>>>
 export type RemoveGroupMemberRouteGroupsGroupIdUsersSlaveIdDeleteResult = NonNullable<Awaited<ReturnType<typeof removeGroupMemberRouteGroupsGroupIdUsersSlaveIdDelete>>>
+export type GetGroupUserRouteGroupsGroupIdUsersMemberIdGetResult = NonNullable<Awaited<ReturnType<typeof getGroupUserRouteGroupsGroupIdUsersMemberIdGet>>>
+export type ListGroupUsersRouteGroupsGroupIdUsersGetResult = NonNullable<Awaited<ReturnType<typeof listGroupUsersRouteGroupsGroupIdUsersGet>>>
 export type CreateInviteRouteGroupsGroupIdInvitePostResult = NonNullable<Awaited<ReturnType<typeof createInviteRouteGroupsGroupIdInvitePost>>>
 export type JoinGroupGroupsJoinPostResult = NonNullable<Awaited<ReturnType<typeof joinGroupGroupsJoinPost>>>

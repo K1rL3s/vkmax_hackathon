@@ -15,16 +15,20 @@
  * OpenAPI spec version: 0.1.0
  */
 export interface EventAddTagRequest {
-  tagId: number;
+  tagIds: number[];
 }
 
 export interface EventAddUserRequest {
-  userId: number;
+  userIds: number[];
 }
 
 export type EventCreateRequestDescription = string | null;
 
 export type EventCreateRequestGroupId = number | null;
+
+export type EventCreateRequestUserIds = number[] | null;
+
+export type EventCreateRequestTagIds = number[] | null;
 
 export interface EventCreateRequest {
   title: string;
@@ -33,6 +37,8 @@ export interface EventCreateRequest {
   isCycle: boolean;
   type: string;
   groupId?: EventCreateRequestGroupId;
+  userIds?: EventCreateRequestUserIds;
+  tagIds?: EventCreateRequestTagIds;
 }
 
 export type EventResponseDescription = string | null;
@@ -89,10 +95,21 @@ export interface GroupMemberResponse {
   roleId: number;
 }
 
+/**
+ * Идентификатор роли
+ */
+export type GroupMemberUpdateRequestRoleId = number | null;
+
+/**
+ * Список идентификаторов тегов
+ */
+export type GroupMemberUpdateRequestTags = number[] | null;
+
 export interface GroupMemberUpdateRequest {
-  slaveId: number;
-  groupId: number;
-  newRoleId: number;
+  /** Идентификатор роли */
+  roleId?: GroupMemberUpdateRequestRoleId;
+  /** Список идентификаторов тегов */
+  tags?: GroupMemberUpdateRequestTags;
 }
 
 export type GroupResponseDescription = string | null;
@@ -112,17 +129,20 @@ export interface GroupUpdateRequest {
   description?: GroupUpdateRequestDescription;
 }
 
+export type GroupUserItemFirstName = string | null;
+
 export type GroupUserItemLastName = string | null;
+
+export type GroupUserItemPhone = string | null;
 
 export interface GroupUserItem {
   userId: number;
   groupId: number;
-  roleId: number;
-  roleName: string;
+  role: RoleResponse;
   maxId: number;
-  firstName: string;
+  firstName?: GroupUserItemFirstName;
   lastName?: GroupUserItemLastName;
-  phone: string;
+  phone?: GroupUserItemPhone;
 }
 
 export interface HTTPValidationError {
@@ -137,12 +157,33 @@ export interface InviteCreateResponse {
   inviteKey: string;
 }
 
-export interface TagAssignRequest {
-  userId: number;
-  tagId: number;
+export interface RespondChangeResponse {
+  status: string;
 }
 
-export interface TagAssignmentResponse {
+export interface RespondResponse {
+  id: number;
+  userId: number;
+  eventId: number;
+  status: string;
+}
+
+export type RoleResponseName = typeof RoleResponseName[keyof typeof RoleResponseName];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RoleResponseName = {
+  Босс: 'Босс',
+  Начальник: 'Начальник',
+  Участник: 'Участник',
+} as const;
+
+export interface RoleResponse {
+  id: number;
+  name: RoleResponseName;
+}
+
+export interface TagAssignRequest {
   userId: number;
   tagId: number;
 }

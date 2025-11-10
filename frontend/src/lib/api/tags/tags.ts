@@ -16,7 +16,6 @@
  */
 import type {
   TagAssignRequest,
-  TagAssignmentResponse,
   TagCreateRequest,
   TagResponse,
   TagUpdateRequest,
@@ -93,8 +92,8 @@ export const deleteTagRouteGroupsGroupIdTagsTagIdDelete = (
 export const assignTagToUserRouteGroupsGroupIdTagsUsersPost = (
     groupId: number,
     tagAssignRequest: BodyType<TagAssignRequest>,
- options?: SecondParameter<typeof request<TagAssignmentResponse>>,) => {
-      return request<TagAssignmentResponse>(
+ options?: SecondParameter<typeof request<void>>,) => {
+      return request<void>(
       {url: `/groups/${groupId}/tags/users`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: tagAssignRequest

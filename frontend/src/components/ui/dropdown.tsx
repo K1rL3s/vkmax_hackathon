@@ -18,13 +18,13 @@ const DropdownContext = createContext<DropdownContextProps | null>(null)
 function useDropdownContext() {
   const ctx = useContext(DropdownContext)
   if (!ctx) {
-    throw new Error('useDropdownContext must be used within a DropdownProvider')
+    throw new Error('useDropdownContext must be used within DropDown')
   }
   return ctx
 }
 
 type DropDownProps = {
-  children: React.ReactNode
+  children: ReactNode
   className?: string
 }
 
@@ -40,14 +40,12 @@ export function DropDown({ children, className }: DropDownProps) {
     }
 
     document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   return (
     <DropdownContext.Provider value={{ open, setOpen }}>
-      <div className={clsx('relative inline-block', className)} ref={ref}>
+      <div ref={ref} className={clsx('relative inline-block', className)}>
         {children}
       </div>
     </DropdownContext.Provider>
@@ -55,24 +53,30 @@ export function DropDown({ children, className }: DropDownProps) {
 }
 
 type DropDownTriggerProps = {
-  children: React.ReactNode
+  children: ReactNode
   className?: string
+  disabled?: boolean
 }
 
 DropDown.Trigger = function Trigger({
   children,
   className,
+  disabled,
 }: DropDownTriggerProps) {
   const { open, setOpen } = useDropdownContext()
+
   return (
-    <div onClick={() => setOpen(!open)} className={clsx(className)}>
+    <div
+      onClick={() => !disabled && setOpen(!open)}
+      className={clsx(className)}
+    >
       {children}
     </div>
   )
 }
 
 type DropDownContentProps = {
-  children: React.ReactNode
+  children: ReactNode
   className?: string
 }
 
@@ -80,8 +84,39 @@ DropDown.Content = function Content({
   children,
   className,
 }: DropDownContentProps) {
+  const { open } = useDropdownContext()
+  if (!open) return null
   return (
-    <div className={clsx('absolute z-10 mt-2 w-full rounded-(--)', className)}>
+    <div
+      className={clsx(
+        `
+        absolute z-10 rounded-(--size-border-radius-semantic-border-radius-card)
+        bg-(--background-surface-card)
+      `,
+        className,
+      )}
+    >
+      {children}
+    </div>
+  )
+}
+
+type DropDownItemProps = {
+  children: ReactNode
+  className?: string
+  onClick?: () => void
+}
+
+DropDown.Item = function Item({ children, className }: DropDownItemProps) {
+  const { setOpen } = useDropdownContext()
+
+  return (
+    <div
+      onClick={() => {
+        setOpen(false)
+      }}
+      className={clsx(className)}
+    >
       {children}
     </div>
   )

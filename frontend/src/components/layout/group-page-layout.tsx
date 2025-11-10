@@ -1,5 +1,5 @@
 import { useGroup } from '@/hooks/groups'
-import { Container, Flex, Panel, Spinner } from '@maxhub/max-ui'
+import { Flex, Spinner } from '@maxhub/max-ui'
 
 import { Header } from '../header'
 

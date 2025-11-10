@@ -1,6 +1,8 @@
 import logging
 from typing import cast
 
+from pydantic.v1 import NoneBytes
+
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
 from maxhack.core.ids import GroupId, InviteKey, RoleId, TagId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
@@ -66,7 +68,7 @@ class GroupService:
         self,
         group_id: GroupId,
         editor_id: UserId,
-        name: str,
+        name: str | None,
         description: str | None,
     ) -> GroupModel:
         group = await self._group_repo.get_by_id(group_id)
@@ -174,7 +176,7 @@ class GroupService:
             )
             member_tag_ids = {tag.id for tag in member_tags}
             to_add = set(tags).difference(member_tag_ids)
-            to_remove = set(member_tag_ids).difference(tags)
+            to_remove = set(member_tag_ids).difference(tags)r
             logger.info(
                 "Updating tags for user %d in group %d: adding %s, removing %s",
                 slave_id,

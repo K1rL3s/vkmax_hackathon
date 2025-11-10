@@ -19,10 +19,6 @@ from maxhack.web.schemas.invite import (
     InviteCreateRequest,
     InviteCreateResponse,
 )
-from maxhack.web.schemas.tag import (
-    TagCreateRequest,
-    TagResponse,
-)
 
 group_router = APIRouter(prefix="/groups", tags=["Groups"], route_class=DishkaRoute)
 
@@ -259,7 +255,7 @@ async def join_group(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
     return GroupMemberResponse(
-        user_id=body.user_id,
+        user_id=master_id,
         group_id=group.id,
         role_id=MEMBER_ROLE_ID,
     )
