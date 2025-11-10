@@ -79,7 +79,7 @@ async def update_group_route(
 
 
 @group_router.patch(
-    "/{group_id}/users/{user_id}",
+    "/membership",
     response_model=GroupMemberResponse,
     description="Редактирование связи пользователя и группы",
 )
@@ -107,6 +107,17 @@ async def update_group_membership(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
 
     # TODO: Вернуть схему
+
+
+@group_router.get("/{group_id}", description="Получить группу по идентификатору")
+async def get_group(
+    group_id: GroupId, group_service: FromDishka[GroupService]
+) -> GroupResponse:
+    try:
+        group = await group_service.get_group(group_id=group_id)
+        return GroupResponse.model_validate(group)
+    except EntityNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
 @group_router.get(

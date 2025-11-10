@@ -15,12 +15,10 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
-  ListUserGroupsRouteUsersUserIdGroupsGetParams,
-  ListUserTagsRouteUsersUserIdGroupsGroupIdTagsGetParams,
+  TagResponse,
   UserCreateRequest,
   UserGroupsResponse,
   UserResponse,
-  UserTagsResponse,
   UserUpdateRequest
 } from '../gen.schemas';
 
@@ -61,12 +59,11 @@ export const getUserByIdRouteUsersUserIdGet = (
  * Редактирование пользователя
  * @summary Update User Route
  */
-export const updateUserRouteUsersUserIdPatch = (
-    userId: number,
+export const updateUserRouteUsersPatch = (
     userUpdateRequest: BodyType<UserUpdateRequest>,
  options?: SecondParameter<typeof request<UserResponse>>,) => {
       return request<UserResponse>(
-      {url: `/users/${userId}`, method: 'PATCH',
+      {url: `/users/`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: userUpdateRequest
     },
@@ -78,11 +75,9 @@ export const updateUserRouteUsersUserIdPatch = (
  */
 export const listUserGroupsRouteUsersUserIdGroupsGet = (
     userId: number,
-    params: ListUserGroupsRouteUsersUserIdGroupsGetParams,
  options?: SecondParameter<typeof request<UserGroupsResponse>>,) => {
       return request<UserGroupsResponse>(
-      {url: `/users/${userId}/groups`, method: 'GET',
-        params
+      {url: `/users/${userId}/groups`, method: 'GET'
     },
       options);
     }
@@ -93,16 +88,14 @@ export const listUserGroupsRouteUsersUserIdGroupsGet = (
 export const listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet = (
     userId: number,
     groupId: number,
-    params: ListUserTagsRouteUsersUserIdGroupsGroupIdTagsGetParams,
- options?: SecondParameter<typeof request<UserTagsResponse>>,) => {
-      return request<UserTagsResponse>(
-      {url: `/users/${userId}/groups/${groupId}/tags`, method: 'GET',
-        params
+ options?: SecondParameter<typeof request<TagResponse[]>>,) => {
+      return request<TagResponse[]>(
+      {url: `/users/${userId}/groups/${groupId}/tags`, method: 'GET'
     },
       options);
     }
   export type CreateUserRouteUsersPostResult = NonNullable<Awaited<ReturnType<typeof createUserRouteUsersPost>>>
 export type GetUserByIdRouteUsersUserIdGetResult = NonNullable<Awaited<ReturnType<typeof getUserByIdRouteUsersUserIdGet>>>
-export type UpdateUserRouteUsersUserIdPatchResult = NonNullable<Awaited<ReturnType<typeof updateUserRouteUsersUserIdPatch>>>
+export type UpdateUserRouteUsersPatchResult = NonNullable<Awaited<ReturnType<typeof updateUserRouteUsersPatch>>>
 export type ListUserGroupsRouteUsersUserIdGroupsGetResult = NonNullable<Awaited<ReturnType<typeof listUserGroupsRouteUsersUserIdGroupsGet>>>
 export type ListUserTagsRouteUsersUserIdGroupsGroupIdTagsGetResult = NonNullable<Awaited<ReturnType<typeof listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet>>>

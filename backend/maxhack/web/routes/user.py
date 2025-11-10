@@ -9,6 +9,8 @@ from maxhack.core.user.service import UserService
 from maxhack.web.schemas.tag import TagResponse
 from maxhack.web.schemas.user import (
     UserCreateRequest,
+    UserGroupItem,
+    UserGroupsResponse,
     UserResponse,
     UserUpdateRequest,
 )
@@ -90,37 +92,37 @@ async def update_user_route(
         )
 
 
-# @user_router.get(
-#     "/{user_id}/groups",
-#     response_model=UserGroupsResponse,
-#     description="Получить список групп, в которых состоит пользователь",
-# )
-# async def list_user_groups_route(
-#     user_id: UserId,
-#     user_service: FromDishka[UserService],
-#     master_id: UserId = Header(...),
-# ) -> UserGroupsResponse:
-#     try:
-#         result = await user_service.get_user_groups(
-#             user_id=user_id,
-#             master_id=master_id,
-#         )
-#         items: list[UserGroupItem] = []
-#         for group, role in result:
-#             items.append(
-#                 UserGroupItem(
-#                     group_id=group.id,
-#                     name=group.name,
-#                     description=group.description,
-#                     role_id=role.id,
-#                 ),
-#             )
-#
-#         return UserGroupsResponse(groups=items)
-#     except EntityNotFound as e:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-#     except NotEnoughRights as e:
-#         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+@user_router.get(
+    "/{user_id}/groups",
+    response_model=UserGroupsResponse,
+    description="Получить список групп, в которых состоит пользователь",
+)
+async def list_user_groups_route(
+    user_id: UserId,
+    user_service: FromDishka[UserService],
+    master_id: UserId = Header(...),
+) -> UserGroupsResponse:
+    try:
+        result = await user_service.get_user_groups(
+            user_id=user_id,
+            master_id=master_id,
+        )
+        items: list[UserGroupItem] = []
+        for group, role in result:
+            items.append(
+                UserGroupItem(
+                    group_id=group.id,
+                    name=group.name,
+                    description=group.description,
+                    role_id=role.id,
+                ),
+            )
+
+        return UserGroupsResponse(groups=items)
+    except EntityNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except NotEnoughRights as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
 
 
 @user_router.get(

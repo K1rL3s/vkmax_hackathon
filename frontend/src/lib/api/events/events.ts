@@ -15,16 +15,12 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
-  DeleteEventRouteEventsEventIdDeleteParams,
   EventAddTagRequest,
   EventAddUserRequest,
   EventCreateRequest,
   EventResponse,
   EventUpdateRequest,
-  EventsResponse,
-  GetEventRouteEventsEventIdGetParams,
-  GetGroupEventsRouteEventsGroupsGroupIdGetParams,
-  GetOtherUserEventsRouteEventsUsersTargetUserIdEventsGetParams
+  EventsResponse
 } from '../gen.schemas';
 
 import { request } from '.././client';
@@ -55,11 +51,9 @@ export const addTagToEventRouteEventsEventIdTagsPost = (
  */
 export const getEventRouteEventsEventIdGet = (
     eventId: number,
-    params: GetEventRouteEventsEventIdGetParams,
  options?: SecondParameter<typeof request<EventResponse>>,) => {
       return request<EventResponse>(
-      {url: `/events/${eventId}`, method: 'GET',
-        params
+      {url: `/events/${eventId}`, method: 'GET'
     },
       options);
     }
@@ -84,11 +78,9 @@ export const updateEventRouteEventsEventIdPatch = (
  */
 export const deleteEventRouteEventsEventIdDelete = (
     eventId: number,
-    params: DeleteEventRouteEventsEventIdDeleteParams,
  options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
-      {url: `/events/${eventId}`, method: 'DELETE',
-        params
+      {url: `/events/${eventId}`, method: 'DELETE'
     },
       options);
     }
@@ -127,11 +119,9 @@ export const addUserToEventRouteEventsEventIdUsersPost = (
  */
 export const getGroupEventsRouteEventsGroupsGroupIdGet = (
     groupId: number,
-    params: GetGroupEventsRouteEventsGroupsGroupIdGetParams,
  options?: SecondParameter<typeof request<EventsResponse>>,) => {
       return request<EventsResponse>(
-      {url: `/events/groups/${groupId}`, method: 'GET',
-        params
+      {url: `/events/groups/${groupId}`, method: 'GET'
     },
       options);
     }
@@ -139,25 +129,11 @@ export const getGroupEventsRouteEventsGroupsGroupIdGet = (
  * Просмотр всех своих событий
  * @summary Get User Events Route
  */
-export const getUserEventsRouteEventsUsersUserIdGet = (
-    userId: number,
+export const getUserEventsRouteEventsGet = (
+    
  options?: SecondParameter<typeof request<EventsResponse>>,) => {
       return request<EventsResponse>(
-      {url: `/events/users/${userId}`, method: 'GET'
-    },
-      options);
-    }
-  /**
- * Просмотр событий другого пользователя (Если вы в одной группе)
- * @summary Get Other User Events Route
- */
-export const getOtherUserEventsRouteEventsUsersTargetUserIdEventsGet = (
-    targetUserId: number,
-    params: GetOtherUserEventsRouteEventsUsersTargetUserIdEventsGetParams,
- options?: SecondParameter<typeof request<EventsResponse>>,) => {
-      return request<EventsResponse>(
-      {url: `/events/users/${targetUserId}/events`, method: 'GET',
-        params
+      {url: `/events/`, method: 'GET'
     },
       options);
     }
@@ -168,5 +144,4 @@ export type DeleteEventRouteEventsEventIdDeleteResult = NonNullable<Awaited<Retu
 export type CreateEventRouteEventsPostResult = NonNullable<Awaited<ReturnType<typeof createEventRouteEventsPost>>>
 export type AddUserToEventRouteEventsEventIdUsersPostResult = NonNullable<Awaited<ReturnType<typeof addUserToEventRouteEventsEventIdUsersPost>>>
 export type GetGroupEventsRouteEventsGroupsGroupIdGetResult = NonNullable<Awaited<ReturnType<typeof getGroupEventsRouteEventsGroupsGroupIdGet>>>
-export type GetUserEventsRouteEventsUsersUserIdGetResult = NonNullable<Awaited<ReturnType<typeof getUserEventsRouteEventsUsersUserIdGet>>>
-export type GetOtherUserEventsRouteEventsUsersTargetUserIdEventsGetResult = NonNullable<Awaited<ReturnType<typeof getOtherUserEventsRouteEventsUsersTargetUserIdEventsGet>>>
+export type GetUserEventsRouteEventsGetResult = NonNullable<Awaited<ReturnType<typeof getUserEventsRouteEventsGet>>>

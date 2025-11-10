@@ -6,8 +6,10 @@ import { SideBar } from './side-bar'
 import { routes } from '@/routes'
 
 export function Header({
+  title,
   children,
 }: {
+  title?: React.ReactNode | undefined
   children?: React.ReactNode | undefined
 }) {
   const location = useLocation()
@@ -23,7 +25,9 @@ export function Header({
           <IconButton mode="tertiary" onClick={() => setIsOpen(true)}>
             <MenuSquare size={24} />
           </IconButton>
-          <Typography.Headline>{route?.title}</Typography.Headline>
+          <Typography.Headline>
+            {title ? title : route?.title}
+          </Typography.Headline>
         </Flex>
         {children}
       </header>

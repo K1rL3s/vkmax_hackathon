@@ -18,6 +18,7 @@ export function SideBar({
   const { data, isPending } = useGroups()
   const navigate = useNavigate()
   const onNavigate = (path: string) => {
+    console.log(path)
     navigate({ to: path })
     onClose()
   }
@@ -67,7 +68,7 @@ export function SideBar({
                     <SideBarLink
                       title="Расписание"
                       icon={<Calendar />}
-                      onClick={() => {}}
+                      onClick={() => onNavigate(`/groups/${group.groupId}`)}
                       isActive={
                         location.pathname === `/groups/${group.groupId}`
                       }
@@ -75,7 +76,9 @@ export function SideBar({
                     <SideBarLink
                       title="Участники"
                       icon={<Users />}
-                      onClick={() => {}}
+                      onClick={() =>
+                        onNavigate(`/groups/${group.groupId}/members`)
+                      }
                       isActive={
                         location.pathname === `/groups/${group.groupId}/members`
                       }
@@ -83,7 +86,9 @@ export function SideBar({
                     <SideBarLink
                       title="Настройки"
                       icon={<Settings />}
-                      onClick={() => {}}
+                      onClick={() =>
+                        onNavigate(`/groups/${group.groupId}/settings`)
+                      }
                       isActive={
                         location.pathname ===
                         `/groups/${group.groupId}/settings`

@@ -12,8 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GroupsCreateRouteImport } from './routes/groups/create'
-import { Route as GroupsIdRouteImport } from './routes/groups/$id'
 import { Route as EventsIdRouteImport } from './routes/events/$id'
+import { Route as GroupsIdIndexRouteImport } from './routes/groups/$id/index'
+import { Route as GroupsIdSettingsRouteImport } from './routes/groups/$id/settings'
+import { Route as GroupsIdMembersRouteImport } from './routes/groups/$id/members'
 
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
@@ -30,14 +32,24 @@ const GroupsCreateRoute = GroupsCreateRouteImport.update({
   path: '/groups/create',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GroupsIdRoute = GroupsIdRouteImport.update({
-  id: '/groups/$id',
-  path: '/groups/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const EventsIdRoute = EventsIdRouteImport.update({
   id: '/events/$id',
   path: '/events/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsIdIndexRoute = GroupsIdIndexRouteImport.update({
+  id: '/groups/$id/',
+  path: '/groups/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsIdSettingsRoute = GroupsIdSettingsRouteImport.update({
+  id: '/groups/$id/settings',
+  path: '/groups/$id/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsIdMembersRoute = GroupsIdMembersRouteImport.update({
+  id: '/groups/$id/members',
+  path: '/groups/$id/members',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -45,44 +57,68 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/profile': typeof ProfileRoute
   '/events/$id': typeof EventsIdRoute
-  '/groups/$id': typeof GroupsIdRoute
   '/groups/create': typeof GroupsCreateRoute
+  '/groups/$id/members': typeof GroupsIdMembersRoute
+  '/groups/$id/settings': typeof GroupsIdSettingsRoute
+  '/groups/$id': typeof GroupsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/profile': typeof ProfileRoute
   '/events/$id': typeof EventsIdRoute
-  '/groups/$id': typeof GroupsIdRoute
   '/groups/create': typeof GroupsCreateRoute
+  '/groups/$id/members': typeof GroupsIdMembersRoute
+  '/groups/$id/settings': typeof GroupsIdSettingsRoute
+  '/groups/$id': typeof GroupsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/profile': typeof ProfileRoute
   '/events/$id': typeof EventsIdRoute
-  '/groups/$id': typeof GroupsIdRoute
   '/groups/create': typeof GroupsCreateRoute
+  '/groups/$id/members': typeof GroupsIdMembersRoute
+  '/groups/$id/settings': typeof GroupsIdSettingsRoute
+  '/groups/$id/': typeof GroupsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/profile' | '/events/$id' | '/groups/$id' | '/groups/create'
+  fullPaths:
+    | '/'
+    | '/profile'
+    | '/events/$id'
+    | '/groups/create'
+    | '/groups/$id/members'
+    | '/groups/$id/settings'
+    | '/groups/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/profile' | '/events/$id' | '/groups/$id' | '/groups/create'
+  to:
+    | '/'
+    | '/profile'
+    | '/events/$id'
+    | '/groups/create'
+    | '/groups/$id/members'
+    | '/groups/$id/settings'
+    | '/groups/$id'
   id:
     | '__root__'
     | '/'
     | '/profile'
     | '/events/$id'
-    | '/groups/$id'
     | '/groups/create'
+    | '/groups/$id/members'
+    | '/groups/$id/settings'
+    | '/groups/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProfileRoute: typeof ProfileRoute
   EventsIdRoute: typeof EventsIdRoute
-  GroupsIdRoute: typeof GroupsIdRoute
   GroupsCreateRoute: typeof GroupsCreateRoute
+  GroupsIdMembersRoute: typeof GroupsIdMembersRoute
+  GroupsIdSettingsRoute: typeof GroupsIdSettingsRoute
+  GroupsIdIndexRoute: typeof GroupsIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -108,18 +144,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/groups/$id': {
-      id: '/groups/$id'
-      path: '/groups/$id'
-      fullPath: '/groups/$id'
-      preLoaderRoute: typeof GroupsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/events/$id': {
       id: '/events/$id'
       path: '/events/$id'
       fullPath: '/events/$id'
       preLoaderRoute: typeof EventsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$id/': {
+      id: '/groups/$id/'
+      path: '/groups/$id'
+      fullPath: '/groups/$id'
+      preLoaderRoute: typeof GroupsIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$id/settings': {
+      id: '/groups/$id/settings'
+      path: '/groups/$id/settings'
+      fullPath: '/groups/$id/settings'
+      preLoaderRoute: typeof GroupsIdSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups/$id/members': {
+      id: '/groups/$id/members'
+      path: '/groups/$id/members'
+      fullPath: '/groups/$id/members'
+      preLoaderRoute: typeof GroupsIdMembersRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -129,8 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProfileRoute: ProfileRoute,
   EventsIdRoute: EventsIdRoute,
-  GroupsIdRoute: GroupsIdRoute,
   GroupsCreateRoute: GroupsCreateRoute,
+  GroupsIdMembersRoute: GroupsIdMembersRoute,
+  GroupsIdSettingsRoute: GroupsIdSettingsRoute,
+  GroupsIdIndexRoute: GroupsIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

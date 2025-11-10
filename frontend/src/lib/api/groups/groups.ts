@@ -15,16 +15,15 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
-  DeleteGroupRouteGroupsGroupIdDeleteParams,
   GroupCreateRequest,
   GroupMemberAddRequest,
   GroupMemberResponse,
   GroupMemberUpdateRequest,
   GroupResponse,
   GroupUpdateRequest,
-  GroupUsersResponse,
-  ListGroupUsersRouteGroupsGroupIdUsersGetParams,
-  RemoveGroupMemberRouteGroupsGroupIdUsersUserIdDeleteParams
+  GroupUserItem,
+  InviteCreateRequest,
+  InviteCreateResponse
 } from '../gen.schemas';
 
 import { request } from '.././client';
@@ -42,7 +41,7 @@ export const createGroupRouteGroupsPost = (
     groupCreateRequest: BodyType<GroupCreateRequest>,
  options?: SecondParameter<typeof request<GroupResponse>>,) => {
       return request<GroupResponse>(
-      {url: `/groups/`, method: 'POST',
+      {url: `/groups`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: groupCreateRequest
     },
@@ -64,30 +63,26 @@ export const updateGroupRouteGroupsGroupIdPatch = (
       options);
     }
   /**
+ * Получение группы по идентификатору
+ * @summary Get Group
+ */
+export const getGroupGroupsGroupIdGet = (
+    groupId: number,
+ options?: SecondParameter<typeof request<GroupResponse>>,) => {
+      return request<GroupResponse>(
+      {url: `/groups/${groupId}`, method: 'GET'
+    },
+      options);
+    }
+  /**
  * Удаление группы (только администратор)
  * @summary Delete Group Route
  */
 export const deleteGroupRouteGroupsGroupIdDelete = (
     groupId: number,
-    params: DeleteGroupRouteGroupsGroupIdDeleteParams,
  options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
-      {url: `/groups/${groupId}`, method: 'DELETE',
-        params
-    },
-      options);
-    }
-  /**
- * Добавление пользователя в группу
- * @summary Join Group
- */
-export const joinGroupGroupsJoinPost = (
-    groupMemberAddRequest: BodyType<GroupMemberAddRequest>,
- options?: SecondParameter<typeof request<GroupMemberResponse>>,) => {
-      return request<GroupMemberResponse>(
-      {url: `/groups/join`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: groupMemberAddRequest
+      {url: `/groups/${groupId}`, method: 'DELETE'
     },
       options);
     }
@@ -111,11 +106,9 @@ export const updateGroupMembershipGroupsMembershipPatch = (
  */
 export const listGroupUsersRouteGroupsGroupIdUsersGet = (
     groupId: number,
-    params: ListGroupUsersRouteGroupsGroupIdUsersGetParams,
- options?: SecondParameter<typeof request<GroupUsersResponse>>,) => {
-      return request<GroupUsersResponse>(
-      {url: `/groups/${groupId}/users`, method: 'GET',
-        params
+ options?: SecondParameter<typeof request<GroupUserItem[]>>,) => {
+      return request<GroupUserItem[]>(
+      {url: `/groups/${groupId}/users`, method: 'GET'
     },
       options);
     }
@@ -123,21 +116,50 @@ export const listGroupUsersRouteGroupsGroupIdUsersGet = (
  * Удаление участника из группы
  * @summary Remove Group Member Route
  */
-export const removeGroupMemberRouteGroupsGroupIdUsersUserIdDelete = (
+export const removeGroupMemberRouteGroupsGroupIdUsersSlaveIdDelete = (
     groupId: number,
-    userId: number,
-    params: RemoveGroupMemberRouteGroupsGroupIdUsersUserIdDeleteParams,
+    slaveId: number,
  options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
-      {url: `/groups/${groupId}/users/${userId}`, method: 'DELETE',
-        params
+      {url: `/groups/${groupId}/users/${slaveId}`, method: 'DELETE'
+    },
+      options);
+    }
+  /**
+ * Создание приглашения в группу
+ * @summary Create Invite Route
+ */
+export const createInviteRouteGroupsGroupIdInvitePost = (
+    groupId: number,
+    inviteCreateRequest: BodyType<InviteCreateRequest>,
+ options?: SecondParameter<typeof request<InviteCreateResponse>>,) => {
+      return request<InviteCreateResponse>(
+      {url: `/groups/${groupId}/invite`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: inviteCreateRequest
+    },
+      options);
+    }
+  /**
+ * Добавление пользователя в группу
+ * @summary Join Group
+ */
+export const joinGroupGroupsJoinPost = (
+    groupMemberAddRequest: BodyType<GroupMemberAddRequest>,
+ options?: SecondParameter<typeof request<GroupMemberResponse>>,) => {
+      return request<GroupMemberResponse>(
+      {url: `/groups/join`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: groupMemberAddRequest
     },
       options);
     }
   export type CreateGroupRouteGroupsPostResult = NonNullable<Awaited<ReturnType<typeof createGroupRouteGroupsPost>>>
 export type UpdateGroupRouteGroupsGroupIdPatchResult = NonNullable<Awaited<ReturnType<typeof updateGroupRouteGroupsGroupIdPatch>>>
+export type GetGroupGroupsGroupIdGetResult = NonNullable<Awaited<ReturnType<typeof getGroupGroupsGroupIdGet>>>
 export type DeleteGroupRouteGroupsGroupIdDeleteResult = NonNullable<Awaited<ReturnType<typeof deleteGroupRouteGroupsGroupIdDelete>>>
-export type JoinGroupGroupsJoinPostResult = NonNullable<Awaited<ReturnType<typeof joinGroupGroupsJoinPost>>>
 export type UpdateGroupMembershipGroupsMembershipPatchResult = NonNullable<Awaited<ReturnType<typeof updateGroupMembershipGroupsMembershipPatch>>>
 export type ListGroupUsersRouteGroupsGroupIdUsersGetResult = NonNullable<Awaited<ReturnType<typeof listGroupUsersRouteGroupsGroupIdUsersGet>>>
-export type RemoveGroupMemberRouteGroupsGroupIdUsersUserIdDeleteResult = NonNullable<Awaited<ReturnType<typeof removeGroupMemberRouteGroupsGroupIdUsersUserIdDelete>>>
+export type RemoveGroupMemberRouteGroupsGroupIdUsersSlaveIdDeleteResult = NonNullable<Awaited<ReturnType<typeof removeGroupMemberRouteGroupsGroupIdUsersSlaveIdDelete>>>
+export type CreateInviteRouteGroupsGroupIdInvitePostResult = NonNullable<Awaited<ReturnType<typeof createInviteRouteGroupsGroupIdInvitePost>>>
+export type JoinGroupGroupsJoinPostResult = NonNullable<Awaited<ReturnType<typeof joinGroupGroupsJoinPost>>>

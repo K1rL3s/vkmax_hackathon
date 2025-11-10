@@ -47,23 +47,16 @@ class GroupService:
 
     async def get_group(
         self,
-        creator_id: UserId,
+        member_id: UserId,
         group_id: GroupId,
     ) -> GroupModel:
-        creator = await self._user_repo.get_by_id(creator_id)
-        if creator is None:
-            raise EntityNotFound("Пользователь не найден")
+        if not await self.is_member(member_id, group_id):
+            raise NotEnoughRights("Недостаточно прав для доступа к группе")
 
         group = await self._group_repo.get_by_id(group_id=group_id)
-        if group is None:
+        if not group:
             raise EntityNotFound("Группа не найдена")
-
-        requester_membership = await self._users_to_groups_repo.get_membership(
-            user_id=creator_id,
-            group_id=group_id,
-        )
-
-        return await self._group_repo.get_by_id(group_id=group_id)
+        return group
 
     async def update_group(
         self,
@@ -76,20 +69,21 @@ class GroupService:
         if group is None:
             raise EntityNotFound("Группа не найдена")
 
-        requester_membership = await self._users_to_groups_repo.get_membership(
+        if not await self.has_roles(
+            CREATOR_ROLE_ID,
+            EDITOR_ROLE_ID,
             user_id=editor_id,
             group_id=group_id,
-        )
-        if (
-            requester_membership is None
-            or requester_membership.role_id != CREATOR_ROLE_ID
         ):
             raise NotEnoughRights("Недостаточно прав для редактирования группы")
 
-        return await self._group_repo.update(
-            group_id,
-            name=name,
-            description=description,
+        return cast(
+            GroupModel,
+            await self._group_repo.update(
+                group_id,
+                name=name,
+                description=description,
+            ),
         )
 
     async def delete_group(
@@ -101,13 +95,10 @@ class GroupService:
         if group is None:
             raise EntityNotFound("Группа не найдена")
 
-        requester_membership = await self._users_to_groups_repo.get_membership(
+        if not await self.has_roles(
+            CREATOR_ROLE_ID,
             user_id=editor_id,
             group_id=group_id,
-        )
-        if (
-            requester_membership is None
-            or requester_membership.role_id != CREATOR_ROLE_ID
         ):
             raise NotEnoughRights("Недостаточно прав для удаления группы")
 
@@ -154,12 +145,12 @@ class GroupService:
         if group is None:
             raise EntityNotFound("Группа не найдена")
 
-        master_membership = await self._users_to_groups_repo.get_membership(
+        if not await self.has_roles(
+            CREATOR_ROLE_ID,
+            EDITOR_ROLE_ID,
             user_id=master_id,
             group_id=group_id,
-        )
-        allowed_roles = {CREATOR_ROLE_ID, EDITOR_ROLE_ID}
-        if master_membership is None or master_membership.role_id not in allowed_roles:
+        ):
             raise NotEnoughRights("Недостаточно прав для редактирования участника")
 
         membership = await self._users_to_groups_repo.update_role(
@@ -181,11 +172,7 @@ class GroupService:
         if group is None:
             raise EntityNotFound("Группа не найдена")
 
-        requester_membership = await self._users_to_groups_repo.get_membership(
-            user_id=user_id,
-            group_id=group_id,
-        )
-        if requester_membership is None:
+        if not await self.is_member(user_id=user_id, group_id=group_id):
             raise NotEnoughRights("Пользователь не состоит в группе")
 
         return await self._users_to_groups_repo.group_users(group_id)
@@ -200,14 +187,12 @@ class GroupService:
         if group is None:
             raise EntityNotFound("Группа не найдена")
 
-        master_membership = await self._users_to_groups_repo.get_membership(
-            user_id=master_id,
-            group_id=group_id,
-        )
-        if master_membership is None or master_membership.role_id not in {
+        if not await self.has_roles(
             CREATOR_ROLE_ID,
             EDITOR_ROLE_ID,
-        }:
+            user_id=master_id,
+            group_id=group_id,
+        ):
             raise NotEnoughRights("Недостаточно прав для удаления участника")
 
         membership = await self._users_to_groups_repo.get_membership(
@@ -216,8 +201,30 @@ class GroupService:
         )
         if membership is None:
             raise EntityNotFound("Связь пользователя с группой не найдена")
-
         if membership.role_id == CREATOR_ROLE_ID:
             raise NotEnoughRights("Нельзя удалить создателя группы")
 
         await self._users_to_groups_repo.left(slave_id, group_id)
+
+    async def is_member(
+        self,
+        user_id: UserId,
+        group_id: GroupId,
+    ) -> bool:
+        membership = await self._users_to_groups_repo.get_membership(
+            user_id=user_id,
+            group_id=group_id,
+        )
+        return membership is not None
+
+    async def has_roles(
+        self,
+        *roles: RoleId,
+        user_id: UserId,
+        group_id: GroupId,
+    ) -> bool:
+        membership = await self._users_to_groups_repo.get_membership(
+            user_id=user_id,
+            group_id=group_id,
+        )
+        return membership is not None and membership.role_id in roles

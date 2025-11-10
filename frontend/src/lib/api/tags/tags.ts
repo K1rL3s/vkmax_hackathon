@@ -15,17 +15,12 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
-  DeleteTagRouteGroupsGroupIdTagsTagIdDeleteParams,
-  GroupTagsResponse,
-  ListGroupTagsRouteGroupsGroupIdTagsGetParams,
-  ListTagUsersRouteGroupsGroupIdTagsTagIdUsersGetParams,
-  RemoveTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDeleteParams,
   TagAssignRequest,
   TagAssignmentResponse,
   TagCreateRequest,
   TagResponse,
   TagUpdateRequest,
-  TagUsersResponse
+  TagUserItem
 } from '../gen.schemas';
 
 import { request } from '.././client';
@@ -56,11 +51,9 @@ export const createTagRouteGroupsGroupIdTagsPost = (
  */
 export const listGroupTagsRouteGroupsGroupIdTagsGet = (
     groupId: number,
-    params: ListGroupTagsRouteGroupsGroupIdTagsGetParams,
- options?: SecondParameter<typeof request<GroupTagsResponse>>,) => {
-      return request<GroupTagsResponse>(
-      {url: `/groups/${groupId}/tags`, method: 'GET',
-        params
+ options?: SecondParameter<typeof request<TagResponse[]>>,) => {
+      return request<TagResponse[]>(
+      {url: `/groups/${groupId}/tags`, method: 'GET'
     },
       options);
     }
@@ -87,11 +80,9 @@ export const updateTagRouteGroupsGroupIdTagsTagIdPatch = (
 export const deleteTagRouteGroupsGroupIdTagsTagIdDelete = (
     groupId: number,
     tagId: number,
-    params: DeleteTagRouteGroupsGroupIdTagsTagIdDeleteParams,
  options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
-      {url: `/groups/${groupId}/tags/${tagId}`, method: 'DELETE',
-        params
+      {url: `/groups/${groupId}/tags/${tagId}`, method: 'DELETE'
     },
       options);
     }
@@ -118,11 +109,9 @@ export const removeTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDelete = (
     groupId: number,
     userId: number,
     tagId: number,
-    params: RemoveTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDeleteParams,
  options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
-      {url: `/groups/${groupId}/tags/users/${userId}/${tagId}`, method: 'DELETE',
-        params
+      {url: `/groups/${groupId}/tags/users/${userId}/${tagId}`, method: 'DELETE'
     },
       options);
     }
@@ -133,11 +122,9 @@ export const removeTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDelete = (
 export const listTagUsersRouteGroupsGroupIdTagsTagIdUsersGet = (
     groupId: number,
     tagId: number,
-    params: ListTagUsersRouteGroupsGroupIdTagsTagIdUsersGetParams,
- options?: SecondParameter<typeof request<TagUsersResponse>>,) => {
-      return request<TagUsersResponse>(
-      {url: `/groups/${groupId}/tags/${tagId}/users`, method: 'GET',
-        params
+ options?: SecondParameter<typeof request<TagUserItem[]>>,) => {
+      return request<TagUserItem[]>(
+      {url: `/groups/${groupId}/tags/${tagId}/users`, method: 'GET'
     },
       options);
     }

@@ -15,12 +15,10 @@
  * OpenAPI spec version: 0.1.0
  */
 export interface EventAddTagRequest {
-  masterId: number;
   tagId: number;
 }
 
 export interface EventAddUserRequest {
-  masterId: number;
   userId: number;
 }
 
@@ -29,7 +27,6 @@ export type EventCreateRequestDescription = string | null;
 export type EventCreateRequestGroupId = number | null;
 
 export interface EventCreateRequest {
-  creatorId: number;
   title: string;
   description?: EventCreateRequestDescription;
   cron: string;
@@ -64,7 +61,6 @@ export type EventUpdateRequestIsCycle = boolean | null;
 export type EventUpdateRequestType = string | null;
 
 export interface EventUpdateRequest {
-  masterId: number;
   title?: EventUpdateRequestTitle;
   description?: EventUpdateRequestDescription;
   cron?: EventUpdateRequestCron;
@@ -81,11 +77,9 @@ export type GroupCreateRequestDescription = string | null;
 export interface GroupCreateRequest {
   name: string;
   description?: GroupCreateRequestDescription;
-  creatorId: number;
 }
 
 export interface GroupMemberAddRequest {
-  userId: number;
   inviteKey: string;
 }
 
@@ -96,7 +90,6 @@ export interface GroupMemberResponse {
 }
 
 export interface GroupMemberUpdateRequest {
-  masterId: number;
   slaveId: number;
   groupId: number;
   newRoleId: number;
@@ -110,16 +103,11 @@ export interface GroupResponse {
   description?: GroupResponseDescription;
 }
 
-export interface GroupTagsResponse {
-  tags: TagResponse[];
-}
-
 export type GroupUpdateRequestName = string | null;
 
 export type GroupUpdateRequestDescription = string | null;
 
 export interface GroupUpdateRequest {
-  masterId: number;
   name?: GroupUpdateRequestName;
   description?: GroupUpdateRequestDescription;
 }
@@ -130,22 +118,26 @@ export interface GroupUserItem {
   userId: number;
   groupId: number;
   roleId: number;
+  roleName: string;
   maxId: number;
   firstName: string;
   lastName?: GroupUserItemLastName;
   phone: string;
 }
 
-export interface GroupUsersResponse {
-  users: GroupUserItem[];
-}
-
 export interface HTTPValidationError {
   detail?: ValidationError[];
 }
 
+export interface InviteCreateRequest {
+  expiresAt: string;
+}
+
+export interface InviteCreateResponse {
+  inviteKey: string;
+}
+
 export interface TagAssignRequest {
-  masterId: number;
   userId: number;
   tagId: number;
 }
@@ -158,7 +150,6 @@ export interface TagAssignmentResponse {
 export type TagCreateRequestDescriptions = string | null;
 
 export interface TagCreateRequest {
-  masterId: number;
   name: string;
   descriptions?: TagCreateRequestDescriptions;
   color: string;
@@ -181,7 +172,6 @@ export type TagUpdateRequestDescriptions = string | null;
 export type TagUpdateRequestColor = string | null;
 
 export interface TagUpdateRequest {
-  masterId: number;
   name?: TagUpdateRequestName;
   descriptions?: TagUpdateRequestDescriptions;
   color?: TagUpdateRequestColor;
@@ -198,10 +188,6 @@ export interface TagUserItem {
   roleId: number;
 }
 
-export interface TagUsersResponse {
-  users: TagUserItem[];
-}
-
 export type UserCreateRequestLastName = string | null;
 
 export type UserCreateRequestPhone = string | null;
@@ -216,14 +202,11 @@ export interface UserCreateRequest {
 
 export type UserGroupItemDescription = string | null;
 
-export type UserGroupItemInviteId = number | null;
-
 export interface UserGroupItem {
   groupId: number;
   name: string;
   description?: UserGroupItemDescription;
   roleId: number;
-  inviteId?: UserGroupItemInviteId;
 }
 
 export interface UserGroupsResponse {
@@ -238,10 +221,6 @@ export interface UserResponse {
   firstName: string;
   lastName?: UserResponseLastName;
   phone: string;
-}
-
-export interface UserTagsResponse {
-  tags: TagResponse[];
 }
 
 export type UserUpdateRequestFirstName = string | null;
@@ -263,56 +242,4 @@ export interface ValidationError {
   msg: string;
   type: string;
 }
-
-export type ListUserGroupsRouteUsersUserIdGroupsGetParams = {
-master_id: number;
-};
-
-export type ListUserTagsRouteUsersUserIdGroupsGroupIdTagsGetParams = {
-master_id: number;
-};
-
-export type DeleteGroupRouteGroupsGroupIdDeleteParams = {
-user_id: number;
-};
-
-export type ListGroupUsersRouteGroupsGroupIdUsersGetParams = {
-user_id: number;
-};
-
-export type RemoveGroupMemberRouteGroupsGroupIdUsersUserIdDeleteParams = {
-master_id: number | null;
-};
-
-export type ListGroupTagsRouteGroupsGroupIdTagsGetParams = {
-master_id: number;
-};
-
-export type DeleteTagRouteGroupsGroupIdTagsTagIdDeleteParams = {
-master_id: number;
-};
-
-export type RemoveTagFromUserRouteGroupsGroupIdTagsUsersUserIdTagIdDeleteParams = {
-master_id: number;
-};
-
-export type ListTagUsersRouteGroupsGroupIdTagsTagIdUsersGetParams = {
-master_id: number;
-};
-
-export type GetEventRouteEventsEventIdGetParams = {
-user_id: number;
-};
-
-export type DeleteEventRouteEventsEventIdDeleteParams = {
-user_id: number;
-};
-
-export type GetGroupEventsRouteEventsGroupsGroupIdGetParams = {
-user_id: number;
-};
-
-export type GetOtherUserEventsRouteEventsUsersTargetUserIdEventsGetParams = {
-user_id: number;
-};
 
