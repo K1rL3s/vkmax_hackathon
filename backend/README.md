@@ -10,7 +10,9 @@
     ```bash
     docker compose -f docker-compose.local.yml up --build -d
     ```
-
+    ```bash
+    docker compose -f docker-compose.local.yml up --build -d api
+    ```
 2. Запуск из IDE:
     1. Поднять psql и redis:
         ```bash
