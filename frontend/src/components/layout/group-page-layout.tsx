@@ -1,7 +1,7 @@
-import { useGroup } from '@/hooks/groups'
 import { Flex, Spinner } from '@maxhub/max-ui'
 
 import { Header } from '../header'
+import { useGroup } from '@/hooks/groups'
 
 export function GroupPageLayout({
   groupId,

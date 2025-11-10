@@ -1,14 +1,14 @@
 import clsx from 'clsx'
-import { DropDown } from '../ui/dropdown'
 import { CellList, CellSimple, Typography } from '@maxhub/max-ui'
-import type { RoleResponse } from '@/lib/api/gen.schemas'
 import { ChevronDown } from 'lucide-react'
+import { DropDown } from '../ui/dropdown'
+import type { RoleResponse } from '@/lib/api/gen.schemas'
 
 type RoleSelectProps = {
   value?: RoleResponse | undefined
   disabled?: boolean
   direction?: 'up' | 'down'
-  variants: RoleResponse[]
+  variants: Array<RoleResponse>
   onChange: (role: RoleResponse) => void
 }
 
@@ -31,9 +31,7 @@ export function RoleSelect({
         <div
           className={clsx(
             'px-3 py-1.5 rounded-3xl flex items-center space-x-2',
-            colorsStyles[
-              ((value?.id as keyof typeof colorsStyles) || undefined) ?? 4
-            ],
+            colorsStyles[value?.id as keyof typeof colorsStyles],
           )}
         >
           <Typography.Body>{value?.name}</Typography.Body>
@@ -44,9 +42,7 @@ export function RoleSelect({
         className={clsx(
           'w-fit',
           { 'mt-2': direction === 'down', '-top-26': direction === 'up' },
-          colorsStyles[
-            ((value?.id as keyof typeof colorsStyles) || undefined) ?? 4
-          ],
+          colorsStyles[value?.id as keyof typeof colorsStyles],
         )}
       >
         <CellList>
@@ -55,7 +51,7 @@ export function RoleSelect({
             .map((variant) => (
               <DropDown.Item key={variant.id}>
                 <CellSimple
-                  title={variant?.name}
+                  title={variant.name}
                   onClick={() => !disabled && onChange(variant)}
                   height="compact"
                 />

@@ -14,88 +14,108 @@
 
  * OpenAPI spec version: 0.1.0
  */
+import { request } from '.././client'
 import type {
   TagResponse,
   UserCreateRequest,
   UserGroupsResponse,
   UserResponse,
-  UserUpdateRequest
-} from '../gen.schemas';
+  UserUpdateRequest,
+} from '../gen.schemas'
 
-import { request } from '.././client';
-import type { BodyType } from '.././client';
+import type { BodyType } from '.././client'
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
-  /**
+/**
  * Создание пользователя
  * @summary Create User Route
  */
 export const createUserRouteUsersPost = (
-    userCreateRequest: BodyType<UserCreateRequest>,
- options?: SecondParameter<typeof request<UserResponse>>,) => {
-      return request<UserResponse>(
-      {url: `/users`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: userCreateRequest
+  userCreateRequest: BodyType<UserCreateRequest>,
+  options?: SecondParameter<typeof request<UserResponse>>,
+) => {
+  return request<UserResponse>(
+    {
+      url: `/users`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: userCreateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Получить одного пользователя по идентификатору
  * @summary Get User By Id Route
  */
 export const getUserByIdRouteUsersUserIdGet = (
-    userId: number,
- options?: SecondParameter<typeof request<UserResponse>>,) => {
-      return request<UserResponse>(
-      {url: `/users/${userId}`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  userId: number,
+  options?: SecondParameter<typeof request<UserResponse>>,
+) => {
+  return request<UserResponse>(
+    { url: `/users/${userId}`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Редактирование пользователя
  * @summary Update User Route
  */
 export const updateUserRouteUsersPatch = (
-    userUpdateRequest: BodyType<UserUpdateRequest>,
- options?: SecondParameter<typeof request<UserResponse>>,) => {
-      return request<UserResponse>(
-      {url: `/users/`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: userUpdateRequest
+  userUpdateRequest: BodyType<UserUpdateRequest>,
+  options?: SecondParameter<typeof request<UserResponse>>,
+) => {
+  return request<UserResponse>(
+    {
+      url: `/users/`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: userUpdateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Получить список групп, в которых состоит пользователь
  * @summary List User Groups Route
  */
 export const listUserGroupsRouteUsersUserIdGroupsGet = (
-    userId: number,
- options?: SecondParameter<typeof request<UserGroupsResponse>>,) => {
-      return request<UserGroupsResponse>(
-      {url: `/users/${userId}/groups`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  userId: number,
+  options?: SecondParameter<typeof request<UserGroupsResponse>>,
+) => {
+  return request<UserGroupsResponse>(
+    { url: `/users/${userId}/groups`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Получить список тегов пользователя в рамках группы
  * @summary List User Tags Route
  */
 export const listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet = (
-    userId: number,
-    groupId: number,
- options?: SecondParameter<typeof request<TagResponse[]>>,) => {
-      return request<TagResponse[]>(
-      {url: `/users/${userId}/groups/${groupId}/tags`, method: 'GET'
-    },
-      options);
-    }
-  export type CreateUserRouteUsersPostResult = NonNullable<Awaited<ReturnType<typeof createUserRouteUsersPost>>>
-export type GetUserByIdRouteUsersUserIdGetResult = NonNullable<Awaited<ReturnType<typeof getUserByIdRouteUsersUserIdGet>>>
-export type UpdateUserRouteUsersPatchResult = NonNullable<Awaited<ReturnType<typeof updateUserRouteUsersPatch>>>
-export type ListUserGroupsRouteUsersUserIdGroupsGetResult = NonNullable<Awaited<ReturnType<typeof listUserGroupsRouteUsersUserIdGroupsGet>>>
-export type ListUserTagsRouteUsersUserIdGroupsGroupIdTagsGetResult = NonNullable<Awaited<ReturnType<typeof listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet>>>
+  userId: number,
+  groupId: number,
+  options?: SecondParameter<typeof request<Array<TagResponse>>>,
+) => {
+  return request<Array<TagResponse>>(
+    { url: `/users/${userId}/groups/${groupId}/tags`, method: 'GET' },
+    options,
+  )
+}
+export type CreateUserRouteUsersPostResult = NonNullable<
+  Awaited<ReturnType<typeof createUserRouteUsersPost>>
+>
+export type GetUserByIdRouteUsersUserIdGetResult = NonNullable<
+  Awaited<ReturnType<typeof getUserByIdRouteUsersUserIdGet>>
+>
+export type UpdateUserRouteUsersPatchResult = NonNullable<
+  Awaited<ReturnType<typeof updateUserRouteUsersPatch>>
+>
+export type ListUserGroupsRouteUsersUserIdGroupsGetResult = NonNullable<
+  Awaited<ReturnType<typeof listUserGroupsRouteUsersUserIdGroupsGet>>
+>
+export type ListUserTagsRouteUsersUserIdGroupsGroupIdTagsGetResult =
+  NonNullable<
+    Awaited<ReturnType<typeof listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet>>
+  >

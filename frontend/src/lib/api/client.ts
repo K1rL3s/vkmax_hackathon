@@ -1,6 +1,6 @@
-import { useMaxUser } from '@/integrations/max-ui/hooks/max-user'
 import axios from 'axios'
 import type { AxiosError, AxiosRequestConfig } from 'axios'
+import { useMaxUser } from '@/integrations/max-ui/hooks/max-user'
 
 export const api = axios.create({
   baseURL: import.meta.env.API_URL || 'http://localhost:7001/',

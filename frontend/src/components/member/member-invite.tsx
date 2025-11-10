@@ -1,18 +1,19 @@
 import { Button, Typography } from '@maxhub/max-ui'
-import { useInvite } from '@/hooks/invite'
 import { useState } from 'react'
+import { useInvite } from '@/hooks/invite'
 
-export function MemberInvite({ groupId }: { groupId: number }) {
+export function MemberInvite({ groupId }: { groupId: string }) {
   const { mutate, isPending } = useInvite()
   const [isCopied, setCopied] = useState(false)
 
   const handleInvite = () => {
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1000)
     mutate(
-      { groupId },
+      { groupId: Number(groupId) },
       {
-        onSuccess: () => {},
+        onSuccess: () => {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 3000)
+        },
       },
     )
   }
@@ -23,6 +24,7 @@ export function MemberInvite({ groupId }: { groupId: number }) {
         size="large"
         className="w-full flex items-center"
         onClick={handleInvite}
+        loading={isPending}
         disabled={isPending || isCopied}
       >
         <Typography.Headline variant="medium">

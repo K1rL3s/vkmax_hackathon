@@ -1,5 +1,5 @@
-import { createInviteRouteGroupsGroupIdInvitePost } from '@/lib/api/groups/groups'
 import { useMutation } from '@tanstack/react-query'
+import { createInviteRouteGroupsGroupIdInvitePost } from '@/lib/api/groups/groups'
 
 export function useInvite() {
   return useMutation({
