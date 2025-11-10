@@ -1,8 +1,10 @@
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from maxhack.core.ids import GroupId, InviteId, RoleId, UserId
+from maxhack.infra.database.models import UserModel
 from maxhack.infra.database.models.base import BaseAlchemyModel
+from maxhack.infra.database.models.role import RoleModel
 
 
 class UsersToGroupsModel(BaseAlchemyModel):
@@ -26,3 +28,6 @@ class UsersToGroupsModel(BaseAlchemyModel):
         ForeignKey("invites.id"),
         nullable=True,
     )
+
+    user: Mapped[UserModel] = relationship()
+    role: Mapped[RoleModel] = relationship()

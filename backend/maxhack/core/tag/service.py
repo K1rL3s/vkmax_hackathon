@@ -138,7 +138,7 @@ class TagService:
         tag_id: TagId,
         user_id: UserId,
         master_id: UserId,
-    ) -> UsersToTagsModel:
+    ) -> None:
         await self._ensure_group_exists(group_id)
         tag = await self._ensure_tag_exists(tag_id, group_id)
 
@@ -156,16 +156,16 @@ class TagService:
             allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID, MEMBER_ROLE_ID},
         )
 
-        existing = await self._tag_repo.get_user_tag_assignment(
+        existing = await self._tag_repo.get_user_tag(
             user_id=user_id,
             tag_id=tag.id,
         )
         if existing is not None:
             raise InvalidValue("Тег уже назначен пользователю")
 
-        return await self._tag_repo.assign_tag_to_user(
-            user_id=user_id,
-            tag_id=tag.id,
+        await self._tag_repo.assign_tags_to_user(
+            user_id,
+            tag.id,
         )
 
     async def remove_tag_from_user(
@@ -184,14 +184,14 @@ class TagService:
             allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID},
         )
 
-        assignment = await self._tag_repo.get_user_tag_assignment(
+        assignment = await self._tag_repo.get_user_tag(
             user_id=user_id,
             tag_id=tag_id,
         )
         if assignment is None:
             raise EntityNotFound("Назначение тега не найдено")
 
-        await self._tag_repo.remove_tag_from_user(user_id, tag_id)
+        await self._tag_repo.remove_tags_from_user(user_id, tag_id)
 
     async def list_group_tags(
         self,

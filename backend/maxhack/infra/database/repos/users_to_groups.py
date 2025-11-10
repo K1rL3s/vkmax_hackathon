@@ -1,5 +1,6 @@
 from sqlalchemy import and_, func, select, update
 from sqlalchemy.exc import IntegrityError, ProgrammingError
+from sqlalchemy.orm.strategy_options import joinedload
 
 from maxhack.core.exceptions import MaxHackError
 from maxhack.core.ids import GroupId, InviteId, RoleId, UserId
@@ -7,7 +8,6 @@ from maxhack.core.role.ids import MEMBER_ROLE_ID
 from maxhack.infra.database.models import (
     GroupModel,
     RoleModel,
-    UserModel,
     UsersToGroupsModel,
 )
 from maxhack.infra.database.repos.base import BaseAlchemyRepo
@@ -45,26 +45,26 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
         group_id: GroupId,
         limit: int | None = None,
         offset: int | None = None,
-    ) -> list[tuple[UserModel, RoleModel]]:
+    ) -> list[UsersToGroupsModel]:
         stmt = (
-            select(UserModel, RoleModel)
-            .join(
-                UsersToGroupsModel,
-                and_(
-                    UsersToGroupsModel.group_id == group_id,
-                    UsersToGroupsModel.user_id == UserModel.id,
-                    UsersToGroupsModel.deleted_at.is_(None),
-                ),
+            select(UsersToGroupsModel)
+            .join(UsersToGroupsModel.role)
+            .options(
+                joinedload(UsersToGroupsModel.role),
+                joinedload(UsersToGroupsModel.user),
             )
-            .join(
-                RoleModel,
-                RoleModel.id == UsersToGroupsModel.role_id,
+            .where(
+                UsersToGroupsModel.group_id == group_id,
+                UsersToGroupsModel.deleted_at.is_(None),
             )
-            .order_by(RoleModel.id, UsersToGroupsModel.created_at.asc())
+            .order_by(
+                UsersToGroupsModel.created_at.asc(),
+                RoleModel.id.asc(),
+            )
             .limit(limit)
             .offset(offset)
         )
-        return list(await self._session.execute(stmt))
+        return list(await self._session.scalars(stmt))
 
     async def change_role(
         self,
@@ -131,9 +131,16 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
         user_id: UserId,
         group_id: GroupId,
     ) -> UsersToGroupsModel | None:
-        stmt = select(UsersToGroupsModel).where(
-            UsersToGroupsModel.user_id == user_id,
-            UsersToGroupsModel.group_id == group_id,
+        stmt = (
+            select(UsersToGroupsModel)
+            .options(
+                joinedload(UsersToGroupsModel.role),
+                joinedload(UsersToGroupsModel.user),
+            )
+            .where(
+                UsersToGroupsModel.user_id == user_id,
+                UsersToGroupsModel.group_id == group_id,
+            )
         )
         return await self._session.scalar(stmt)
 

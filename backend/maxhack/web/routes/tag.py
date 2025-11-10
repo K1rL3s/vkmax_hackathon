@@ -104,8 +104,7 @@ async def delete_tag_route(
 
 @tag_router.post(
     "/users",
-    response_model=TagAssignmentResponse,
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_204_NO_CONTENT,
     description="Назначить тег пользователю",
 )
 async def assign_tag_to_user_route(
@@ -113,17 +112,13 @@ async def assign_tag_to_user_route(
     body: TagAssignRequest,
     tag_service: FromDishka[TagService],
     master_id: UserId = Header(...),
-) -> TagAssignmentResponse:
+) -> None:
     try:
-        assignment = await tag_service.assign_tag_to_user(
+        await tag_service.assign_tag_to_user(
             group_id=group_id,
             tag_id=body.tag_id,
             user_id=body.user_id,
             master_id=master_id,
-        )
-        return TagAssignmentResponse(
-            user_id=assignment.user_id,
-            tag_id=assignment.tag_id,
         )
     except EntityNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

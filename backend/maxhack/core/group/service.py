@@ -1,19 +1,21 @@
+import logging
 from typing import cast
 
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
-from maxhack.core.ids import GroupId, InviteKey, RoleId, UserId
+from maxhack.core.ids import GroupId, InviteKey, RoleId, TagId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.utils.datehelp import datetime_now
 from maxhack.infra.database.models import (
     GroupModel,
-    RoleModel,
-    UserModel,
     UsersToGroupsModel,
 )
 from maxhack.infra.database.repos.group import GroupRepo
 from maxhack.infra.database.repos.invite import InviteRepo
+from maxhack.infra.database.repos.tag import TagRepo
 from maxhack.infra.database.repos.user import UserRepo
 from maxhack.infra.database.repos.users_to_groups import UsersToGroupsRepo
+
+logger = logging.getLogger(__name__)
 
 
 class GroupService:
@@ -22,12 +24,14 @@ class GroupService:
         group_repo: GroupRepo,
         user_repo: UserRepo,
         invite_repo: InviteRepo,
+        tag_repo: TagRepo,
         users_to_groups_repo: UsersToGroupsRepo,
     ) -> None:
         self._group_repo = group_repo
         self._users_to_groups_repo = users_to_groups_repo
         self._user_repo = user_repo
         self._invite_repo = invite_repo
+        self._tag_repo = tag_repo
 
     async def create_group(
         self,
@@ -137,9 +141,10 @@ class GroupService:
     async def update_membership(
         self,
         group_id: GroupId,
-        new_role_id: RoleId,
         slave_id: UserId,
         master_id: UserId,
+        role_id: RoleId | None = None,
+        tags: list[TagId] | None = None,
     ) -> UsersToGroupsModel:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
@@ -153,21 +158,40 @@ class GroupService:
         ):
             raise NotEnoughRights("Недостаточно прав для редактирования участника")
 
-        membership = await self._users_to_groups_repo.update_role(
-            user_id=slave_id,
-            group_id=group_id,
-            role_id=new_role_id,
-        )
-        if membership is None:
-            raise EntityNotFound("Связь пользователя с группой не найдена")
+        if role_id:
+            membership = await self._users_to_groups_repo.update_role(
+                user_id=slave_id,
+                group_id=group_id,
+                role_id=role_id,
+            )
+            if membership is None:
+                raise EntityNotFound("Связь пользователя с группой не найдена")
 
-        return membership
+        if tags is not None:
+            member_tags = await self._tag_repo.list_user_tags(
+                group_id=group_id,
+                user_id=slave_id,
+            )
+            member_tag_ids = {tag.id for tag in member_tags}
+            to_add = set(tags).difference(member_tag_ids)
+            to_remove = set(member_tag_ids).difference(tags)
+            logger.info(
+                "Updating tags for user %d in group %d: adding %s, removing %s",
+                slave_id,
+                group_id,
+                to_add,
+                to_remove,
+            )
+            await self._tag_repo.assign_tags_to_user(slave_id, *to_add)
+            await self._tag_repo.remove_tags_from_user(slave_id, *to_remove)
+
+        return await self.get_member(slave_id, group_id, master_id)
 
     async def get_group_users(
         self,
         group_id: GroupId,
         user_id: UserId,
-    ) -> list[tuple[UserModel, RoleModel]]:
+    ) -> list[UsersToGroupsModel]:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
             raise EntityNotFound("Группа не найдена")
@@ -205,6 +229,21 @@ class GroupService:
             raise NotEnoughRights("Нельзя удалить создателя группы")
 
         await self._users_to_groups_repo.left(slave_id, group_id)
+
+    async def get_member(
+        self, user_id: UserId, group_id: GroupId, master_id: UserId
+    ) -> UsersToGroupsModel:
+        if not await self.is_member(user_id=master_id, group_id=group_id):
+            raise NotEnoughRights("Недостаточно прав для получения участника")
+
+        membership = await self._users_to_groups_repo.get_membership(
+            user_id=user_id,
+            group_id=group_id,
+        )
+        if membership is None:
+            raise EntityNotFound("Участник не найден")
+
+        return membership
 
     async def is_member(
         self,

@@ -1,4 +1,4 @@
-from uuid import uuid4
+import secrets
 
 from maxhack.core.ids import InviteKey
 
@@ -21,4 +21,4 @@ def to_camel(string: str) -> str:
 
 
 def generate_invite_key() -> InviteKey:
-    return InviteKey(str(uuid4()))
+    return InviteKey(secrets.token_urlsafe(16)[:16])

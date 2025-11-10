@@ -47,34 +47,28 @@ class TagRepo(BaseAlchemyRepo):
             await self._session.delete(tag)
             await self._session.flush()
 
-    async def assign_tag_to_user(
+    async def assign_tags_to_user(
         self,
         user_id: UserId,
-        tag_id: TagId,
-    ) -> UsersToTagsModel:
-        assignment = UsersToTagsModel(user_id=user_id, tag_id=tag_id)
-        self._session.add(assignment)
-        await self._session.flush()
-        await self._session.refresh(assignment)
-
-        return assignment
-
-        await self._session.flush()
-
-    async def remove_tag_from_user(
-        self,
-        user_id: UserId,
-        tag_id: TagId,
+        *tags_ids: TagId,
     ) -> None:
-        assignment = await self.get_user_tag_assignment(user_id=user_id, tag_id=tag_id)
-        if assignment:
-            await self._session.delete(assignment)
-            await self._session.flush()
+        assignment = [
+            UsersToTagsModel(user_id=user_id, tag_id=tag_id) for tag_id in tags_ids
+        ]
+        self._session.add_all(assignment)
+        await self._session.flush()
+
+    async def remove_tags_from_user(
+        self,
+        user_id: UserId,
+        *tags_ids: TagId,
+    ) -> None:
+        stmt = delete(UsersToTagsModel).where(UsersToTagsModel.tag_id.in_([*tags_ids]))
+        await self._session.execute(stmt)
 
     async def list_group_tags(self, group_id: GroupId) -> list[TagModel]:
         stmt = select(TagModel).where(TagModel.group_id == group_id)
-        result = await self._session.execute(stmt)
-        return result.scalars().all()
+        return list(await self._session.scalars(stmt))
 
     async def list_user_tags(
         self,
@@ -90,8 +84,7 @@ class TagRepo(BaseAlchemyRepo):
             )
         )
 
-        result = await self._session.execute(stmt)
-        return result.scalars().all()
+        return list(await self._session.scalars(stmt))
 
     async def list_tag_users(
         self,
@@ -128,3 +121,14 @@ class TagRepo(BaseAlchemyRepo):
             raise MaxHackError from e
 
         return tag
+
+    async def get_user_tag(
+        self,
+        user_id: UserId,
+        tag_id: TagId,
+    ) -> UsersToTagsModel | None:
+        stmt = select(UsersToTagsModel).where(
+            UsersToTagsModel.user_id == user_id,
+            UsersToTagsModel.tag_id == tag_id,
+        )
+        return await self._session.scalar(stmt)

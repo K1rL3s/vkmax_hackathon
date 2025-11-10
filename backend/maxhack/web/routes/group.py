@@ -1,13 +1,11 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, HTTPException, Header, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
 from maxhack.core.group.service import GroupService
-from maxhack.core.ids import GroupId, UserId
+from maxhack.core.ids import GroupId, InviteKey, UserId
 from maxhack.core.invite.service import InviteService
 from maxhack.core.role.ids import MEMBER_ROLE_ID
-from maxhack.core.tag.service import TagService
 from maxhack.web.schemas.group import (
     GroupCreateRequest,
     GroupMemberAddRequest,
@@ -79,20 +77,23 @@ async def update_group_route(
 
 
 @group_router.patch(
-    "/membership",
+    "/{group_id}/users/{slave_id}",
     response_model=GroupMemberResponse,
     description="Редактирование связи пользователя и группы",
 )
 async def update_group_membership(
+    group_id: GroupId,
+    slave_id: UserId,
     body: GroupMemberUpdateRequest,
     group_service: FromDishka[GroupService],
     master_id: UserId = Header(...),
 ) -> GroupMemberResponse:
     try:
         membership = await group_service.update_membership(
-            group_id=body.group_id,
-            new_role_id=body.new_role_id,
-            slave_id=body.slave_id,
+            group_id=group_id,
+            role_id=body.role_id,
+            slave_id=slave_id,
+            tags=body.tags,
             master_id=master_id,
         )
 
@@ -124,6 +125,29 @@ async def get_group(
 
 
 @group_router.get(
+    "/{group_id}/users/{member_id}",
+    description="Получить участника группы по идентификатору",
+)
+async def get_group_user_route(
+    group_id: GroupId,
+    member_id: UserId,
+    group_service: FromDishka[GroupService],
+    master_id: UserId = Header(...),
+) -> GroupUserItem:
+    try:
+        user = await group_service.get_member(
+            group_id=group_id,
+            user_id=member_id,
+            master_id=master_id,
+        )
+        return GroupUserItem.model_validate(user)
+    except EntityNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except NotEnoughRights as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+
+
+@group_router.get(
     "/{group_id}/users",
     response_model=list[GroupUserItem],
     description="Получить список всех пользователей группы",
@@ -138,19 +162,7 @@ async def list_group_users_route(
             group_id=group_id,
             user_id=master_id,
         )
-        return [
-            GroupUserItem(
-                user_id=user_model.id,
-                group_id=group_id,
-                role_id=role_model.id,
-                role_name=role_model.name,
-                max_id=user_model.max_id,
-                first_name=user_model.first_name,
-                last_name=user_model.last_name,
-                phone=user_model.phone,
-            )
-            for user_model, role_model in group_users
-        ]
+        return [GroupUserItem.model_validate(u) for u in group_users]
     except EntityNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except NotEnoughRights as e:
@@ -204,34 +216,6 @@ async def delete_group_route(
 
 
 @group_router.post(
-    "/{group_id}/tags",
-    response_model=TagResponse,
-    status_code=status.HTTP_201_CREATED,
-    description="Создание тега",
-)
-async def create_tag_route(
-    group_id: GroupId,
-    body: TagCreateRequest,
-    tag_service: FromDishka[TagService],
-    session: FromDishka[AsyncSession],
-    master_id: UserId = Header(...),
-) -> TagResponse:
-    try:
-        tag = await tag_service.create_tag(
-            group_id=group_id,
-            master_id=master_id,
-            name=body.name,
-            descriptions=body.descriptions,
-            color=body.color,
-        )
-        return await TagResponse.from_orm_async(tag, session)
-    except EntityNotFound as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except NotEnoughRights as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
-
-
-@group_router.post(
     "/{group_id}/invite",
     response_model=InviteCreateResponse,
     status_code=status.HTTP_201_CREATED,
@@ -248,7 +232,7 @@ async def create_invite_route(
         creator_id=master_id,
         expires_at=body.expires_at,
     )
-    return await InviteCreateResponse.model_validate(invite_obj)
+    return InviteCreateResponse(invite_key=InviteKey(invite_obj.key))
 
 
 @group_router.post(
