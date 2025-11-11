@@ -83,9 +83,9 @@ _wait_timezone = Window(
     TO_GROUPS_BUTTON,
     TO_MENU_BUTTON,
     TextInput(
-        type_factory=handlers.validate_group_description,
+        type_factory=handlers.validate_group_timezone,
         on_error=answer_str_error,
-        on_success=handlers.on_group_description,
+        on_success=handlers.on_group_timezone,
         id="group_description",
     ),
     state=GroupsCreate.wait_timezone,
@@ -96,6 +96,10 @@ _confirm = Window(
     Format(
         "Описание: {dialog_data[group_description]}",
         when=F["dialog_data"]["group_description"],
+    ),
+    Format(
+        "Таймзона: {dialog_data[group_timezone]}",
+        when=F["dialog_data"]["group_timezone"],
     ),
     Const("\n❓ Создать группу?"),
     Button(Const("✅ Создать"), on_click=handlers.on_create_confirm, id="confirm"),

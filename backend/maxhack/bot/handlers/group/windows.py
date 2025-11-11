@@ -1,5 +1,6 @@
+from magic_filter import F
+
 from maxhack.bot.states import Groups, GroupsCreate
-from maxhack.bot.widgets.empty_button import empty_button
 from maxhack.bot.widgets.scrolling_group import CustomScrollingGroup
 from maxhack.bot.widgets.to_groups import TO_GROUPS_BUTTON
 from maxhack.bot.widgets.to_menu import TO_MENU_BUTTON
@@ -23,7 +24,6 @@ _groups = Window(
             id="select_group",
         ),
     ),
-    empty_button(when="groups"),
     Start(
         Const("🆕 Создать группу"),
         state=GroupsCreate.wait_name,
@@ -38,6 +38,7 @@ _groups = Window(
 
 _one_group = Window(
     Format("💤 Группа {group.name}"),
+    Format("{group.description}\n", when=F["group"].description),
     Format("Ты - {role.name} {role.emoji}"),
     TO_GROUPS_BUTTON,
     TO_MENU_BUTTON,

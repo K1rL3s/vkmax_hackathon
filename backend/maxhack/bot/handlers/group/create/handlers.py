@@ -28,6 +28,18 @@ def validate_group_description(text: str) -> str:
     return description
 
 
+def validate_group_timezone(text: str) -> int:
+    try:
+        timezone = int(text)
+    except ValueError as e:
+        raise ValueError("Таймзона должна быть числом в минутах") from e
+
+    if abs(timezone) > 24 * 60:
+        raise ValueError("Разница таймзоны должна быть в пределах суток")
+
+    return timezone
+
+
 async def on_group_name(
     _: Any,
     __: Any,
@@ -47,7 +59,7 @@ async def on_group_description(
     dialog_manager: DialogManager,
     description: str,
 ) -> None:
-    dialog_manager.dialog_data["description"] = description
+    dialog_manager.dialog_data["group_description"] = description
     await dialog_manager.switch_to(
         state=GroupsCreate.wait_timezone,
         show_mode=ShowMode.SEND,
@@ -60,7 +72,7 @@ async def on_group_timezone(
     dialog_manager: DialogManager,
     timezone: int,
 ) -> None:
-    dialog_manager.dialog_data["timezone"] = timezone
+    dialog_manager.dialog_data["group_timezone"] = timezone
     await dialog_manager.switch_to(
         state=GroupsCreate.confirm,
         show_mode=ShowMode.SEND,
