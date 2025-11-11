@@ -14,7 +14,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "maxo[magic-filter] @ git+https://github.com/K1rL3s/maxo.git@938dc98446978bc6ec30ecea74739d56727e1df2",
+    "maxo[magic-filter] @ git+https://github.com/K1rL3s/maxo.git@2f6dc191dbf1333d9663228d30acba0febfbf59a",
     "retejo[aiohttp] @ git+https://github.com/K1rL3s/retejo.git@0582f2a06fd7dc035e627c89bb293199f1622c42",
     "dishka==1.7.2",
     "sqlalchemy[asyncio]==2.0.44",
