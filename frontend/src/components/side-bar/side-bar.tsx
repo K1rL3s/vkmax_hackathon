@@ -1,10 +1,12 @@
-import { CellList, Flex } from '@maxhub/max-ui'
+import { CellList, Flex, Typography } from '@maxhub/max-ui'
 import { useNavigate } from '@tanstack/react-router'
 import clsx from 'clsx'
 import { Calendar, Plus, Settings, Users } from 'lucide-react'
 import { Loader } from '../ui/loader'
+import { Role } from '../group/Role'
 import { SideBarLink } from './side-bar-link'
 import { SideBarSection } from './side-bar-section'
+import type { RoleResponse } from '@/lib/api/gen.schemas'
 import { routes } from '@/routes'
 import { useGroups } from '@/hooks/groups'
 
@@ -64,7 +66,21 @@ export function SideBar({
                 </div>
               ) : (
                 data.groups.map((group) => (
-                  <SideBarSection key={group.groupId} title={group.name}>
+                  <SideBarSection
+                    key={group.groupId}
+                    title={
+                      <Flex gapX={8} align="center">
+                        <Typography.Title className="text-sm!">
+                          {group.name}
+                        </Typography.Title>
+                        <Role
+                          roleId={
+                            group.roleId as unknown as Pick<RoleResponse, 'id'>
+                          }
+                        />
+                      </Flex>
+                    }
+                  >
                     <SideBarLink
                       title="Расписание"
                       icon={<Calendar />}
@@ -83,17 +99,19 @@ export function SideBar({
                         location.pathname === `/groups/${group.groupId}/members`
                       }
                     />
-                    <SideBarLink
-                      title="Настройки"
-                      icon={<Settings />}
-                      onClick={() =>
-                        onNavigate(`/groups/${group.groupId}/settings`)
-                      }
-                      isActive={
-                        location.pathname ===
-                        `/groups/${group.groupId}/settings`
-                      }
-                    />
+                    {[1].includes(group.roleId) && (
+                      <SideBarLink
+                        title="Настройки"
+                        icon={<Settings />}
+                        onClick={() =>
+                          onNavigate(`/groups/${group.groupId}/settings`)
+                        }
+                        isActive={
+                          location.pathname ===
+                          `/groups/${group.groupId}/settings`
+                        }
+                      />
+                    )}
                   </SideBarSection>
                 ))
               )}

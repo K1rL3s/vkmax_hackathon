@@ -10,27 +10,27 @@ import { Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Modal } from './ui/modal'
 
-const TIMEZONES: Array<Timezone> = [
+export const TIMEZONES: Array<Timezone> = [
   { label: 'Калининград +02:00', value: 120 },
+  { label: 'Киев (Украина) +02:00', value: 125 },
   { label: 'Москва, Санкт-Петербург +03:00', value: 180 },
+  { label: 'Минск (Беларусь) +03:00', value: 185 },
   { label: 'Самара +04:00', value: 240 },
+  { label: 'Тбилиси (Грузия) +04:00', value: 245 },
+  { label: 'Ереван (Армения) +04:00', value: 250 },
   { label: 'Екатеринбург +05:00', value: 300 },
+  { label: 'Алматы (Казахстан) +05:00', value: 305 },
+  { label: 'Ташкент (Узбекистан) +05:00', value: 310 },
   { label: 'Омск +06:00', value: 360 },
+  { label: 'Нур-Султан (Казахстан) +06:00', value: 365 },
+  { label: 'Бишкек (Киргизия) +06:00', value: 370 },
   { label: 'Новосибирск +07:00', value: 420 },
-  { label: 'Красноярск +07:00', value: 420 },
+  { label: 'Красноярск +07:00', value: 425 },
   { label: 'Иркутск +08:00', value: 480 },
   { label: 'Якутск +09:00', value: 540 },
   { label: 'Владивосток +10:00', value: 600 },
   { label: 'Магадан +11:00', value: 660 },
   { label: 'Камчатка, Петропавловск-Камчатский +12:00', value: 720 },
-  { label: 'Минск (Беларусь) +03:00', value: 180 },
-  { label: 'Киев (Украина) +02:00', value: 120 },
-  { label: 'Алматы (Казахстан) +05:00', value: 300 },
-  { label: 'Нур-Султан (Казахстан) +06:00', value: 360 },
-  { label: 'Бишкек (Киргизия) +06:00', value: 360 },
-  { label: 'Ташкент (Узбекистан) +05:00', value: 300 },
-  { label: 'Тбилиси (Грузия) +04:00', value: 240 },
-  { label: 'Ереван (Армения) +04:00', value: 240 },
 ]
 
 type Timezone = {
@@ -84,7 +84,7 @@ export function TimezoneSelectModal({
           className="w-full shrink-0"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          iconBefore={<Search size={18} className="w-full" />}
+          iconBefore={<Search size={18} />}
         />
         <Flex direction="column" className="grow w-full overflow-y-scroll">
           <div className="max-h-0 w-full">

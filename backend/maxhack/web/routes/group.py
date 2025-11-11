@@ -63,8 +63,7 @@ async def update_group_route(
         group = await group_service.update_group(
             group_id=group_id,
             editor_id=master_id,
-            name=body.name,
-            description=body.description,
+            **body.model_dump(exclude_none=True),
         )
     except EntityNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

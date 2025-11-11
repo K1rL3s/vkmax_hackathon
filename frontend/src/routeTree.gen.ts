@@ -16,6 +16,7 @@ import { Route as EventsIdRouteImport } from './routes/events/$id'
 import { Route as GroupsGroupIdIndexRouteImport } from './routes/groups/$groupId/index'
 import { Route as GroupsGroupIdSettingsRouteImport } from './routes/groups/$groupId/settings'
 import { Route as GroupsGroupIdMembersIndexRouteImport } from './routes/groups/$groupId/members/index'
+import { Route as GroupsGroupIdTagsCreateRouteImport } from './routes/groups/$groupId/tags/create'
 import { Route as GroupsGroupIdMembersMemberIdRouteImport } from './routes/groups/$groupId/members/$memberId'
 
 const ProfileRoute = ProfileRouteImport.update({
@@ -54,6 +55,11 @@ const GroupsGroupIdMembersIndexRoute =
     path: '/groups/$groupId/members/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const GroupsGroupIdTagsCreateRoute = GroupsGroupIdTagsCreateRouteImport.update({
+  id: '/groups/$groupId/tags/create',
+  path: '/groups/$groupId/tags/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GroupsGroupIdMembersMemberIdRoute =
   GroupsGroupIdMembersMemberIdRouteImport.update({
     id: '/groups/$groupId/members/$memberId',
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId': typeof GroupsGroupIdIndexRoute
   '/groups/$groupId/members/$memberId': typeof GroupsGroupIdMembersMemberIdRoute
+  '/groups/$groupId/tags/create': typeof GroupsGroupIdTagsCreateRoute
   '/groups/$groupId/members': typeof GroupsGroupIdMembersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -79,6 +86,7 @@ export interface FileRoutesByTo {
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId': typeof GroupsGroupIdIndexRoute
   '/groups/$groupId/members/$memberId': typeof GroupsGroupIdMembersMemberIdRoute
+  '/groups/$groupId/tags/create': typeof GroupsGroupIdTagsCreateRoute
   '/groups/$groupId/members': typeof GroupsGroupIdMembersIndexRoute
 }
 export interface FileRoutesById {
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId/': typeof GroupsGroupIdIndexRoute
   '/groups/$groupId/members/$memberId': typeof GroupsGroupIdMembersMemberIdRoute
+  '/groups/$groupId/tags/create': typeof GroupsGroupIdTagsCreateRoute
   '/groups/$groupId/members/': typeof GroupsGroupIdMembersIndexRoute
 }
 export interface FileRouteTypes {
@@ -102,6 +111,7 @@ export interface FileRouteTypes {
     | '/groups/$groupId/settings'
     | '/groups/$groupId'
     | '/groups/$groupId/members/$memberId'
+    | '/groups/$groupId/tags/create'
     | '/groups/$groupId/members'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/groups/$groupId/settings'
     | '/groups/$groupId'
     | '/groups/$groupId/members/$memberId'
+    | '/groups/$groupId/tags/create'
     | '/groups/$groupId/members'
   id:
     | '__root__'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/groups/$groupId/settings'
     | '/groups/$groupId/'
     | '/groups/$groupId/members/$memberId'
+    | '/groups/$groupId/tags/create'
     | '/groups/$groupId/members/'
   fileRoutesById: FileRoutesById
 }
@@ -133,6 +145,7 @@ export interface RootRouteChildren {
   GroupsGroupIdSettingsRoute: typeof GroupsGroupIdSettingsRoute
   GroupsGroupIdIndexRoute: typeof GroupsGroupIdIndexRoute
   GroupsGroupIdMembersMemberIdRoute: typeof GroupsGroupIdMembersMemberIdRoute
+  GroupsGroupIdTagsCreateRoute: typeof GroupsGroupIdTagsCreateRoute
   GroupsGroupIdMembersIndexRoute: typeof GroupsGroupIdMembersIndexRoute
 }
 
@@ -187,6 +200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupsGroupIdMembersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/groups/$groupId/tags/create': {
+      id: '/groups/$groupId/tags/create'
+      path: '/groups/$groupId/tags/create'
+      fullPath: '/groups/$groupId/tags/create'
+      preLoaderRoute: typeof GroupsGroupIdTagsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/groups/$groupId/members/$memberId': {
       id: '/groups/$groupId/members/$memberId'
       path: '/groups/$groupId/members/$memberId'
@@ -205,6 +225,7 @@ const rootRouteChildren: RootRouteChildren = {
   GroupsGroupIdSettingsRoute: GroupsGroupIdSettingsRoute,
   GroupsGroupIdIndexRoute: GroupsGroupIdIndexRoute,
   GroupsGroupIdMembersMemberIdRoute: GroupsGroupIdMembersMemberIdRoute,
+  GroupsGroupIdTagsCreateRoute: GroupsGroupIdTagsCreateRoute,
   GroupsGroupIdMembersIndexRoute: GroupsGroupIdMembersIndexRoute,
 }
 export const routeTree = rootRouteImport

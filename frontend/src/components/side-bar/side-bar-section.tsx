@@ -1,4 +1,4 @@
-import { CellHeader, CellList, Typography } from '@maxhub/max-ui'
+import { CellHeader, CellList, Flex, Typography } from '@maxhub/max-ui'
 import clsx from 'clsx'
 import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
@@ -7,7 +7,7 @@ export function SideBarSection({
   title,
   children,
 }: {
-  title: string
+  title: React.ReactNode
   children: React.ReactNode
 }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -27,7 +27,7 @@ export function SideBarSection({
           />
         }
       >
-        <Typography.Title className="text-sm!">{title}</Typography.Title>
+        {title}
       </CellHeader>
       {isOpen && <>{children}</>}
     </CellList>

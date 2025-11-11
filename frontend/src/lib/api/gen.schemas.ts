@@ -24,6 +24,8 @@ export interface EventAddUserRequest {
 
 export type EventCreateRequestDescription = string | null
 
+export type EventCreateRequestTimezone = number | null
+
 export type EventCreateRequestGroupId = number | null
 
 export type EventCreateRequestUserIds = Array<number> | null
@@ -34,7 +36,7 @@ export interface EventCreateRequest {
   title: string
   description?: EventCreateRequestDescription
   eventDate: string
-  timezone: number
+  timezone?: EventCreateRequestTimezone
   everyDay?: boolean
   everyWeek?: boolean
   everyMonth?: boolean
@@ -141,9 +143,12 @@ export interface GroupResponse {
 
 export type GroupUpdateRequestDescription = string | null
 
+export type GroupUpdateRequestTimezone = number | null
+
 export interface GroupUpdateRequest {
   name: string
   description?: GroupUpdateRequestDescription
+  timezone?: GroupUpdateRequestTimezone
 }
 
 export type GroupUserItemFirstName = string | null
@@ -188,6 +193,7 @@ export interface RespondResponse {
 export type RoleResponseName =
   (typeof RoleResponseName)[keyof typeof RoleResponseName]
 
+ 
 export const RoleResponseName = {
   Босс: 'Босс',
   Начальник: 'Начальник',

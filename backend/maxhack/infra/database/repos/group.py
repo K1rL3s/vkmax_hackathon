@@ -12,7 +12,10 @@ from maxhack.infra.database.repos.base import BaseAlchemyRepo
 
 class GroupRepo(BaseAlchemyRepo):
     async def get_by_id(self, group_id: GroupId) -> GroupModel | None:
-        stmt = select(GroupModel).where(GroupModel.id == group_id)
+        stmt = select(GroupModel).where(
+            GroupModel.id == group_id,
+            GroupModel.deleted_at.is_(None),
+        )
         return await self._session.scalar(stmt)
 
     async def create(
@@ -46,7 +49,7 @@ class GroupRepo(BaseAlchemyRepo):
     async def update(self, group_id: GroupId, **values: Any) -> GroupModel | None:
         stmt = (
             update(GroupModel)
-            .where(GroupModel.id == group_id)
+            .where(GroupModel.id == group_id, GroupModel.deleted_at.is_(None))
             .values(**values)
             .returning(GroupModel)
         )

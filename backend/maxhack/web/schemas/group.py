@@ -19,6 +19,7 @@ class GroupCreateRequest(Model):
 class GroupUpdateRequest(Model):
     name: str
     description: str | None = None
+    timezone: int | None = None
 
 
 class GroupResponse(Model):

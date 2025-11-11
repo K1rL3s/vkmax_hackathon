@@ -21,7 +21,7 @@ export function GroupPageLayout({
           </div>
         ) : (
           <Flex direction="column" className="h-full w-full">
-            <Header title={data?.name} />
+            <Header title={data?.group.name} />
             <div className="w-full h-full px-(--spacing-size-xl)">
               {children}
             </div>

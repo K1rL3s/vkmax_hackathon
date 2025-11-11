@@ -22,6 +22,7 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
     ) -> list[tuple[GroupModel, RoleModel]]:
         stmt = (
             select(GroupModel, RoleModel)
+            .where(GroupModel.deleted_at.is_(None))
             .join(
                 UsersToGroupsModel,
                 and_(

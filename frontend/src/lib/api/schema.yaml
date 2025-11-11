@@ -1911,7 +1911,11 @@
                       'format': 'date-time',
                       'title': 'Eventdate',
                     },
-                  'timezone': { 'type': 'integer', 'title': 'Timezone' },
+                  'timezone':
+                    {
+                      'anyOf': [{ 'type': 'integer' }, { 'type': 'null' }],
+                      'title': 'Timezone',
+                    },
                   'everyDay':
                     {
                       'type': 'boolean',
@@ -1956,7 +1960,7 @@
                     },
                 },
               'type': 'object',
-              'required': ['title', 'eventDate', 'timezone', 'type'],
+              'required': ['title', 'eventDate', 'type'],
               'title': 'EventCreateRequest',
             },
           'EventResponse':
@@ -2165,6 +2169,11 @@
                     {
                       'anyOf': [{ 'type': 'string' }, { 'type': 'null' }],
                       'title': 'Description',
+                    },
+                  'timezone':
+                    {
+                      'anyOf': [{ 'type': 'integer' }, { 'type': 'null' }],
+                      'title': 'Timezone',
                     },
                 },
               'type': 'object',

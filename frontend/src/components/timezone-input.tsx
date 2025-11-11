@@ -10,7 +10,8 @@ type Timezone = {
 
 type TimezoneInputProps = {
   mode?: 'primary' | 'secondary'
-  value: Timezone
+  value?: Timezone | undefined
+  disabled?: boolean
   onChange: (value: Timezone) => void
 }
 
@@ -18,6 +19,7 @@ export function TimezoneInput({
   value,
   onChange,
   mode = 'primary',
+  disabled = false,
 }: TimezoneInputProps) {
   const [isSelecting, setIsSelecting] = useState(false)
 
@@ -35,13 +37,14 @@ export function TimezoneInput({
         </Typography.Title>
         <button
           type="button"
-          onClick={() => setIsSelecting(true)}
+          onClick={() => !disabled && setIsSelecting(true)}
           className={clsx(
             'min-h-[52px] w-full rounded-(--size-border-radius-semantic-border-radius-card) cursor-pointer text-start px-3',
             modeStyles[mode],
+            { 'bg-(--states-background-disabled-neutral-fade)!': disabled },
           )}
         >
-          {value.label}
+          {value?.label}
         </button>
       </Flex>
       <TimezoneSelectModal
