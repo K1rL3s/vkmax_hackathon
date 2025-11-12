@@ -53,6 +53,7 @@ class UserService:
         self,
         user_id: UserId,
     ) -> UserModel:
+        # TODO: Можно только самого себя
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFound

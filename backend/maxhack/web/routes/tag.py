@@ -23,9 +23,8 @@ tag_router = APIRouter(
 
 @tag_router.post(
     "",
-    response_model=TagResponse,
     status_code=status.HTTP_201_CREATED,
-    description="Создание тега",
+    description="""Создать тег. Могут только "Босс" и "Начальник".""",
 )
 async def create_tag_route(
     group_id: GroupId,
@@ -51,8 +50,7 @@ async def create_tag_route(
 
 @tag_router.patch(
     "/{tag_id}",
-    response_model=TagResponse,
-    description="Редактирование тега",
+    description="""Редактировать тег. Могут только "Босс" и "Начальник".""",
 )
 async def update_tag_route(
     group_id: GroupId,
@@ -81,7 +79,7 @@ async def update_tag_route(
 @tag_router.delete(
     "/{tag_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Удаление тега",
+    description="""Удалить тег. Могут только "Босс" и "Начальник".""",
 )
 async def delete_tag_route(
     group_id: GroupId,
@@ -104,7 +102,10 @@ async def delete_tag_route(
 @tag_router.post(
     "/users",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Назначить тег пользователю",
+    description="""
+Добавить (назначить, привязать) тег пользователю.
+Могут только "Босс" и "Начальник".
+""".strip(),
 )
 async def assign_tag_to_user_route(
     group_id: GroupId,
@@ -130,7 +131,10 @@ async def assign_tag_to_user_route(
 @tag_router.delete(
     "/users/{user_id}/{tag_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Удалить тег у пользователя",
+    description="""
+Удалить (отвязать) тег у пользователя.
+Могут только "Босс" и "Начальник".
+""".strip(),
 )
 async def remove_tag_from_user_route(
     group_id: GroupId,
@@ -154,8 +158,7 @@ async def remove_tag_from_user_route(
 
 @tag_router.get(
     "",
-    response_model=list[TagResponse],
-    description="Получить список тегов группы",
+    description="Получить все теги группы. Могут только участники группы.",
 )
 async def list_group_tags_route(
     group_id: GroupId,
@@ -178,8 +181,10 @@ async def list_group_tags_route(
 
 @tag_router.get(
     "/{tag_id}/users",
-    response_model=list[TagUserItem],
-    description="Получить список пользователей, у которых назначен тег",
+    description="""
+Получить список пользователей, у которых есть тег.
+Могут только участники группы.
+""".strip(),
 )
 async def list_tag_users_route(
     group_id: GroupId,

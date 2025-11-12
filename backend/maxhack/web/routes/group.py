@@ -24,7 +24,7 @@ group_router = APIRouter(prefix="/groups", tags=["Groups"], route_class=DishkaRo
 @group_router.post(
     "",
     status_code=status.HTTP_201_CREATED,
-    description="Создание группы",
+    description="Создание группы. Может кто угодно.",
 )
 async def create_group_route(
     body: GroupCreateRequest,
@@ -48,7 +48,7 @@ async def create_group_route(
 
 @group_router.patch(
     "/{group_id}",
-    description="Редактирование группы (только создатель)",
+    description="""Редактирование группы. Может только "Босс".""",
 )
 async def update_group_route(
     group_id: GroupId,
@@ -77,8 +77,7 @@ async def update_group_route(
 
 @group_router.patch(
     "/{group_id}/users/{slave_id}",
-    response_model=GroupMemberResponse,
-    description="Редактирование связи пользователя и группы",
+    description="""Смена роли юзера в группе. Может только "Босс".""",
 )
 async def update_group_membership(
     group_id: GroupId,
@@ -109,7 +108,10 @@ async def update_group_membership(
     # TODO: Вернуть схему
 
 
-@group_router.get("/{group_id}", description="Получить группу по идентификатору")
+@group_router.get(
+    "/{group_id}",
+    description="Получить группу. Могут только участники группы.",
+)
 async def get_group(
     *,
     group_id: GroupId,
@@ -129,7 +131,7 @@ async def get_group(
 
 @group_router.get(
     "/{group_id}/users/{member_id}",
-    description="Получить участника группы по идентификатору",
+    description="Получить участника группы. Могут только участники группы.",
 )
 async def get_group_user_route(
     group_id: GroupId,
@@ -152,8 +154,7 @@ async def get_group_user_route(
 
 @group_router.get(
     "/{group_id}/users",
-    response_model=list[GroupUserItem],
-    description="Получить список всех пользователей группы",
+    description="Получить всех пользователей группы. Могут только участники группы.",
 )
 async def list_group_users_route(
     group_id: GroupId,
@@ -175,7 +176,10 @@ async def list_group_users_route(
 @group_router.delete(
     "/{group_id}/users/{slave_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Удаление участника из группы",
+    description="""
+Удаление участника из группы.
+"Босс" может удалить всех, "Начальник" не может удалить "Босса"
+""".strip(),
 )
 async def remove_group_member_route(
     group_id: GroupId,
@@ -200,7 +204,7 @@ async def remove_group_member_route(
 @group_router.delete(
     "/{group_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Удаление группы (только администратор)",
+    description="""Удалить группы. Может только "Босс".""",
 )
 async def delete_group_route(
     group_id: GroupId,
@@ -220,9 +224,11 @@ async def delete_group_route(
 
 @group_router.post(
     "/{group_id}/invite",
-    response_model=InviteCreateResponse,
     status_code=status.HTTP_201_CREATED,
-    description="Создание приглашения в группу",
+    description="""
+Создать (перевыпустить) приглашение в группу.
+В группе может быть только одно активное приглашение.
+""".strip(),
 )
 async def create_invite_route(
     group_id: GroupId,
@@ -236,6 +242,7 @@ async def create_invite_route(
     return InviteCreateResponse(invite_key=InviteKey(invite_obj.key))
 
 
+# TODO: Удалить на проде
 @group_router.post(
     "/join",
     response_model=GroupMemberResponse,

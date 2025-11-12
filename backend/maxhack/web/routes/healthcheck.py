@@ -15,7 +15,7 @@ healthcheck_router = APIRouter(
 
 @healthcheck_router.get(
     "",
-    description="Проверка соединения с базой данных",
+    description="Проверка соединения",
 )
 async def check_db_connection(
     session: FromDishka[AsyncSession],

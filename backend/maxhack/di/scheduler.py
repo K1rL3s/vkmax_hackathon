@@ -23,9 +23,9 @@ class SchedulerProvider(Provider):
 
     @provide
     def schedule_source(
-            self,
-            scheduler_config: SchedulerConfig,
-            redis_config: RedisConfig,
+        self,
+        scheduler_config: SchedulerConfig,
+        redis_config: RedisConfig,
     ) -> ScheduleSource:
         return ListRedisScheduleSource(
             url=redis_config.uri,
@@ -41,9 +41,9 @@ class SchedulerProvider(Provider):
 
     @provide
     def scheduler(
-            self,
-            broker: AsyncBroker,
-            schedule_source: ScheduleSource,
+        self,
+        broker: AsyncBroker,
+        schedule_source: ScheduleSource,
     ) -> TaskiqScheduler:
         return TaskiqScheduler(
             broker=broker,
@@ -52,8 +52,8 @@ class SchedulerProvider(Provider):
 
     @provide()
     def redis(
-            self,
-            redis_config: RedisConfig,
+        self,
+        redis_config: RedisConfig,
     ) -> Redis:
         return Redis(
             host=redis_config.host,

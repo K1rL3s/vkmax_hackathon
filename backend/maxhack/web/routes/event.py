@@ -5,8 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from maxhack.core.event.models import Cron, EventCreate, EventUpdate
 from maxhack.core.event.service import EventService
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
-from maxhack.core.ids import EventId, GroupId, RespondId, UserId
-from maxhack.core.responds.service import RespondService
+from maxhack.core.ids import EventId, GroupId, UserId
 from maxhack.web.schemas.event import (
     EventAddTagRequest,
     EventAddUserRequest,
@@ -14,8 +13,6 @@ from maxhack.web.schemas.event import (
     EventResponse,
     EventUpdateRequest,
     EventsResponse,
-    RespondChangeResponse,
-    RespondResponse,
 )
 
 event_router = APIRouter(prefix="/events", tags=["Events"], route_class=DishkaRoute)
@@ -23,9 +20,11 @@ event_router = APIRouter(prefix="/events", tags=["Events"], route_class=DishkaRo
 
 @event_router.post(
     "",
-    response_model=EventResponse,
     status_code=status.HTTP_201_CREATED,
-    description="Создание события (может только 1 и 2 роль)",
+    description="""
+Создать событие (встреча или сообщение) в группе.
+Могут только "Босс" и "Начальник".
+""".strip(),
 )
 async def create_event_route(
     body: EventCreateRequest,
@@ -39,7 +38,7 @@ async def create_event_route(
                 **body.model_dump(exclude={"cron"}),
                 cron=Cron(**body.cron.model_dump()),
                 creator_id=master_id,
-            )
+            ),
         )
         return await EventResponse.from_orm_async(event, session)
     except EntityNotFound as e:
@@ -51,7 +50,7 @@ async def create_event_route(
 @event_router.post(
     "/{event_id}/tags",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Добавить тег для события (может только 1 и 2 роль)",
+    description="""Добавить тег для события. Могут только "Босс" и "Начальник".""",
 )
 async def add_tag_to_event_route(
     event_id: EventId,
@@ -75,8 +74,7 @@ async def add_tag_to_event_route(
 
 @event_router.get(
     "/{event_id}",
-    response_model=EventResponse,
-    description="Получить событие",
+    description="Получить событие. Могут только участники события.",
 )
 async def get_event_route(
     event_id: EventId,
@@ -95,8 +93,7 @@ async def get_event_route(
 
 @event_router.patch(
     "/{event_id}",
-    response_model=EventResponse,
-    description="Редактирование события (может только 1 и 2 роль)",
+    description="""Редактировать событие. Могут только "Босс" и "Начальник".""",
 )
 async def update_event_route(
     event_id: EventId,
@@ -130,7 +127,7 @@ async def update_event_route(
 @event_router.delete(
     "/{event_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Удаление события (может только 1 и 2 роль)",
+    description="""Удалить событие. Могут только "Босс" и "Начальник".""",
 )
 async def delete_event_route(
     event_id: EventId,
@@ -148,7 +145,10 @@ async def delete_event_route(
 @event_router.post(
     "/{event_id}/users",
     status_code=status.HTTP_204_NO_CONTENT,
-    description="Добавить пользователя для события (может только 1 и 2 роль)",
+    description="""
+Добавить (привязать) пользователя в событие.
+Могут только "Босс" и "Начальник".
+""".strip(),
 )
 async def add_user_to_event_route(
     event_id: EventId,
@@ -172,8 +172,7 @@ async def add_user_to_event_route(
 
 @event_router.get(
     "/groups/{group_id}",
-    response_model=EventsResponse,
-    description="Просмотр всех событий группы (может только пользователь находящийся в этой группе)",
+    description="Просмотр всех событий группы, в которых пользователь принимает участие",
 )
 async def get_group_events_route(
     group_id: GroupId,
@@ -181,6 +180,7 @@ async def get_group_events_route(
     session: FromDishka[AsyncSession],
     master_id: UserId = Header(...),
 ) -> EventsResponse:
+    # TODO: Только возврат событий, в которых участвует юзер
     try:
         events = await event_service.get_group_events(
             group_id=group_id,
@@ -198,8 +198,7 @@ async def get_group_events_route(
 
 @event_router.get(
     "/",
-    response_model=EventsResponse,
-    description="Просмотр всех своих событий",
+    description="Просмотр всех своих событий во всех группах.",
 )
 async def get_user_events_route(
     event_service: FromDishka[EventService],
@@ -212,28 +211,6 @@ async def get_user_events_route(
             await EventResponse.from_orm_async(event, session) for event in events
         ]
         return EventsResponse(events=response_events)
-    except EntityNotFound as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-
-
-@event_router.patch(
-    "/responds/{respond_id}",
-    response_model=RespondResponse,
-    description="Изменить статус отклика",
-)
-async def get_user_events_route(
-    respond_id: RespondId,
-    body: RespondChangeResponse,
-    respond_service: FromDishka[RespondService],
-    master_id: UserId = Header(...),
-) -> RespondResponse:
-    try:
-        respond = await respond_service.update(
-            respond_id,
-            master_id,
-            status=body.status,
-        )
-        return RespondResponse.model_validate(respond)
     except EntityNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 

@@ -2,6 +2,7 @@ from dishka import FromDishka
 
 from maxhack.bot.filters.respond import RespondData
 from maxhack.core.exceptions import MaxHackError
+from maxhack.core.ids import EventId
 from maxhack.core.responds.service import RespondService
 from maxhack.infra.database.models import UserModel
 from maxo.enums.message_link_type import MessageLinkType
@@ -21,15 +22,16 @@ async def respond_handler(
     current_user: UserModel,
     respond_service: FromDishka[RespondService],
 ) -> None:
+    event_id = EventId(int(payload.event_id))
     try:
         respond = await respond_service.get_user_respond(
-            payload.event_id,
+            event_id,
             current_user.id,
         )
     except MaxHackError:
         respond = await respond_service.create(
             [current_user.id],
-            payload.event_id,
+            event_id,
             payload.status,
         )
     else:

@@ -111,13 +111,13 @@ def load_config(env: str | Path | None = None) -> Config:
             portal_address=os.getenv("PORTAL_ADDRESS"),
             debug_mode=os.getenv("DEBUG_MODE", "").lower() == "true",
             cors_policy_disabled=(
-                    os.getenv("CORS_POLICY_DISABLED", "True").lower() == "true"
+                os.getenv("CORS_POLICY_DISABLED", "True").lower() == "true"
             ),
             cors=os.getenv("CORS", "").split(","),
             secret=os.getenv("SECRET", "Pepa the pig"),
             file_directory=os.getenv("FILE_DIRECTORY", None),
             additional_debug=os.getenv("ADDITIONAL_DEBUG", "False").lower() == "true",
-            reload=os.getenv("RELOAD", "False").lower() == "true"
+            reload=os.getenv("RELOAD", "False").lower() == "true",
         ),
         app_settings=AppSettings(
             test_token=os.getenv("TEST_TOKEN", None),

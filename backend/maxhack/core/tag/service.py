@@ -4,7 +4,7 @@ from maxhack.core.exceptions import (
     TagNotFound,
 )
 from maxhack.core.ids import GroupId, RoleId, TagId, UserId
-from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID, MEMBER_ROLE_ID
+from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.service import BaseService
 from maxhack.infra.database.models import TagModel, UserModel
 
@@ -22,7 +22,7 @@ class TagService(BaseService):
         await self._ensure_membership_role(
             user_id=master_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID},
+            allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
 
         return await self._tag_repo.create_tag(
@@ -47,7 +47,7 @@ class TagService(BaseService):
         await self._ensure_membership_role(
             user_id=master_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID},
+            allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
 
         values: dict[str, str] = {}
@@ -76,9 +76,10 @@ class TagService(BaseService):
         await self._ensure_membership_role(
             user_id=master_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID},
+            allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
 
+        # TODO: Удаление всех связных сущностей
         await self._tag_repo.delete_tag(tag_id)
 
     async def assign_tag_to_user(
@@ -94,7 +95,7 @@ class TagService(BaseService):
         await self._ensure_membership_role(
             user_id=master_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID},
+            allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
 
         await self._ensure_user_exists(user_id)
@@ -102,7 +103,6 @@ class TagService(BaseService):
         await self._ensure_membership_role(
             user_id=user_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID, MEMBER_ROLE_ID},
         )
 
         existing = await self._tag_repo.get_user_tag(
@@ -127,7 +127,7 @@ class TagService(BaseService):
         await self._ensure_membership_role(
             user_id=master_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID},
+            allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
 
         assignment = await self._tag_repo.get_user_tag(
@@ -148,7 +148,6 @@ class TagService(BaseService):
         await self._ensure_membership_role(
             user_id=master_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID, MEMBER_ROLE_ID},
         )
 
         return await self._tag_repo.list_group_tags(group_id)
@@ -164,13 +163,11 @@ class TagService(BaseService):
         await self._ensure_membership_role(
             user_id=master_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID, MEMBER_ROLE_ID},
         )
 
         await self._ensure_membership_role(
             user_id=user_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID, MEMBER_ROLE_ID},
         )
 
         return await self._tag_repo.list_user_tags(group_id, user_id)
@@ -187,7 +184,6 @@ class TagService(BaseService):
         await self._ensure_membership_role(
             user_id=master_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID, MEMBER_ROLE_ID},
         )
 
         return await self._tag_repo.list_tag_users(group_id, tag_id)

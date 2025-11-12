@@ -44,6 +44,7 @@ class EventCreate(DomainModel):
     tags_ids: list[TagId] = field(default_factory=list[TagId])
     minutes_before: list[int] = field(default_factory=list)
 
+
 @dataclass(kw_only=True)
 class EventUpdate(DomainModel):
     title: str | None = field(default=None)
@@ -54,9 +55,9 @@ class EventUpdate(DomainModel):
 
     @override
     def to_dict(
-            self,
-            exclude: set[str] | None = None,
-            exclude_none: bool = False,
+        self,
+        exclude: set[str] | None = None,
+        exclude_none: bool = False,
     ) -> dict[str, Any]:
         obj = super().to_dict(exclude=exclude, exclude_none=exclude_none)
         if self.cron:

@@ -20,7 +20,7 @@ class InviteService(BaseService):
         await self._ensure_membership_role(
             user_id=creator_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID},
+            allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
 
         key = generate_invite_key()
@@ -47,7 +47,7 @@ class InviteService(BaseService):
         await self._ensure_membership_role(
             user_id=user_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID},
+            allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
 
         return await self._invite_repo.get_group_invite(group_id)
@@ -62,7 +62,7 @@ class InviteService(BaseService):
         await self._ensure_membership_role(
             user_id=user_id,
             group_id=group_id,
-            allowed_roles={CREATOR_ROLE_ID, EDITOR_ROLE_ID},
+            allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
 
         current_invite = await self._invite_repo.get_group_invite(group_id)

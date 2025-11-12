@@ -20,6 +20,7 @@ from maxhack.web.schemas.user import (
 user_router = APIRouter(prefix="/users", tags=["Users"], route_class=DishkaRoute)
 
 
+# TODO: Удалить на проде
 @user_router.post(
     "",
     response_model=UserResponse,
@@ -42,7 +43,6 @@ async def create_user_route(
         )
         return await UserResponse.from_orm_async(user, session)
     except InvalidValue as e:
-        # Конвертируем бизнес-исключение в HTTP 409
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=str(e),
@@ -51,8 +51,7 @@ async def create_user_route(
 
 @user_router.get(
     "/{user_id}",
-    response_model=UserResponse,
-    description="Получить одного пользователя по идентификатору",
+    description="Получить пользователя. Можно только самого себя.",
 )
 async def get_user_by_id_route(
     user_id: UserId,
@@ -71,8 +70,7 @@ async def get_user_by_id_route(
 
 @user_router.patch(
     "/",
-    response_model=UserResponse,
-    description="Редактирование пользователя",
+    description="Редактировать пользователя. Можно только самого себя.",
 )
 async def update_user_route(
     body: UserUpdateRequest,
@@ -97,14 +95,16 @@ async def update_user_route(
 
 @user_router.get(
     "/{user_id}/groups",
-    response_model=UserGroupsResponse,
-    description="Получить список групп, в которых состоит пользователь",
+    description="""
+Получить список групп, в которых состоит пользователь. Можно только свои группы.
+""".strip(),
 )
 async def list_user_groups_route(
     user_id: UserId,
     user_service: FromDishka[UserService],
     master_id: UserId = Header(...),
 ) -> UserGroupsResponse:
+    # TODO: Убрать user_id, так как можно получить только свои группы
     try:
         result = await user_service.get_user_groups(
             user_id=user_id,
@@ -130,7 +130,6 @@ async def list_user_groups_route(
 
 @user_router.get(
     "/{user_id}/groups/{group_id}/tags",
-    response_model=list[TagResponse],
     description="Получить список тегов пользователя в рамках группы",
 )
 async def list_user_tags_route(
@@ -156,7 +155,6 @@ async def list_user_tags_route(
 
 @user_router.get(
     "/{user_id}/groups/{group_id}/events",
-    response_model=list[EventResponse],
     description="Получить список тегов пользователя в рамках группы",
 )
 async def list_user_tags_route(

@@ -11,39 +11,18 @@ from maxhack.core.exceptions import (
 )
 from maxhack.core.ids import GroupId, InviteKey, RoleId, TagId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
+from maxhack.core.service import BaseService
 from maxhack.core.utils.datehelp import datetime_now
 from maxhack.infra.database.models import (
     GroupModel,
     RoleModel,
     UsersToGroupsModel,
 )
-from maxhack.infra.database.repos.group import GroupRepo
-from maxhack.infra.database.repos.invite import InviteRepo
-from maxhack.infra.database.repos.role import RoleRepo
-from maxhack.infra.database.repos.tag import TagRepo
-from maxhack.infra.database.repos.user import UserRepo
-from maxhack.infra.database.repos.users_to_groups import UsersToGroupsRepo
 
 logger = logging.getLogger(__name__)
 
 
-class GroupService:
-    def __init__(
-        self,
-        group_repo: GroupRepo,
-        user_repo: UserRepo,
-        invite_repo: InviteRepo,
-        tag_repo: TagRepo,
-        users_to_groups_repo: UsersToGroupsRepo,
-        role_repo: RoleRepo,
-    ) -> None:
-        self._group_repo = group_repo
-        self._users_to_groups_repo = users_to_groups_repo
-        self._user_repo = user_repo
-        self._invite_repo = invite_repo
-        self._tag_repo = tag_repo
-        self._role_repo = role_repo
-
+class GroupService(BaseService):
     async def create_group(
         self,
         creator_id: UserId,
@@ -128,6 +107,7 @@ class GroupService:
         ):
             raise NotEnoughRights("Недостаточно прав для удаления группы")
 
+        # TODO: Удаление всех ивентов, тэгов, связей итп
         await self._group_repo.update(group_id, deleted_at=datetime_now())
 
     async def join_group(
@@ -233,11 +213,10 @@ class GroupService:
         if group is None:
             raise GroupNotFound
 
-        if not await self.has_roles(
-            CREATOR_ROLE_ID,
-            EDITOR_ROLE_ID,
+        if not await self._ensure_membership_role(
             user_id=master_id,
             group_id=group_id,
+            allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         ):
             raise NotEnoughRights("Недостаточно прав для удаления участника")
 
