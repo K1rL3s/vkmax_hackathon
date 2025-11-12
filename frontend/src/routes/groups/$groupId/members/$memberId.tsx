@@ -131,7 +131,7 @@ function MemberPage() {
                     lastName={memberQuery.data?.member.lastName?.toString()}
                   />
                   <Typography.Headline variant="large-strong">
-                    {memberQuery.data?.member.firstName}
+                    {memberQuery.data?.member.firstName}{' '}
                     {memberQuery.data?.member.lastName}
                   </Typography.Headline>
                   <form.Field

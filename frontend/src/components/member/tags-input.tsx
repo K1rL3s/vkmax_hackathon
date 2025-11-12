@@ -27,6 +27,11 @@ export function TagsInput({
     red: 'bg-red-700',
     blue: 'bg-blue-700',
     green: 'bg-green-700',
+    yellow: 'bg-yellow-700',
+    purple: 'bg-purple-700',
+    cyan: 'bg-cyan-700',
+    pink: 'bg-pink-700',
+    orange: 'bg-orange-700',
   }
 
   return (
