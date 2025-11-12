@@ -2,6 +2,7 @@ from dishka import Provider, Scope, from_context, provide
 
 from maxhack.config import MaxConfig
 from maxhack.core.max import MaxMailer, MaxSender
+from maxhack.core.max.notifier import MaxNotifier
 from maxo import Bot
 from maxo.dialogs import BgManagerFactory
 from maxo.enums.text_fromat import TextFormat
@@ -18,3 +19,4 @@ class MaxBotProvider(Provider):
 
     max_sender = provide(MaxSender)
     max_mailer = provide(MaxMailer)
+    max_notifier = provide(MaxNotifier)
