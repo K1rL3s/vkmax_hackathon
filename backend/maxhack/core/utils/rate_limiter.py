@@ -10,12 +10,16 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
+class RateLimitError(ValueError):
+    pass
+
+
 class RateLimiter:
     def __init__(self, max_calls: int, period: float = 1.0) -> None:
         if period <= 0:
-            raise ValueError("Rate limiting period should be > 0")
+            raise RateLimitError("Rate limiting period should be > 0")
         if max_calls <= 0:
-            raise ValueError("Rate limiting number of calls should be > 0")
+            raise RateLimitError("Rate limiting number of calls should be > 0")
 
         self.calls: collections.deque[float] = collections.deque()
 

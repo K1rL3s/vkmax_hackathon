@@ -2,7 +2,7 @@ from typing import Any
 
 from dishka import FromDishka
 
-from maxhack.core.exceptions import EntityNotFound, MaxHackError
+from maxhack.core.exceptions import GroupNotFound, InviteNotFound, MaxHackError
 from maxhack.core.group.service import GroupService
 from maxhack.core.ids import GroupId
 from maxhack.core.invite.service import InviteService
@@ -58,11 +58,11 @@ async def get_group_preview(
     **__: Any,
 ) -> dict[str, Any]:
     if "invite_key" not in dialog_manager.dialog_data:
-        raise EntityNotFound("Группа не найдена")
+        raise InviteNotFound
 
     group_id: GroupId = dialog_manager.dialog_data["group_id"]
     group = await group_repo.get_by_id(group_id)
     if group is None:
-        raise EntityNotFound("Группа не найдена")
+        raise GroupNotFound
 
     return {"group": group}

@@ -1,4 +1,11 @@
-from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
+from maxhack.core.exceptions import (
+    EntityNotFound,
+    GroupNotFound,
+    InvalidValue,
+    NotEnoughRights,
+    TagNotFound,
+    UserNotFound,
+)
 from maxhack.core.ids import GroupId, RoleId, TagId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID, MEMBER_ROLE_ID
 from maxhack.infra.database.models import (
@@ -28,12 +35,12 @@ class TagService:
     async def _ensure_group_exists(self, group_id: GroupId) -> None:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
-            raise EntityNotFound("Группа не найдена")
+            raise GroupNotFound
 
     async def _ensure_user_exists(self, user_id: UserId) -> None:
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
-            raise EntityNotFound("Пользователь не найден")
+            raise UserNotFound
 
     async def _ensure_tag_exists(
         self,
@@ -42,7 +49,7 @@ class TagService:
     ) -> TagModel:
         tag = await self._tag_repo.get_by_id(tag_id)
         if tag is None or tag.group_id != group_id:
-            raise EntityNotFound("Тег не найден")
+            raise TagNotFound
         return tag
 
     async def _ensure_membership_role(
@@ -110,7 +117,7 @@ class TagService:
 
         tag = await self._tag_repo.update_tag(tag_id, **values)
         if tag is None:
-            raise EntityNotFound("Тег не найден")
+            raise TagNotFound
 
         return tag
 

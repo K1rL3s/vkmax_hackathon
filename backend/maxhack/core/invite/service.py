@@ -1,6 +1,11 @@
 from typing import cast
 
-from maxhack.core.exceptions import EntityNotFound, NotEnoughRights
+from maxhack.core.exceptions import (
+    GroupNotFound,
+    InviteNotFound,
+    NotEnoughRights,
+    UserNotFound,
+)
 from maxhack.core.ids import GroupId, InviteKey, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.utils.datehelp import datetime_now
@@ -30,12 +35,12 @@ class InviteService:
             return
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
-            raise EntityNotFound("Группа не найдена")
+            raise GroupNotFound
 
     async def _ensure_user_exists(self, user_id: UserId) -> None:
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
-            raise EntityNotFound("Пользователь не найден")
+            raise UserNotFound
 
     async def _ensure_membership_role(
         self,
@@ -49,7 +54,7 @@ class InviteService:
             group_id=group_id,
         )
         if membership is None or membership.role_id not in allowed_roles:
-            raise NotEnoughRights("Недостаточно прав")
+            raise NotEnoughRights
         return membership
 
     async def recreate_invite(
@@ -120,7 +125,7 @@ class InviteService:
     ) -> tuple[InviteModel, GroupModel]:
         invite = await self._invite_repo.get_by_key(invite_key)
         if invite is None:
-            raise EntityNotFound("Приглашение не найдено")
+            raise InviteNotFound
 
         group = cast(GroupModel, await self._group_repo.get_by_id(invite.group_id))
         return invite, group

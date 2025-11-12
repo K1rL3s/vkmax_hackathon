@@ -1,6 +1,10 @@
 from typing import Any
 
-from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
+from maxhack.core.exceptions import (
+    InvalidValue,
+    NotEnoughRights,
+    UserNotFound,
+)
 from maxhack.core.ids import MaxChatId, MaxId, UserId
 from maxhack.infra.database.models import (
     GroupModel,
@@ -51,7 +55,7 @@ class UserService:
     ) -> UserModel:
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
-            raise EntityNotFound("Пользователь не найден")
+            raise UserNotFound
         return user
 
     async def update_user(
@@ -64,7 +68,7 @@ class UserService:
     ) -> UserModel:
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
-            raise EntityNotFound("Пользователь не найден")
+            raise UserNotFound
 
         values: dict[str, Any] = {}
         if first_name is not None:
@@ -77,7 +81,7 @@ class UserService:
             values["timezone"] = timezone
         user = await self._user_repo.update_user(user_id, **values)
         if user is None:
-            raise EntityNotFound("Пользователь не найден")
+            raise UserNotFound
 
         return user
 
@@ -88,7 +92,7 @@ class UserService:
     ) -> list[tuple[GroupModel, RoleModel]]:
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
-            raise EntityNotFound("Пользователь не найден")
+            raise UserNotFound
 
         if user_id != master_id:
             raise NotEnoughRights("Недостаточно прав для просмотра групп пользователя")

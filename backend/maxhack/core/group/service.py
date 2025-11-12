@@ -1,7 +1,14 @@
 import logging
 from typing import cast
 
-from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
+from maxhack.core.exceptions import (
+    EntityNotFound,
+    GroupNotFound,
+    InvalidValue,
+    InviteNotFound,
+    NotEnoughRights,
+    UserNotFound,
+)
 from maxhack.core.ids import GroupId, InviteKey, RoleId, TagId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.utils.datehelp import datetime_now
@@ -46,7 +53,7 @@ class GroupService:
     ) -> GroupModel:
         creator = await self._user_repo.get_by_id(creator_id)
         if creator is None:
-            raise EntityNotFound("Пользователь не найден")
+            raise UserNotFound
 
         if timezone is None:
             timezone = creator.timezone
@@ -69,7 +76,7 @@ class GroupService:
 
         group = await self._group_repo.get_by_id(group_id=group_id)
         if not group:
-            raise EntityNotFound("Группа не найдена")
+            raise GroupNotFound
 
         role = cast(RoleModel, await self._role_repo.get_role(membership.role_id))
 
@@ -85,7 +92,7 @@ class GroupService:
     ) -> GroupModel:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
-            raise EntityNotFound("Группа не найдена")
+            raise GroupNotFound
 
         if not await self.has_roles(
             CREATOR_ROLE_ID,
@@ -112,7 +119,7 @@ class GroupService:
     ) -> None:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
-            raise EntityNotFound("Группа не найдена")
+            raise GroupNotFound
 
         if not await self.has_roles(
             CREATOR_ROLE_ID,
@@ -130,11 +137,11 @@ class GroupService:
     ) -> GroupModel:
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
-            raise EntityNotFound("Пользователь не найден")
+            raise UserNotFound
 
         invite = await self._invite_repo.get_by_key(invite_key)
         if invite is None:
-            raise EntityNotFound("Приглашение не найдено")
+            raise InviteNotFound
 
         group = cast(GroupModel, await self._group_repo.get_by_id(invite.group_id))
 
@@ -163,7 +170,7 @@ class GroupService:
     ) -> UsersToGroupsModel:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
-            raise EntityNotFound("Группа не найдена")
+            raise GroupNotFound
 
         if not await self.has_roles(
             CREATOR_ROLE_ID,
@@ -209,7 +216,7 @@ class GroupService:
     ) -> list[UsersToGroupsModel]:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
-            raise EntityNotFound("Группа не найдена")
+            raise GroupNotFound
 
         if not await self.is_member(user_id=user_id, group_id=group_id):
             raise NotEnoughRights("Пользователь не состоит в группе")
@@ -224,7 +231,7 @@ class GroupService:
     ) -> None:
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
-            raise EntityNotFound("Группа не найдена")
+            raise GroupNotFound
 
         if not await self.has_roles(
             CREATOR_ROLE_ID,
@@ -259,7 +266,7 @@ class GroupService:
             group_id=group_id,
         )
         if membership is None:
-            raise EntityNotFound("Участник не найден")
+            raise UserNotFound
 
         return membership
 

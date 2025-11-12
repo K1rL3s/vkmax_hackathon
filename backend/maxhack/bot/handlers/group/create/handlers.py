@@ -4,6 +4,7 @@ from typing import Any
 from dishka import FromDishka
 
 from maxhack.bot.states import Groups, GroupsCreate
+from maxhack.core.exceptions import InvalidValue
 from maxhack.core.group.service import GroupService
 from maxhack.infra.database.models import UserModel
 from maxo.dialogs import DialogManager, ShowMode, StartMode
@@ -13,18 +14,18 @@ from maxo.dialogs.integrations.dishka import inject
 def validate_group_name(text: str) -> str:
     name = html.escape(text.strip())
     if not name:
-        raise ValueError("Пустое название группы")
+        raise InvalidValue("Пустое название группы")
     if len(name) > 64:
-        raise ValueError("Слишком большое название группы")
+        raise InvalidValue("Слишком большое название группы")
     return name
 
 
 def validate_group_description(text: str) -> str:
     description = html.escape(text.strip())
     if not description:
-        raise ValueError("Пустое описание группы")
+        raise InvalidValue("Пустое описание группы")
     if len(description) > 64:
-        raise ValueError("Слишком большое описание группы")
+        raise InvalidValue("Слишком большое описание группы")
     return description
 
 
@@ -32,10 +33,10 @@ def validate_group_timezone(text: str) -> int:
     try:
         timezone = int(text)
     except ValueError as e:
-        raise ValueError("Таймзона должна быть числом в минутах") from e
+        raise InvalidValue("Таймзона должна быть числом в минутах") from e
 
     if abs(timezone) > 24 * 60:
-        raise ValueError("Разница таймзоны должна быть в пределах суток")
+        raise InvalidValue("Разница таймзоны должна быть в пределах суток")
 
     return timezone
 

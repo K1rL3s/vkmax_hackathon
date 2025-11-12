@@ -1,7 +1,14 @@
 from datetime import datetime
 
 from maxhack.core.event.models import EventCreate, EventUpdate
-from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
+from maxhack.core.exceptions import (
+    EventNotFound,
+    GroupNotFound,
+    InvalidValue,
+    NotEnoughRights,
+    TagNotFound,
+    UserNotFound,
+)
 from maxhack.core.group.service import GroupService
 from maxhack.core.ids import EventId, GroupId, TagId, UserId
 from maxhack.core.responds.service import RespondService
@@ -46,24 +53,24 @@ class EventService:
             return
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
-            raise EntityNotFound("Группа не найдена")
+            raise GroupNotFound
 
     async def _ensure_user_exists(self, user_id: UserId) -> UserModel:
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
-            raise EntityNotFound("Пользователь не найден")
+            raise UserNotFound
         return user
 
     async def _ensure_event_exists(self, event_id: EventId) -> EventModel:
         event = await self._event_repo.get_by_id(event_id)
         if event is None:
-            raise EntityNotFound("Событие не найдено")
+            raise EventNotFound
         return event
 
     async def _ensure_tag_exists(self, tag_id: TagId) -> TagModel:
         tag = await self._tag_repo.get_by_id(tag_id)
         if tag is None:
-            raise EntityNotFound("Тег не найден")
+            raise TagNotFound
         return tag
 
     async def _ensure_membership_role(
@@ -193,7 +200,7 @@ class EventService:
                 group_id=event.group_id,
             )
         elif event.creator_id != user_id:
-            raise NotEnoughRights("Недостаточно прав для редактирования события")
+            raise NotEnoughRights
 
         is_cycle = event.is_cycle
         if event_update_model.cron:
@@ -205,7 +212,7 @@ class EventService:
             is_cycle=is_cycle,
         )
         if updated_event is None:
-            raise EntityNotFound("Событие не найдено")
+            raise EventNotFound
 
         return updated_event
 
@@ -223,7 +230,7 @@ class EventService:
 
         success = await self._event_repo.delete(event_id)
         if not success:
-            raise EntityNotFound("Событие не найдено")
+            raise GroupNotFound
 
     async def add_tag_to_event(
         self,

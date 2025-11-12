@@ -1,4 +1,4 @@
-from maxhack.core.exceptions import EntityNotFound, NotEnoughRights
+from maxhack.core.exceptions import EntityNotFound, NotEnoughRights, RespondNotFound
 from maxhack.core.ids import EventId, RespondId, UserId
 from maxhack.infra.database.models import RespondModel
 from maxhack.infra.database.repos.event import EventRepo
@@ -19,7 +19,7 @@ class RespondService:
 
     async def _ensure_respond_exists(self, respond_id: RespondId):
         if not (respond := await self._respond_repo.get_by_id(respond_id)):
-            return EntityNotFound("Отклик не найден")
+            return EntityNotFound
         return respond
 
     async def create(
@@ -44,6 +44,6 @@ class RespondService:
         values = {"status": status}
         respond = await self._respond_repo.update(event_id, **values)
         if respond is None:
-            raise EntityNotFound("Отклик не найден")
+            raise RespondNotFound
 
         return respond
