@@ -88,6 +88,7 @@ async def delete_tag_route(
     tag_service: FromDishka[TagService],
     current_user: CurrentUser,
 ) -> None:
+    # TODO: Удаление всех связанных сущностей
     try:
         await tag_service.delete_tag(
             group_id=group_id,

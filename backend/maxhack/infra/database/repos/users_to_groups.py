@@ -22,13 +22,13 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
     ) -> list[tuple[GroupModel, RoleModel]]:
         stmt = (
             select(GroupModel, RoleModel)
-            .where(GroupModel.deleted_at.is_(None))
+            .where(GroupModel.is_not_deleted)
             .join(
                 UsersToGroupsModel,
                 and_(
                     UsersToGroupsModel.group_id == GroupModel.id,
                     UsersToGroupsModel.user_id == user_id,
-                    UsersToGroupsModel.deleted_at.is_(None),
+                    UsersToGroupsModel.is_not_deleted,
                 ),
             )
             .join(
@@ -56,7 +56,7 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
             )
             .where(
                 UsersToGroupsModel.group_id == group_id,
-                UsersToGroupsModel.deleted_at.is_(None),
+                UsersToGroupsModel.is_not_deleted,
             )
             .order_by(
                 UsersToGroupsModel.created_at.asc(),
@@ -78,7 +78,7 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
             .where(
                 UsersToGroupsModel.user_id == user_id,
                 UsersToGroupsModel.group_id == group_id,
-                UsersToGroupsModel.deleted_at.is_(None),
+                UsersToGroupsModel.is_not_deleted,
             )
             .values(role_id=new_role_id)
             .returning(UsersToGroupsModel)
@@ -110,12 +110,13 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
         user_id: UserId,
         group_id: GroupId,
     ) -> bool:
+        # TODO: Удаление всех связанных сущностей
         stmt = (
             update(UsersToGroupsModel)
             .where(
                 UsersToGroupsModel.user_id == user_id,
                 UsersToGroupsModel.group_id == group_id,
-                UsersToGroupsModel.deleted_at.is_(None),
+                UsersToGroupsModel.is_not_deleted,
             )
             .values(deleted_at=func.now())
             .returning(UsersToGroupsModel)
@@ -156,7 +157,7 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
             .where(
                 UsersToGroupsModel.user_id == user_id,
                 UsersToGroupsModel.group_id == group_id,
-                UsersToGroupsModel.deleted_at.is_(None),
+                UsersToGroupsModel.is_not_deleted,
             )
             .values(role_id=role_id)
             .returning(UsersToGroupsModel)

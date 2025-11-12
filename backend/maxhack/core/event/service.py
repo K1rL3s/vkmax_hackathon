@@ -177,6 +177,7 @@ class EventService(BaseService):
         elif event.creator_id != user_id:
             raise NotEnoughRights("Недостаточно прав для удаления события")
 
+        # TODO: Удаление всех связанных сущностей
         success = await self._event_repo.delete(event_id)
         if not success:
             raise GroupNotFound

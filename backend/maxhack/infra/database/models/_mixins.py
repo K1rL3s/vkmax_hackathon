@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import ColumnElement, DateTime, Integer, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import declared_attr, Mapped, mapped_column
 
 
 def fresh_timestamp() -> ColumnElement[datetime]:
@@ -40,3 +40,7 @@ class DeletedAtMixin:
         server_onupdate=None,
         nullable=True,
     )
+
+    @declared_attr.directive
+    def is_not_deleted(cls) -> ColumnElement[bool]:
+        return cls.deleted_at.is_(None)  # type: ignore

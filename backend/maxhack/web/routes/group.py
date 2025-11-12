@@ -192,6 +192,7 @@ async def remove_group_member_route(
     group_service: FromDishka[GroupService],
     current_user: CurrentUser,
 ) -> None:
+    # TODO: Удаление всех связанных сущностей
     try:
         await group_service.remove_user_from_group(
             group_id=group_id,
@@ -216,6 +217,7 @@ async def delete_group_route(
     group_service: FromDishka[GroupService],
     current_user: CurrentUser,
 ) -> None:
+    # TODO: Удаление всех связанных сущностей
     try:
         await group_service.delete_group(
             group_id=group_id,

@@ -24,7 +24,7 @@ class EventRepo(BaseAlchemyRepo):
     async def get_by_id(self, event_id: EventId) -> EventModel | None:
         stmt = select(EventModel).where(
             EventModel.id == event_id,
-            EventModel.deleted_at.is_(None),
+            EventModel.is_not_deleted,
         )
         return await self._session.scalar(stmt)
 
@@ -63,7 +63,7 @@ class EventRepo(BaseAlchemyRepo):
             update(EventModel)
             .where(
                 EventModel.id == event_id,
-                EventModel.deleted_at.is_(None),
+                EventModel.is_not_deleted,
             )
             .values(**values)
             .returning(EventModel)
@@ -78,11 +78,12 @@ class EventRepo(BaseAlchemyRepo):
         return event
 
     async def delete(self, event_id: EventId) -> bool:
+        # TODO: Удаление всех связанных сущностей
         stmt = (
             update(EventModel)
             .where(
                 EventModel.id == event_id,
-                EventModel.deleted_at.is_(None),
+                EventModel.is_not_deleted,
             )
             .values(deleted_at=func.now())
             .returning(EventModel)
@@ -102,7 +103,7 @@ class EventRepo(BaseAlchemyRepo):
             select(EventModel)
             .where(
                 EventModel.group_id == group_id,
-                EventModel.deleted_at.is_(None),
+                EventModel.is_not_deleted,
             )
             .order_by(EventModel.created_at.desc())
             .limit(limit)
@@ -125,10 +126,10 @@ class EventRepo(BaseAlchemyRepo):
                 and_(
                     UsersToEvents.event_id == EventModel.id,
                     UsersToEvents.user_id == user_id,
-                    UsersToEvents.deleted_at.is_(None),
+                    UsersToEvents.is_not_deleted,
                 ),
             )
-            .where(EventModel.deleted_at.is_(None))
+            .where(EventModel.is_not_deleted)
             .order_by(EventModel.created_at.desc())
             .limit(limit)
             .offset(offset)
@@ -146,7 +147,7 @@ class EventRepo(BaseAlchemyRepo):
             select(EventModel)
             .where(
                 EventModel.creator_id == user_id,
-                EventModel.deleted_at.is_(None),
+                EventModel.is_not_deleted,
             )
             .order_by(EventModel.created_at.desc())
             .limit(limit)
@@ -195,7 +196,7 @@ class EventRepo(BaseAlchemyRepo):
     async def get_event_tags(self, event_id: EventId) -> list[TagId]:
         stmt = select(TagsToEvents.tag_id).where(
             TagsToEvents.event_id == event_id,
-            TagsToEvents.deleted_at.is_(None),
+            TagsToEvents.is_not_deleted,
         )
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
@@ -231,7 +232,7 @@ class EventRepo(BaseAlchemyRepo):
             .where(
                 UsersToEvents.event_id == event_id,
                 UsersToEvents.user_id == user_id,
-                UsersToEvents.deleted_at.is_(None),
+                UsersToEvents.is_not_deleted,
             )
             .values(deleted_at=func.now())
             .returning(UsersToEvents)
@@ -246,7 +247,7 @@ class EventRepo(BaseAlchemyRepo):
             .join(UsersToEvents)
             .where(
                 UsersToEvents.event_id == event_id,
-                UsersToEvents.deleted_at.is_(None),
+                UsersToEvents.is_not_deleted,
             )
         )
         event_users = list(await self._session.scalars(stmt))
@@ -258,9 +259,9 @@ class EventRepo(BaseAlchemyRepo):
             .join(TagsToEvents)
             .where(
                 TagsToEvents.event_id == event_id,
-                UsersToTagsModel.deleted_at.is_(None),
-                TagModel.deleted_at.is_(None),
-                TagsToEvents.deleted_at.is_(None),
+                UsersToTagsModel.is_not_deleted,
+                TagModel.is_not_deleted,
+                TagsToEvents.is_not_deleted,
             )
         )
         tag_users = list(await self._session.scalars(stmt))
@@ -283,7 +284,7 @@ class EventRepo(BaseAlchemyRepo):
         stmt = select(UsersToEvents).where(
             UsersToEvents.event_id == event_id,
             UsersToEvents.user_id == user_id,
-            UsersToEvents.deleted_at.is_(None),
+            UsersToEvents.is_not_deleted,
         )
         result = await self._session.scalar(stmt)
         return result is not None
@@ -332,7 +333,7 @@ class EventRepo(BaseAlchemyRepo):
     ) -> EventNotifyModel | None:
         stmt = select(EventNotifyModel).where(
             EventNotifyModel.id == event_notify_id,
-            EventNotifyModel.deleted_at.is_(None),
+            EventNotifyModel.is_not_deleted,
         )
         return await self._session.scalar(stmt)
 

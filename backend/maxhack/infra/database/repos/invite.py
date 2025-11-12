@@ -45,7 +45,7 @@ class InviteRepo(BaseAlchemyRepo):
     async def get_group_invite(self, group_id: GroupId) -> InviteModel | None:
         stmt = (
             select(InviteModel)
-            .where(InviteModel.group_id == group_id, InviteModel.deleted_at.is_(None))
+            .where(InviteModel.group_id == group_id, InviteModel.is_not_deleted)
             .limit(1)
         )
         return await self._session.scalar(stmt)

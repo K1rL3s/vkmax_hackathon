@@ -39,6 +39,7 @@ class TagRepo(BaseAlchemyRepo):
         return tag
 
     async def delete_tag(self, tag_id: TagId) -> None:
+        # TODO: Удаление всех связанных сущностей
         tag = await self.get_by_id(tag_id)
         if tag:
             await self._session.execute(
@@ -63,6 +64,8 @@ class TagRepo(BaseAlchemyRepo):
         user_id: UserId,
         *tags_ids: TagId,
     ) -> None:
+        # TODO: Удаление всех связанных сущностей
+        # TODO: СОФТ УДАЛЕНИЕ
         stmt = delete(UsersToTagsModel).where(UsersToTagsModel.tag_id.in_([*tags_ids]))
         await self._session.execute(stmt)
 

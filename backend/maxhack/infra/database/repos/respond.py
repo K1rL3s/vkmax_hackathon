@@ -12,7 +12,7 @@ class RespondRepo(BaseAlchemyRepo):
     async def get_by_id(self, respond_id: RespondId) -> RespondModel | None:
         stmt = select(RespondModel).where(
             RespondModel.id == respond_id,
-            RespondModel.deleted_at.is_(None),
+            RespondModel.is_not_deleted,
         )
         return await self._session.scalar(stmt)
 
@@ -24,7 +24,7 @@ class RespondRepo(BaseAlchemyRepo):
         stmt = select(RespondModel).where(
             RespondModel.event_id == event_id,
             RespondModel.user_id == user_id,
-            RespondModel.deleted_at.is_(None),
+            RespondModel.is_not_deleted,
         )
         return await self._session.scalar(stmt)
 
@@ -36,7 +36,7 @@ class RespondRepo(BaseAlchemyRepo):
             select(RespondModel)
             .where(
                 RespondModel.event_id == event_id,
-                RespondModel.deleted_at.is_(None),
+                RespondModel.is_not_deleted,
             )
             .order_by(RespondModel.created_at.ddesc())
         )
@@ -74,7 +74,7 @@ class RespondRepo(BaseAlchemyRepo):
             update(RespondModel)
             .where(
                 RespondModel.id == respond_id,
-                RespondModel.deleted_at.is_(None),
+                RespondModel.is_not_deleted,
             )
             .values(**values)
             .returning(RespondModel)
@@ -92,7 +92,7 @@ class RespondRepo(BaseAlchemyRepo):
             update(RespondModel)
             .where(
                 RespondModel.id == event_id,
-                RespondModel.deleted_at.is_(None),
+                RespondModel.is_not_deleted,
             )
             .values(deleted_at=func.now())
             .returning(RespondModel)

@@ -142,6 +142,7 @@ async def delete_event_route(
     event_service: FromDishka[EventService],
     current_user: CurrentUser,
 ) -> None:
+    # TODO: Удаление всех связанных сущностей
     try:
         await event_service.delete_event(
             event_id=event_id,

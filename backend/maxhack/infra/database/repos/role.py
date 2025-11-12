@@ -9,6 +9,6 @@ class RoleRepo(BaseAlchemyRepo):
     async def get_role(self, role_id: RoleId) -> RoleModel | None:
         stmt = select(RoleModel).where(
             RoleModel.id == role_id,
-            RoleModel.deleted_at.is_(None),
+            RoleModel.is_not_deleted,
         )
         return await self._session.scalar(stmt)

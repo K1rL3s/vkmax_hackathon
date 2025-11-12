@@ -14,7 +14,7 @@ class GroupRepo(BaseAlchemyRepo):
     async def get_by_id(self, group_id: GroupId) -> GroupModel | None:
         stmt = select(GroupModel).where(
             GroupModel.id == group_id,
-            GroupModel.deleted_at.is_(None),
+            GroupModel.is_not_deleted,
         )
         return await self._session.scalar(stmt)
 
@@ -49,7 +49,7 @@ class GroupRepo(BaseAlchemyRepo):
     async def update(self, group_id: GroupId, **values: Any) -> GroupModel | None:
         stmt = (
             update(GroupModel)
-            .where(GroupModel.id == group_id, GroupModel.deleted_at.is_(None))
+            .where(GroupModel.id == group_id, GroupModel.is_not_deleted)
             .values(**values)
             .returning(GroupModel)
         )
