@@ -217,13 +217,12 @@ async def get_user_events_route(
 
 
 @event_router.patch(
-    "/respond/{respond_id}/{event_id}",
+    "/responds/{respond_id}",
     response_model=RespondResponse,
     description="Изменить статус отклика",
 )
 async def get_user_events_route(
     respond_id: RespondId,
-    event_id: EventId,
     body: RespondChangeResponse,
     respond_service: FromDishka[RespondService],
     master_id: UserId = Header(...),
@@ -231,7 +230,6 @@ async def get_user_events_route(
     try:
         respond = await respond_service.update(
             respond_id,
-            event_id,
             master_id,
             status=body.status,
         )

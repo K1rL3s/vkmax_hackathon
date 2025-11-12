@@ -5,6 +5,7 @@ from pydantic import Field
 
 from maxhack.core.ids import EventId, GroupId, RespondId, TagId, UserId
 
+from ...core.enums.respond_action import RespondStatus
 from .core import Model
 
 
@@ -66,7 +67,7 @@ class EventsResponse(Model):
 
 
 class RespondChangeResponse(Model):
-    status: str
+    status: RespondStatus
 
 
 class RespondResponse(Model):

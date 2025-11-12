@@ -8,7 +8,8 @@ from maxhack.core.exceptions import (
     TagNotFound,
     UserNotFound,
 )
-from maxhack.core.ids import EventId, GroupId, RespondId, TagId, UserId
+from maxhack.core.ids import EventId, GroupId, RespondId, RoleId, TagId, UserId
+from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID, MEMBER_ROLE_ID
 from maxhack.infra.database.models import (
     EventModel,
     TagModel,
@@ -73,7 +74,11 @@ class BaseService(ABC):
         *,
         user_id: UserId,
         group_id: GroupId | None,
-        allowed_roles: set[int],
+        allowed_roles: tuple[RoleId, ...] = (
+            CREATOR_ROLE_ID,
+            EDITOR_ROLE_ID,
+            MEMBER_ROLE_ID,
+        ),
     ) -> UsersToGroupsModel | None:
         if group_id is None:
             return None

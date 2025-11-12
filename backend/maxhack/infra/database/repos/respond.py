@@ -16,6 +16,32 @@ class RespondRepo(BaseAlchemyRepo):
         )
         return await self._session.scalar(stmt)
 
+    async def get_user_respond(
+        self,
+        event_id: EventId,
+        user_id: UserId,
+    ) -> RespondModel | None:
+        stmt = select(RespondModel).where(
+            RespondModel.event_id == event_id,
+            RespondModel.user_id == user_id,
+            RespondModel.deleted_at.is_(None),
+        )
+        return await self._session.scalar(stmt)
+
+    async def get_all_responds(
+        self,
+        event_id: EventId,
+    ) -> list[RespondModel]:
+        stmt = (
+            select(RespondModel)
+            .where(
+                RespondModel.event_id == event_id,
+                RespondModel.deleted_at.is_(None),
+            )
+            .order_by(RespondModel.created_at.ddesc())
+        )
+        return list(await self._session.scalars(stmt))
+
     async def create(
         self,
         user_ids: list[UserId],
@@ -43,11 +69,11 @@ class RespondRepo(BaseAlchemyRepo):
 
         return events
 
-    async def update(self, event_id: EventId, **values: Any) -> RespondModel | None:
+    async def update(self, respond_id: RespondId, **values: Any) -> RespondModel | None:
         stmt = (
             update(RespondModel)
             .where(
-                RespondModel.id == event_id,
+                RespondModel.id == respond_id,
                 RespondModel.deleted_at.is_(None),
             )
             .values(**values)

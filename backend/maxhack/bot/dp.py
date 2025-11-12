@@ -10,6 +10,7 @@ from maxhack.bot.handlers import (
     groups_dialog,
     menu_dialog,
     profile_dialog,
+    respond_router,
     start_router,
 )
 from maxhack.bot.middlewares import (
@@ -66,6 +67,7 @@ async def init_dispatcher(
         errors_router,
         commands_router,
         start_router,
+        respond_router,
         errors_dialog,
         menu_dialog,
         profile_dialog,
