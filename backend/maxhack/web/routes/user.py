@@ -64,7 +64,7 @@ async def get_user_by_id_route(
 ) -> UserResponse:
     try:
         user = await user_service.get_user_by_max_id(
-            max_id=MaxId(current_user.db_user.id),
+            max_id=MaxId(current_user.db_user.max_id),
         )
         return await UserResponse.from_orm_async(user, session)
     except EntityNotFound as e:
