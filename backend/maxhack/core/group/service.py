@@ -73,7 +73,7 @@ class GroupService(BaseService):
         if group is None:
             raise GroupNotFound
 
-        if not await self.has_roles(
+        if not await self.ensure_has_membership(
             CREATOR_ROLE_ID,
             EDITOR_ROLE_ID,
             user_id=master_id,
@@ -100,7 +100,7 @@ class GroupService(BaseService):
         if group is None:
             raise GroupNotFound
 
-        if not await self.has_roles(
+        if not await self.ensure_has_membership(
             CREATOR_ROLE_ID,
             user_id=editor_id,
             group_id=group_id,
@@ -151,7 +151,7 @@ class GroupService(BaseService):
         if group is None:
             raise GroupNotFound
 
-        if not await self.has_roles(
+        if not await self.ensure_has_membership(
             CREATOR_ROLE_ID,
             EDITOR_ROLE_ID,
             user_id=master_id,
@@ -228,7 +228,7 @@ class GroupService(BaseService):
         if membership.role_id == CREATOR_ROLE_ID:
             raise NotEnoughRights("Нельзя удалить создателя группы")
 
-        # TODO: Удаление всех связанных сущностей
+
         await self._users_to_groups_repo.left(slave_id, group_id)
 
     async def get_member(
@@ -259,8 +259,7 @@ class GroupService(BaseService):
             group_id=group_id,
         )
 
-    # TODO: Заменить на ensure_has_membership
-    async def has_roles(
+    async def ensure_has_membership(
         self,
         *roles: RoleId,
         user_id: UserId,

@@ -15,6 +15,8 @@ from maxhack.core.ids import EventId, GroupId, TagId, UserId
 from maxhack.core.responds.service import RespondService
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.service import BaseService
+from maxhack.core.tag.service import TagService
+from maxhack.core.user.service import UserService
 from maxhack.core.utils.datehelp import datetime_now
 from maxhack.infra.database.models import EventModel, EventNotifyModel, UserModel
 from maxhack.infra.database.repos.event import EventRepo
@@ -29,18 +31,20 @@ from maxhack.infra.database.repos.users_to_groups import UsersToGroupsRepo
 
 class EventService(BaseService):
     def __init__(
-        self,
-        event_repo: EventRepo,
-        tag_repo: TagRepo,
-        group_repo: GroupRepo,
-        user_repo: UserRepo,
-        users_to_groups_repo: UsersToGroupsRepo,
-        respond_repo: RespondRepo,
-        invite_repo: InviteRepo,
-        respond_service: RespondService,
-        group_service: GroupService,
-        role_repo: RoleRepo,
-        redis: Redis,
+            self,
+            event_repo: EventRepo,
+            tag_repo: TagRepo,
+            group_repo: GroupRepo,
+            user_repo: UserRepo,
+            users_to_groups_repo: UsersToGroupsRepo,
+            respond_repo: RespondRepo,
+            invite_repo: InviteRepo,
+            respond_service: RespondService,
+            group_service: GroupService,
+            role_repo: RoleRepo,
+            redis: Redis,
+            tag_service: TagService,
+            user_service: UserService,
     ) -> None:
         super().__init__(
             event_repo=event_repo,
@@ -55,6 +59,8 @@ class EventService(BaseService):
         self._respond_service = respond_service
         self._group_service = group_service
         self._redis = redis
+        self._tag_service = tag_service
+        self._user_service = user_service
 
     async def get_event(self, event_id: EventId, user_id: UserId) -> EventModel:
         event = await self._ensure_event_exists(event_id)
@@ -79,8 +85,8 @@ class EventService(BaseService):
         return event
 
     async def create_event(
-        self,
-        event_create_scheme: EventCreate,
+            self,
+            event_create_scheme: EventCreate,
     ) -> tuple[EventModel, list[EventNotifyModel]]:
         creator = await self._ensure_user_exists(event_create_scheme.creator_id)
 
@@ -135,10 +141,10 @@ class EventService(BaseService):
         return event, notifies
 
     async def update_event(
-        self,
-        event_id: EventId,
-        user_id: UserId,
-        event_update_model: EventUpdate,
+            self,
+            event_id: EventId,
+            user_id: UserId,
+            event_update_model: EventUpdate,
     ) -> EventModel:
         event = await self._ensure_event_exists(event_id)
 
@@ -182,10 +188,10 @@ class EventService(BaseService):
             raise GroupNotFound
 
     async def add_tag_to_event(
-        self,
-        event_id: EventId,
-        tag_ids: list[TagId],
-        user_id: UserId,
+            self,
+            event_id: EventId,
+            tag_ids: list[TagId],
+            user_id: UserId,
     ) -> None:
         event = await self._ensure_event_exists(event_id)
 
@@ -228,10 +234,10 @@ class EventService(BaseService):
             await self._respond_service.create(user_ids, event.id, status="mb")
 
     async def add_user_to_event(
-        self,
-        event_id: EventId,
-        target_user_ids: list[UserId],
-        user_id: UserId,
+            self,
+            event_id: EventId,
+            target_user_ids: list[UserId],
+            user_id: UserId,
     ) -> None:
         if not target_user_ids:
             return
@@ -281,9 +287,9 @@ class EventService(BaseService):
             await self._respond_service.create(target_user_ids, event.id, status="mb")
 
     async def get_group_events(
-        self,
-        group_id: GroupId,
-        user_id: UserId,
+            self,
+            group_id: GroupId,
+            user_id: UserId,
     ) -> list[EventModel]:
         await self._ensure_group_exists(group_id)
 
@@ -301,9 +307,9 @@ class EventService(BaseService):
         return await self._event_repo.get_created_by_user(user_id)
 
     async def get_other_user_events(
-        self,
-        target_user_id: UserId,
-        user_id: UserId,
+            self,
+            target_user_id: UserId,
+            user_id: UserId,
     ) -> list[EventModel]:
         await self._ensure_user_exists(target_user_id)
 
@@ -321,10 +327,11 @@ class EventService(BaseService):
         return [event for event in all_events if event.group_id in common_groups]
 
     async def list_user_events(
-        self,
-        group_id: GroupId,
-        user_id: UserId,
-        master_id: UserId,
+            self,
+            group_id: GroupId,
+            user_id: UserId,
+            master_id: UserId,
+            tag_ids: list[TagId] | None = None
     ) -> list[EventModel]:
         await self._ensure_group_exists(group_id)
 
@@ -338,10 +345,10 @@ class EventService(BaseService):
             group_id=group_id,
         )
 
-        return await self._event_repo.list_user_events(group_id, user_id)
+        return await self._event_repo.list_user_events(group_id, user_id, tag_ids)
 
     async def get_notify_by_date_interval(
-        self,
+            self,
     ) -> list[tuple[list[UserModel], EventModel]]:
         # todo: отправляется на минуту позже WTF OMG LMAOOOOOOO
         time_now = datetime_now()
@@ -373,3 +380,14 @@ class EventService(BaseService):
                 continue
 
         return matching_notify
+
+    async def get_by_user(
+            self,
+            user_id: UserId,
+            tag_ids: list[TagId] | None = None,
+    ) -> list[EventModel]:
+        for tag_id in tag_ids:
+            await self._tag_service._ensure_tag_exists(tag_id)
+        events = await self._event_repo.get_by_user(user_id, tag_ids)
+
+        return events

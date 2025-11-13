@@ -142,10 +142,8 @@ class EventRepo(BaseAlchemyRepo):
     async def get_by_user(
             self,
             user_id: UserId,
-            limit: int | None = None,
-            offset: int | None = None,
+            tag_ids: list[TagId] | None = None,
     ) -> list[EventModel]:
-        # TODO: Добавить поиск по тэгам (Она нигде не используется)
         stmt = (
             select(EventModel)
             .join(
@@ -157,11 +155,23 @@ class EventRepo(BaseAlchemyRepo):
                 ),
             )
             .where(EventModel.is_not_deleted)
-            .order_by(EventModel.created_at.desc())
-            .limit(limit)
-            .offset(offset)
         )
-        return list(await self._session.execute(stmt))
+
+        if tag_ids:
+            events_with_tags_subquery = (
+                select(TagsToEvents.event_id)
+                .where(
+                    TagsToEvents.tag_id.in_(tag_ids),
+                    TagsToEvents.is_not_deleted,
+                )
+                .scalar_subquery()
+            )
+            stmt = stmt.where(EventModel.id.in_(events_with_tags_subquery))
+
+        stmt = stmt.order_by(EventModel.created_at.desc())
+
+        result = await self._session.execute(stmt)
+        return list(result.scalars().all())
 
     async def get_created_by_user(
             self,
@@ -303,13 +313,31 @@ class EventRepo(BaseAlchemyRepo):
             self,
             event_id: EventId,
             user_id: UserId,
+            tag_ids: list[TagId] | None = None,
     ) -> bool:
-        # TODO: Добавить поиск по тэгам
-        stmt = select(UsersToEvents).where(
-            UsersToEvents.event_id == event_id,
-            UsersToEvents.user_id == user_id,
-            UsersToEvents.is_not_deleted,
+        stmt = (
+            select(UsersToEvents)
+            .join(EventModel, EventModel.id == UsersToEvents.event_id)
+            .where(
+                UsersToEvents.event_id == event_id,
+                UsersToEvents.user_id == user_id,
+                UsersToEvents.is_not_deleted,
+                EventModel.is_not_deleted,
+            )
         )
+
+        if tag_ids:
+            events_with_tags_subquery = (
+                select(TagsToEvents.event_id)
+                .where(
+                    TagsToEvents.event_id == event_id,
+                    TagsToEvents.tag_id.in_(tag_ids),
+                    TagsToEvents.is_not_deleted,
+                )
+                .scalar_subquery()
+            )
+            stmt = stmt.where(EventModel.id.in_(events_with_tags_subquery))
+
         result = await self._session.scalar(stmt)
         return result is not None
 
@@ -317,18 +345,31 @@ class EventRepo(BaseAlchemyRepo):
             self,
             group_id: GroupId,
             user_id: UserId,
+            tag_ids: list[TagId] | None = None,
     ) -> list[EventModel]:
-        # TODO: Добавить поиск по тэгам
         stmt = (
             select(EventModel)
             .join(UsersToEvents, EventModel.id == UsersToEvents.event_id)
             .where(
                 EventModel.group_id == group_id,
                 UsersToEvents.user_id == user_id,
+                EventModel.is_not_deleted,
+                UsersToEvents.is_not_deleted,
             )
         )
+        if tag_ids:
+            events_with_tags_subquery = (
+                select(TagsToEvents.event_id)
+                .where(
+                    TagsToEvents.tag_id.in_(tag_ids),
+                    TagsToEvents.is_not_deleted,
+                )
+                .scalar_subquery()
+            )
+            stmt = stmt.where(EventModel.id.in_(events_with_tags_subquery))
 
-        return list(await self._session.scalars(stmt))
+        result = await self._session.scalars(stmt)
+        return list(result.all())
 
     async def create_notify(
             self,

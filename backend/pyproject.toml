@@ -34,6 +34,7 @@ dependencies = [
     "taskiq-redis==1.1.2",
     "redis==6.4.0",
     "dotenv==0.9.9",
+    "asyncpg>=0.30.0",
 ]
 
 [project.optional-dependencies]

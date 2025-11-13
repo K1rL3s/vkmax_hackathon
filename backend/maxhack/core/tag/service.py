@@ -79,8 +79,7 @@ class TagService(BaseService):
             allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
 
-        # TODO: Удаление всех связных сущностей
-        await self._tag_repo.delete_tag(tag_id)
+        await self._tag_repo.delete_tag(tag_id, group_id)
 
     async def assign_tag_to_user(
         self,

@@ -1,5 +1,5 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.event.service import EventService
@@ -167,12 +167,17 @@ async def list_user_events_route(
     event_service: FromDishka[EventService],
     session: FromDishka[AsyncSession],
     current_user: CurrentUser,
+    tag_ids: str | None = Query(
+            None,
+            description="Список ID тегов через запятую для фильтрации"
+        ),
 ) -> list[EventResponse]:
     try:
         events = await event_service.list_user_events(
             group_id=group_id,
             user_id=user_id,
             master_id=current_user.db_user.id,
+            tag_ids=tag_ids
         )
         response_events = [
             await EventResponse.from_orm_async(event, session) for event in events

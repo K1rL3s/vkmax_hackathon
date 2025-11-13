@@ -8,7 +8,7 @@ from maxhack.core.role.ids import MEMBER_ROLE_ID
 from maxhack.infra.database.models import (
     GroupModel,
     RoleModel,
-    UsersToGroupsModel,
+    UsersToGroupsModel, RespondModel, EventModel, UsersToEvents,
 )
 from maxhack.infra.database.repos.base import BaseAlchemyRepo
 
@@ -109,21 +109,46 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
         self,
         user_id: UserId,
         group_id: GroupId,
-    ) -> bool:
-        # TODO: Удаление всех связанных сущностей
-        stmt = (
+    ) -> None:
+        update_users_to_groups_stmt = (
             update(UsersToGroupsModel)
             .where(
                 UsersToGroupsModel.user_id == user_id,
                 UsersToGroupsModel.group_id == group_id,
-                UsersToGroupsModel.is_not_deleted,
             )
             .values(deleted_at=func.now())
-            .returning(UsersToGroupsModel)
         )
-        result = await self._session.scalar(stmt)
-        await self._session.flush()
-        return bool(result)
+        result1 = await self._session.execute(update_users_to_groups_stmt)
+
+        events_subquery = (
+            select(EventModel.id)
+            .where(
+                EventModel.group_id == group_id,
+                EventModel.is_not_deleted,
+            )
+            .scalar_subquery()
+        )
+
+        update_users_to_events_stmt = (
+            update(UsersToEvents)
+            .where(
+                UsersToEvents.user_id == user_id,
+                UsersToEvents.event_id.in_(events_subquery),
+            )
+            .values(deleted_at=func.now())
+        )
+        result2 = await self._session.execute(update_users_to_events_stmt)
+
+        update_responds_stmt = (
+            update(RespondModel)
+            .where(
+                RespondModel.user_id == user_id,
+                RespondModel.event_id.in_(events_subquery),
+            )
+            .values(deleted_at=func.now())
+        )
+        result3 = await self._session.execute(update_responds_stmt)
+
 
     kick = left
 
