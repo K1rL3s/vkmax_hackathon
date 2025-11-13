@@ -12,7 +12,7 @@ from maxo.dialogs import DialogManager, ShowMode, StartMode
 from maxo.integrations.magic_filter import MagicData
 from maxo.routing.filters.deeplink import DeeplinkFilter
 from maxo.routing.filters.logic import AndFilter
-from maxo.routing.sentinels import UNHANDLED, SkipHandler
+from maxo.routing.sentinels import SkipHandler
 from maxo.routing.updates.bot_started import BotStarted
 
 deeplinks_router = Router(name=__name__)
@@ -30,7 +30,7 @@ async def invite_deeplink_handler(
     dialog_manager: DialogManager,
     invite_service: FromDishka[InviteService],
     max_sender: FromDishka[MaxSender],
-) -> UNHANDLED:
+) -> None:
     raw_invite_key = deeplink[len(InvitePrefix) :]
     try:
         invite_key = InviteKey(str(raw_invite_key))

@@ -10,7 +10,7 @@ class ThrottlingMiddleware(BaseMiddleware[MessageCreated | MessageCallback]):
     __slots__ = ("_cache",)
 
     def __init__(self) -> None:
-        self._cache = set()
+        self._cache: set[int] = set()
 
     async def __call__(
         self,

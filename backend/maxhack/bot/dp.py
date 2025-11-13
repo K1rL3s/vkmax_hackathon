@@ -4,7 +4,6 @@ from magic_filter import F
 
 from maxhack.bot.handlers import (
     commands_router,
-    create_group_dialog,
     errors_dialog,
     errors_router,
     groups_dialog,
@@ -72,7 +71,6 @@ async def init_dispatcher(
         menu_dialog,
         profile_dialog,
         groups_dialog,
-        create_group_dialog,
     )
 
     bg_factory = setup_dialogs(dp, events_isolation=DisabledEventIsolation())

@@ -15,6 +15,7 @@ class UserModel(BaseAlchemyModel, IdMixin[UserId]):
 
     max_id: Mapped[MaxId] = mapped_column(Integer, nullable=False, unique=True)
     max_chat_id: Mapped[MaxChatId] = mapped_column(Integer, nullable=False, unique=True)
+    max_photo: Mapped[str] = mapped_column(String(256), nullable=True)
     first_name: Mapped[str] = mapped_column(String(USER_FIRST_NAME_LEN), nullable=False)
     last_name: Mapped[str | None] = mapped_column(
         String(USER_LAST_NAME_LEN),

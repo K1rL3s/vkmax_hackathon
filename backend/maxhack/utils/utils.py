@@ -1,3 +1,4 @@
+import base64
 import secrets
 from datetime import datetime
 
@@ -54,3 +55,7 @@ def create_cron_expression(
 
     month = event_date.month
     return f"{minute} {hour} {day_of_month} {month} *"
+
+
+def to_base64(data: str) -> str:
+    return base64.b64encode(data.encode('utf-8')).decode('utf-8')

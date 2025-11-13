@@ -1,6 +1,11 @@
 from typing import Any, cast
 
 from dishka import AsyncContainer
+
+from maxhack.core.ids import MaxChatId, MaxId
+from maxhack.core.user.service import UserService
+from maxhack.infra.database.models import UserModel
+from maxhack.logger import get_logger
 from maxo.integrations.dishka import CONTAINER_NAME
 from maxo.routing.ctx import Ctx
 from maxo.routing.interfaces import BaseMiddleware, NextMiddleware
@@ -8,11 +13,6 @@ from maxo.routing.middlewares.event_context import EVENT_FROM_USER_KEY
 from maxo.routing.middlewares.update_context import UPDATE_CONTEXT_KEY
 from maxo.types import User as MaxUser
 from maxo.types.update_context import UpdateContext
-
-from maxhack.core.ids import MaxChatId, MaxId
-from maxhack.core.user.service import UserService
-from maxhack.infra.database.models import UserModel
-from maxhack.logger import get_logger
 
 logger = get_logger(__name__, groups=("maxo", "max", "middlewares"))
 

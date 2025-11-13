@@ -16,14 +16,4 @@ class Profile(StatesGroup):
 
 class Groups(StatesGroup):
     all = State()
-    one = State()
     join = State()
-    create = State()
-    delete = State()
-
-
-class GroupsCreate(StatesGroup):
-    wait_name = State()
-    wait_description = State()
-    wait_timezone = State()
-    confirm = State()

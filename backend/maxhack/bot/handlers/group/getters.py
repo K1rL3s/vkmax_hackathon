@@ -11,6 +11,8 @@ from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.user.service import UserService
 from maxhack.infra.database.models import UserModel
 from maxhack.infra.database.repos.group import GroupRepo
+from maxhack.utils.utils import to_base64
+from maxo import Bot
 from maxo.dialogs import DialogManager
 from maxo.dialogs.integrations.dishka import inject
 
@@ -19,10 +21,20 @@ from maxo.dialogs.integrations.dishka import inject
 async def get_my_groups(
     current_user: UserModel,
     user_service: FromDishka[UserService],
+    bot: Bot,
     **__: Any,
 ) -> dict[str, Any]:
+    groups = await user_service.get_user_groups(current_user.id, current_user.id)
     return {
-        "groups": await user_service.get_user_groups(current_user.id, current_user.id),
+        "groups": [
+            (
+                group.id,
+                group.name, role.emoji,
+                bot.state.info.username,
+                to_base64(f'{{"path": "/groups/{group.id}"}}'),
+            )
+            for group, role in groups
+        ],
     }
 
 
