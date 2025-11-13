@@ -10,6 +10,7 @@
 
  * OpenAPI spec version: 0.1.0
  */
+import { request } from '.././client'
 import type {
   GetGroupResponse,
   GroupCreateRequest,
@@ -18,158 +19,200 @@ import type {
   GroupMemberUpdateRequest,
   GroupUpdateRequest,
   GroupUserItem,
-  InviteCreateResponse
-} from '../gen.schemas';
+  InviteCreateResponse,
+} from '../gen.schemas'
 
-import { request } from '.././client';
-import type { BodyType } from '.././client';
+import type { BodyType } from '.././client'
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
-  /**
+/**
  * Создание группы. Может кто угодно.
  * @summary Create Group Route
  */
 export const createGroupRouteGroupsPost = (
-    groupCreateRequest: BodyType<GroupCreateRequest>,
- options?: SecondParameter<typeof request<GetGroupResponse>>,) => {
-      return request<GetGroupResponse>(
-      {url: `/groups`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: groupCreateRequest
+  groupCreateRequest: BodyType<GroupCreateRequest>,
+  options?: SecondParameter<typeof request<GetGroupResponse>>,
+) => {
+  return request<GetGroupResponse>(
+    {
+      url: `/groups`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: groupCreateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Редактирование группы. Может только "Босс".
  * @summary Update Group Route
  */
 export const updateGroupRouteGroupsGroupIdPatch = (
-    groupId: number,
-    groupUpdateRequest: BodyType<GroupUpdateRequest>,
- options?: SecondParameter<typeof request<GetGroupResponse>>,) => {
-      return request<GetGroupResponse>(
-      {url: `/groups/${groupId}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: groupUpdateRequest
+  groupId: number,
+  groupUpdateRequest: BodyType<GroupUpdateRequest>,
+  options?: SecondParameter<typeof request<GetGroupResponse>>,
+) => {
+  return request<GetGroupResponse>(
+    {
+      url: `/groups/${groupId}`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: groupUpdateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Получить группу. Могут только участники группы.
  * @summary Get Group
  */
 export const getGroupGroupsGroupIdGet = (
-    groupId: number,
- options?: SecondParameter<typeof request<GetGroupResponse>>,) => {
-      return request<GetGroupResponse>(
-      {url: `/groups/${groupId}`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  groupId: number,
+  options?: SecondParameter<typeof request<GetGroupResponse>>,
+) => {
+  return request<GetGroupResponse>(
+    { url: `/groups/${groupId}`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Удалить группы. Может только "Босс".
  * @summary Delete Group Route
  */
 export const deleteGroupRouteGroupsGroupIdDelete = (
-    groupId: number,
- options?: SecondParameter<typeof request<void>>,) => {
-      return request<void>(
-      {url: `/groups/${groupId}`, method: 'DELETE'
-    },
-      options);
-    }
-  /**
+  groupId: number,
+  options?: SecondParameter<typeof request<void>>,
+) => {
+  return request<void>({ url: `/groups/${groupId}`, method: 'DELETE' }, options)
+}
+/**
  * Смена роли юзера в группе. Может только "Босс".
  * @summary Update Group Membership
  */
 export const updateGroupMembershipGroupsGroupIdUsersSlaveIdPatch = (
-    groupId: number,
-    slaveId: number,
-    groupMemberUpdateRequest: BodyType<GroupMemberUpdateRequest>,
- options?: SecondParameter<typeof request<GroupMemberResponse>>,) => {
-      return request<GroupMemberResponse>(
-      {url: `/groups/${groupId}/users/${slaveId}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: groupMemberUpdateRequest
+  groupId: number,
+  slaveId: number,
+  groupMemberUpdateRequest: BodyType<GroupMemberUpdateRequest>,
+  options?: SecondParameter<typeof request<GroupMemberResponse>>,
+) => {
+  return request<GroupMemberResponse>(
+    {
+      url: `/groups/${groupId}/users/${slaveId}`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: groupMemberUpdateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Удаление участника из группы.
 "Босс" может удалить всех, "Начальник" не может удалить "Босса"
  * @summary Remove Group Member Route
  */
 export const removeGroupMemberRouteGroupsGroupIdUsersSlaveIdDelete = (
-    groupId: number,
-    slaveId: number,
- options?: SecondParameter<typeof request<void>>,) => {
-      return request<void>(
-      {url: `/groups/${groupId}/users/${slaveId}`, method: 'DELETE'
-    },
-      options);
-    }
-  /**
+  groupId: number,
+  slaveId: number,
+  options?: SecondParameter<typeof request<void>>,
+) => {
+  return request<void>(
+    { url: `/groups/${groupId}/users/${slaveId}`, method: 'DELETE' },
+    options,
+  )
+}
+/**
  * Получить участника группы. Могут только участники группы.
  * @summary Get Group User Route
  */
 export const getGroupUserRouteGroupsGroupIdUsersMemberIdGet = (
-    groupId: number,
-    memberId: number,
- options?: SecondParameter<typeof request<GroupUserItem>>,) => {
-      return request<GroupUserItem>(
-      {url: `/groups/${groupId}/users/${memberId}`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  groupId: number,
+  memberId: number,
+  options?: SecondParameter<typeof request<GroupUserItem>>,
+) => {
+  return request<GroupUserItem>(
+    { url: `/groups/${groupId}/users/${memberId}`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Получить всех пользователей группы. Могут только участники группы.
  * @summary List Group Users Route
  */
 export const listGroupUsersRouteGroupsGroupIdUsersGet = (
-    groupId: number,
- options?: SecondParameter<typeof request<GroupUserItem[]>>,) => {
-      return request<GroupUserItem[]>(
-      {url: `/groups/${groupId}/users`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  groupId: number,
+  options?: SecondParameter<typeof request<Array<GroupUserItem>>>,
+) => {
+  return request<Array<GroupUserItem>>(
+    { url: `/groups/${groupId}/users`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Создать (перевыпустить) приглашение в группу.
 В группе может быть только одно активное приглашение.
  * @summary Create Invite Route
  */
 export const createInviteRouteGroupsGroupIdInvitePost = (
-    groupId: number,
- options?: SecondParameter<typeof request<InviteCreateResponse>>,) => {
-      return request<InviteCreateResponse>(
-      {url: `/groups/${groupId}/invite`, method: 'POST'
-    },
-      options);
-    }
-  /**
+  groupId: number,
+  options?: SecondParameter<typeof request<InviteCreateResponse>>,
+) => {
+  return request<InviteCreateResponse>(
+    { url: `/groups/${groupId}/invite`, method: 'POST' },
+    options,
+  )
+}
+/**
  * Добавление пользователя в группу
  * @summary Join Group
  */
 export const joinGroupGroupsJoinPost = (
-    groupMemberAddRequest: BodyType<GroupMemberAddRequest>,
- options?: SecondParameter<typeof request<GroupMemberResponse>>,) => {
-      return request<GroupMemberResponse>(
-      {url: `/groups/join`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: groupMemberAddRequest
+  groupMemberAddRequest: BodyType<GroupMemberAddRequest>,
+  options?: SecondParameter<typeof request<GroupMemberResponse>>,
+) => {
+  return request<GroupMemberResponse>(
+    {
+      url: `/groups/join`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: groupMemberAddRequest,
     },
-      options);
-    }
-  export type CreateGroupRouteGroupsPostResult = NonNullable<Awaited<ReturnType<typeof createGroupRouteGroupsPost>>>
-export type UpdateGroupRouteGroupsGroupIdPatchResult = NonNullable<Awaited<ReturnType<typeof updateGroupRouteGroupsGroupIdPatch>>>
-export type GetGroupGroupsGroupIdGetResult = NonNullable<Awaited<ReturnType<typeof getGroupGroupsGroupIdGet>>>
-export type DeleteGroupRouteGroupsGroupIdDeleteResult = NonNullable<Awaited<ReturnType<typeof deleteGroupRouteGroupsGroupIdDelete>>>
-export type UpdateGroupMembershipGroupsGroupIdUsersSlaveIdPatchResult = NonNullable<Awaited<ReturnType<typeof updateGroupMembershipGroupsGroupIdUsersSlaveIdPatch>>>
-export type RemoveGroupMemberRouteGroupsGroupIdUsersSlaveIdDeleteResult = NonNullable<Awaited<ReturnType<typeof removeGroupMemberRouteGroupsGroupIdUsersSlaveIdDelete>>>
-export type GetGroupUserRouteGroupsGroupIdUsersMemberIdGetResult = NonNullable<Awaited<ReturnType<typeof getGroupUserRouteGroupsGroupIdUsersMemberIdGet>>>
-export type ListGroupUsersRouteGroupsGroupIdUsersGetResult = NonNullable<Awaited<ReturnType<typeof listGroupUsersRouteGroupsGroupIdUsersGet>>>
-export type CreateInviteRouteGroupsGroupIdInvitePostResult = NonNullable<Awaited<ReturnType<typeof createInviteRouteGroupsGroupIdInvitePost>>>
-export type JoinGroupGroupsJoinPostResult = NonNullable<Awaited<ReturnType<typeof joinGroupGroupsJoinPost>>>
+    options,
+  )
+}
+export type CreateGroupRouteGroupsPostResult = NonNullable<
+  Awaited<ReturnType<typeof createGroupRouteGroupsPost>>
+>
+export type UpdateGroupRouteGroupsGroupIdPatchResult = NonNullable<
+  Awaited<ReturnType<typeof updateGroupRouteGroupsGroupIdPatch>>
+>
+export type GetGroupGroupsGroupIdGetResult = NonNullable<
+  Awaited<ReturnType<typeof getGroupGroupsGroupIdGet>>
+>
+export type DeleteGroupRouteGroupsGroupIdDeleteResult = NonNullable<
+  Awaited<ReturnType<typeof deleteGroupRouteGroupsGroupIdDelete>>
+>
+export type UpdateGroupMembershipGroupsGroupIdUsersSlaveIdPatchResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof updateGroupMembershipGroupsGroupIdUsersSlaveIdPatch>
+    >
+  >
+export type RemoveGroupMemberRouteGroupsGroupIdUsersSlaveIdDeleteResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof removeGroupMemberRouteGroupsGroupIdUsersSlaveIdDelete>
+    >
+  >
+export type GetGroupUserRouteGroupsGroupIdUsersMemberIdGetResult = NonNullable<
+  Awaited<ReturnType<typeof getGroupUserRouteGroupsGroupIdUsersMemberIdGet>>
+>
+export type ListGroupUsersRouteGroupsGroupIdUsersGetResult = NonNullable<
+  Awaited<ReturnType<typeof listGroupUsersRouteGroupsGroupIdUsersGet>>
+>
+export type CreateInviteRouteGroupsGroupIdInvitePostResult = NonNullable<
+  Awaited<ReturnType<typeof createInviteRouteGroupsGroupIdInvitePost>>
+>
+export type JoinGroupGroupsJoinPostResult = NonNullable<
+  Awaited<ReturnType<typeof joinGroupGroupsJoinPost>>
+>

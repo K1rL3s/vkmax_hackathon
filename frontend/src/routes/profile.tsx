@@ -10,16 +10,17 @@ import {
 } from '@maxhub/max-ui'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { useForm, type StandardSchemaV1Issue } from '@tanstack/react-form'
+import {  useForm } from '@tanstack/react-form'
 import { z } from 'zod'
 import { clsx } from 'clsx'
+import { LucideMessageCircleWarning } from 'lucide-react'
+import type {StandardSchemaV1Issue} from '@tanstack/react-form';
 import { Header } from '@/components/header'
 import { Avatar } from '@/components/avatar'
 import { useEditMe, useMe } from '@/hooks/user'
 import { TimezoneInput } from '@/components/timezone-input'
 import { TIMEZONES } from '@/components/timezone-select-modal'
 import { FallbackLoader } from '@/components/ui/fallback-loader'
-import { LucideMessageCircleWarning } from 'lucide-react'
 
 export const Route = createFileRoute('/profile')({
   component: ProfilePage,

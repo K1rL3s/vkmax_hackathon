@@ -10,103 +10,124 @@
 
  * OpenAPI spec version: 0.1.0
  */
+import { request } from '.././client'
 import type {
   EventResponse,
   TagResponse,
   UserCreateRequest,
   UserGroupsResponse,
   UserResponse,
-  UserUpdateRequest
-} from '../gen.schemas';
+  UserUpdateRequest,
+} from '../gen.schemas'
 
-import { request } from '.././client';
-import type { BodyType } from '.././client';
+import type { BodyType } from '.././client'
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
-  /**
+/**
  * Создание пользователя
  * @summary Create User Route
  */
 export const createUserRouteUsersPost = (
-    userCreateRequest: BodyType<UserCreateRequest>,
- options?: SecondParameter<typeof request<UserResponse>>,) => {
-      return request<UserResponse>(
-      {url: `/users`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: userCreateRequest
+  userCreateRequest: BodyType<UserCreateRequest>,
+  options?: SecondParameter<typeof request<UserResponse>>,
+) => {
+  return request<UserResponse>(
+    {
+      url: `/users`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: userCreateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Получить пользователя. Можно только самого себя.
  * @summary Get User By Id Route
  */
 export const getUserByIdRouteUsersMeGet = (
-    
- options?: SecondParameter<typeof request<UserResponse>>,) => {
-      return request<UserResponse>(
-      {url: `/users/me`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  options?: SecondParameter<typeof request<UserResponse>>,
+) => {
+  return request<UserResponse>({ url: `/users/me`, method: 'GET' }, options)
+}
+/**
  * Редактировать пользователя. Можно только самого себя.
  * @summary Update User Route
  */
 export const updateUserRouteUsersPatch = (
-    userUpdateRequest: BodyType<UserUpdateRequest>,
- options?: SecondParameter<typeof request<UserResponse>>,) => {
-      return request<UserResponse>(
-      {url: `/users/`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: userUpdateRequest
+  userUpdateRequest: BodyType<UserUpdateRequest>,
+  options?: SecondParameter<typeof request<UserResponse>>,
+) => {
+  return request<UserResponse>(
+    {
+      url: `/users/`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: userUpdateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Получить список групп, в которых состоит пользователь. Можно только свои группы.
  * @summary List User Groups Route
  */
 export const listUserGroupsRouteUsersMeGroupsGet = (
-    
- options?: SecondParameter<typeof request<UserGroupsResponse>>,) => {
-      return request<UserGroupsResponse>(
-      {url: `/users/me/groups`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  options?: SecondParameter<typeof request<UserGroupsResponse>>,
+) => {
+  return request<UserGroupsResponse>(
+    { url: `/users/me/groups`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Получить список тегов пользователя в рамках группы
  * @summary List User Tags Route
  */
 export const listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet = (
-    userId: number,
-    groupId: number,
- options?: SecondParameter<typeof request<TagResponse[]>>,) => {
-      return request<TagResponse[]>(
-      {url: `/users/${userId}/groups/${groupId}/tags`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  userId: number,
+  groupId: number,
+  options?: SecondParameter<typeof request<Array<TagResponse>>>,
+) => {
+  return request<Array<TagResponse>>(
+    { url: `/users/${userId}/groups/${groupId}/tags`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Получить список событий пользователя в рамках группы
  * @summary List User Events Route
  */
 export const listUserEventsRouteUsersUserIdGroupsGroupIdEventsGet = (
-    userId: number,
-    groupId: number,
- options?: SecondParameter<typeof request<EventResponse[]>>,) => {
-      return request<EventResponse[]>(
-      {url: `/users/${userId}/groups/${groupId}/events`, method: 'GET'
-    },
-      options);
-    }
-  export type CreateUserRouteUsersPostResult = NonNullable<Awaited<ReturnType<typeof createUserRouteUsersPost>>>
-export type GetUserByIdRouteUsersMeGetResult = NonNullable<Awaited<ReturnType<typeof getUserByIdRouteUsersMeGet>>>
-export type UpdateUserRouteUsersPatchResult = NonNullable<Awaited<ReturnType<typeof updateUserRouteUsersPatch>>>
-export type ListUserGroupsRouteUsersMeGroupsGetResult = NonNullable<Awaited<ReturnType<typeof listUserGroupsRouteUsersMeGroupsGet>>>
-export type ListUserTagsRouteUsersUserIdGroupsGroupIdTagsGetResult = NonNullable<Awaited<ReturnType<typeof listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet>>>
-export type ListUserEventsRouteUsersUserIdGroupsGroupIdEventsGetResult = NonNullable<Awaited<ReturnType<typeof listUserEventsRouteUsersUserIdGroupsGroupIdEventsGet>>>
+  userId: number,
+  groupId: number,
+  options?: SecondParameter<typeof request<Array<EventResponse>>>,
+) => {
+  return request<Array<EventResponse>>(
+    { url: `/users/${userId}/groups/${groupId}/events`, method: 'GET' },
+    options,
+  )
+}
+export type CreateUserRouteUsersPostResult = NonNullable<
+  Awaited<ReturnType<typeof createUserRouteUsersPost>>
+>
+export type GetUserByIdRouteUsersMeGetResult = NonNullable<
+  Awaited<ReturnType<typeof getUserByIdRouteUsersMeGet>>
+>
+export type UpdateUserRouteUsersPatchResult = NonNullable<
+  Awaited<ReturnType<typeof updateUserRouteUsersPatch>>
+>
+export type ListUserGroupsRouteUsersMeGroupsGetResult = NonNullable<
+  Awaited<ReturnType<typeof listUserGroupsRouteUsersMeGroupsGet>>
+>
+export type ListUserTagsRouteUsersUserIdGroupsGroupIdTagsGetResult =
+  NonNullable<
+    Awaited<ReturnType<typeof listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet>>
+  >
+export type ListUserEventsRouteUsersUserIdGroupsGroupIdEventsGetResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof listUserEventsRouteUsersUserIdGroupsGroupIdEventsGet>
+    >
+  >

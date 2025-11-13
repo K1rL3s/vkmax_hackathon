@@ -10,136 +10,163 @@
 
  * OpenAPI spec version: 0.1.0
  */
+import { request } from '.././client'
 import type {
   EventAddTagRequest,
   EventAddUserRequest,
   EventCreateRequest,
   EventResponse,
   EventUpdateRequest,
-  EventsResponse
-} from '../gen.schemas';
+  EventsResponse,
+} from '../gen.schemas'
 
-import { request } from '.././client';
-import type { BodyType } from '.././client';
+import type { BodyType } from '.././client'
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
-  /**
+/**
  * Создать событие (встреча или сообщение) в группе.
 Могут только "Босс" и "Начальник".
  * @summary Create Event Route
  */
 export const createEventRouteEventsPost = (
-    eventCreateRequest: BodyType<EventCreateRequest>,
- options?: SecondParameter<typeof request<EventResponse>>,) => {
-      return request<EventResponse>(
-      {url: `/events`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: eventCreateRequest
+  eventCreateRequest: BodyType<EventCreateRequest>,
+  options?: SecondParameter<typeof request<EventResponse>>,
+) => {
+  return request<EventResponse>(
+    {
+      url: `/events`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: eventCreateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Добавить тег для события. Могут только "Босс" и "Начальник".
  * @summary Add Tag To Event Route
  */
 export const addTagToEventRouteEventsEventIdTagsPost = (
-    eventId: number,
-    eventAddTagRequest: BodyType<EventAddTagRequest>,
- options?: SecondParameter<typeof request<void>>,) => {
-      return request<void>(
-      {url: `/events/${eventId}/tags`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: eventAddTagRequest
+  eventId: number,
+  eventAddTagRequest: BodyType<EventAddTagRequest>,
+  options?: SecondParameter<typeof request<void>>,
+) => {
+  return request<void>(
+    {
+      url: `/events/${eventId}/tags`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: eventAddTagRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Получить событие. Могут только участники события.
  * @summary Get Event Route
  */
 export const getEventRouteEventsEventIdGet = (
-    eventId: number,
- options?: SecondParameter<typeof request<EventResponse>>,) => {
-      return request<EventResponse>(
-      {url: `/events/${eventId}`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  eventId: number,
+  options?: SecondParameter<typeof request<EventResponse>>,
+) => {
+  return request<EventResponse>(
+    { url: `/events/${eventId}`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Редактировать событие. Могут только "Босс" и "Начальник".
  * @summary Update Event Route
  */
 export const updateEventRouteEventsEventIdPatch = (
-    eventId: number,
-    eventUpdateRequest: BodyType<EventUpdateRequest>,
- options?: SecondParameter<typeof request<EventResponse>>,) => {
-      return request<EventResponse>(
-      {url: `/events/${eventId}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: eventUpdateRequest
+  eventId: number,
+  eventUpdateRequest: BodyType<EventUpdateRequest>,
+  options?: SecondParameter<typeof request<EventResponse>>,
+) => {
+  return request<EventResponse>(
+    {
+      url: `/events/${eventId}`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: eventUpdateRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Удалить событие. Могут только "Босс" и "Начальник".
  * @summary Delete Event Route
  */
 export const deleteEventRouteEventsEventIdDelete = (
-    eventId: number,
- options?: SecondParameter<typeof request<void>>,) => {
-      return request<void>(
-      {url: `/events/${eventId}`, method: 'DELETE'
-    },
-      options);
-    }
-  /**
+  eventId: number,
+  options?: SecondParameter<typeof request<void>>,
+) => {
+  return request<void>({ url: `/events/${eventId}`, method: 'DELETE' }, options)
+}
+/**
  * Добавить (привязать) пользователя в событие.
 Могут только "Босс" и "Начальник".
  * @summary Add User To Event Route
  */
 export const addUserToEventRouteEventsEventIdUsersPost = (
-    eventId: number,
-    eventAddUserRequest: BodyType<EventAddUserRequest>,
- options?: SecondParameter<typeof request<void>>,) => {
-      return request<void>(
-      {url: `/events/${eventId}/users`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: eventAddUserRequest
+  eventId: number,
+  eventAddUserRequest: BodyType<EventAddUserRequest>,
+  options?: SecondParameter<typeof request<void>>,
+) => {
+  return request<void>(
+    {
+      url: `/events/${eventId}/users`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: eventAddUserRequest,
     },
-      options);
-    }
-  /**
+    options,
+  )
+}
+/**
  * Просмотр всех событий группы, в которых пользователь принимает участие
  * @summary Get Group Events Route
  */
 export const getGroupEventsRouteEventsGroupsGroupIdGet = (
-    groupId: number,
- options?: SecondParameter<typeof request<EventsResponse>>,) => {
-      return request<EventsResponse>(
-      {url: `/events/groups/${groupId}`, method: 'GET'
-    },
-      options);
-    }
-  /**
+  groupId: number,
+  options?: SecondParameter<typeof request<EventsResponse>>,
+) => {
+  return request<EventsResponse>(
+    { url: `/events/groups/${groupId}`, method: 'GET' },
+    options,
+  )
+}
+/**
  * Просмотр всех своих событий во всех группах.
  * @summary Get User Events Route
  */
 export const getUserEventsRouteEventsGet = (
-    
- options?: SecondParameter<typeof request<EventsResponse>>,) => {
-      return request<EventsResponse>(
-      {url: `/events/`, method: 'GET'
-    },
-      options);
-    }
-  export type CreateEventRouteEventsPostResult = NonNullable<Awaited<ReturnType<typeof createEventRouteEventsPost>>>
-export type AddTagToEventRouteEventsEventIdTagsPostResult = NonNullable<Awaited<ReturnType<typeof addTagToEventRouteEventsEventIdTagsPost>>>
-export type GetEventRouteEventsEventIdGetResult = NonNullable<Awaited<ReturnType<typeof getEventRouteEventsEventIdGet>>>
-export type UpdateEventRouteEventsEventIdPatchResult = NonNullable<Awaited<ReturnType<typeof updateEventRouteEventsEventIdPatch>>>
-export type DeleteEventRouteEventsEventIdDeleteResult = NonNullable<Awaited<ReturnType<typeof deleteEventRouteEventsEventIdDelete>>>
-export type AddUserToEventRouteEventsEventIdUsersPostResult = NonNullable<Awaited<ReturnType<typeof addUserToEventRouteEventsEventIdUsersPost>>>
-export type GetGroupEventsRouteEventsGroupsGroupIdGetResult = NonNullable<Awaited<ReturnType<typeof getGroupEventsRouteEventsGroupsGroupIdGet>>>
-export type GetUserEventsRouteEventsGetResult = NonNullable<Awaited<ReturnType<typeof getUserEventsRouteEventsGet>>>
+  options?: SecondParameter<typeof request<EventsResponse>>,
+) => {
+  return request<EventsResponse>({ url: `/events/`, method: 'GET' }, options)
+}
+export type CreateEventRouteEventsPostResult = NonNullable<
+  Awaited<ReturnType<typeof createEventRouteEventsPost>>
+>
+export type AddTagToEventRouteEventsEventIdTagsPostResult = NonNullable<
+  Awaited<ReturnType<typeof addTagToEventRouteEventsEventIdTagsPost>>
+>
+export type GetEventRouteEventsEventIdGetResult = NonNullable<
+  Awaited<ReturnType<typeof getEventRouteEventsEventIdGet>>
+>
+export type UpdateEventRouteEventsEventIdPatchResult = NonNullable<
+  Awaited<ReturnType<typeof updateEventRouteEventsEventIdPatch>>
+>
+export type DeleteEventRouteEventsEventIdDeleteResult = NonNullable<
+  Awaited<ReturnType<typeof deleteEventRouteEventsEventIdDelete>>
+>
+export type AddUserToEventRouteEventsEventIdUsersPostResult = NonNullable<
+  Awaited<ReturnType<typeof addUserToEventRouteEventsEventIdUsersPost>>
+>
+export type GetGroupEventsRouteEventsGroupsGroupIdGetResult = NonNullable<
+  Awaited<ReturnType<typeof getGroupEventsRouteEventsGroupsGroupIdGet>>
+>
+export type GetUserEventsRouteEventsGetResult = NonNullable<
+  Awaited<ReturnType<typeof getUserEventsRouteEventsGet>>
+>
