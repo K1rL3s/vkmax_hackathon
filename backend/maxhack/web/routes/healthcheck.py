@@ -11,7 +11,6 @@ healthcheck_router = APIRouter(
 )
 
 
-
 @healthcheck_router.get(
     "",
     description="Проверка соединения",

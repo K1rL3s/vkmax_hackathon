@@ -61,6 +61,16 @@ async def init_dispatcher(
     dp.message_created.middleware.outer(ThrottlingMiddleware())
     dp.message_callback.middleware.outer(ThrottlingMiddleware())
 
+    # TODO: Убрать на проде
+    # dp.update.filter(
+    #     OrFilter(
+    #         MagicData(F.update_context.user_id == 85851413),
+    #         MagicData(F.update_context.user_id == 84271494),
+    #         MagicData(F.update_context.user_id == 6033605),
+    #         MagicData(F.update_context.user_id == 96519367),
+    #     )
+    # )
+
     dp.message_created.filter(MagicFilter(F.chat.type == ChatType.DIALOG))
     dp.include(
         errors_router,

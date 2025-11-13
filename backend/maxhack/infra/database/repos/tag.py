@@ -1,15 +1,17 @@
 from typing import Any
 
-from sqlalchemy import and_, delete, select, update, func
+from sqlalchemy import and_, func, select, update
 from sqlalchemy.exc import IntegrityError, ProgrammingError
 
 from maxhack.core.exceptions import MaxHackError
 from maxhack.core.ids import GroupId, RoleId, TagId, UserId
 from maxhack.infra.database.models import (
+    EventModel,
     TagModel,
+    TagsToEvents,
     UserModel,
     UsersToGroupsModel,
-    UsersToTagsModel, TagsToEvents, EventModel,
+    UsersToTagsModel,
 )
 from maxhack.infra.database.repos.base import BaseAlchemyRepo
 
@@ -20,11 +22,11 @@ class TagRepo(BaseAlchemyRepo):
         return await self._session.scalar(stmt)
 
     async def create_tag(
-            self,
-            group_id: GroupId,
-            name: str,
-            description: str | None,
-            color: str | None,
+        self,
+        group_id: GroupId,
+        name: str,
+        description: str | None,
+        color: str | None,
     ) -> TagModel:
         tag = TagModel(
             group_id=group_id,
@@ -79,9 +81,9 @@ class TagRepo(BaseAlchemyRepo):
         await self._session.execute(stmt)
 
     async def assign_tags_to_user(
-            self,
-            user_id: UserId,
-            *tags_ids: TagId,
+        self,
+        user_id: UserId,
+        *tags_ids: TagId,
     ) -> None:
         assignment = [
             UsersToTagsModel(user_id=user_id, tag_id=tag_id) for tag_id in tags_ids
@@ -90,9 +92,9 @@ class TagRepo(BaseAlchemyRepo):
         await self._session.flush()
 
     async def remove_tags_from_user(
-            self,
-            user_id: UserId,
-            *tags_ids: TagId,
+        self,
+        user_id: UserId,
+        *tags_ids: TagId,
     ) -> None:
         stmt = (
             update(UsersToTagsModel)
@@ -109,9 +111,9 @@ class TagRepo(BaseAlchemyRepo):
         return list(await self._session.scalars(stmt))
 
     async def list_user_tags(
-            self,
-            group_id: GroupId,
-            user_id: UserId,
+        self,
+        group_id: GroupId,
+        user_id: UserId,
     ) -> list[TagModel]:
         stmt = (
             select(TagModel)
@@ -125,9 +127,9 @@ class TagRepo(BaseAlchemyRepo):
         return list(await self._session.scalars(stmt))
 
     async def list_tag_users(
-            self,
-            group_id: GroupId,
-            tag_id: TagId,
+        self,
+        group_id: GroupId,
+        tag_id: TagId,
     ) -> list[tuple[UserModel, RoleId]]:
         stmt = (
             select(UserModel, UsersToGroupsModel.role_id)
@@ -160,9 +162,9 @@ class TagRepo(BaseAlchemyRepo):
         return tag
 
     async def get_user_tag(
-            self,
-            user_id: UserId,
-            tag_id: TagId,
+        self,
+        user_id: UserId,
+        tag_id: TagId,
     ) -> UsersToTagsModel | None:
         stmt = select(UsersToTagsModel).where(
             UsersToTagsModel.user_id == user_id,

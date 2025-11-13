@@ -1,3 +1,4 @@
+from maxhack.bot.handlers.utils import on_start_update_dialog_data
 from maxhack.bot.states import Groups
 from maxhack.bot.widgets.scrolling_group import CustomScrollingGroup
 from maxhack.bot.widgets.to_groups import TO_GROUPS_BUTTON
@@ -7,15 +8,14 @@ from maxo.dialogs import Dialog, Window
 from maxo.dialogs.widgets.kbd import Button
 from maxo.dialogs.widgets.text import Const, Format
 
-from maxhack.bot.handlers.utils import on_start_update_dialog_data
 from . import getters, handlers
 
 _groups = Window(
     Const("💤 Твои группы"),
     CustomScrollingGroup(
         UrlSelect(
-            text=Format("{item[2]} {item[1]}"),
-            url=Format("https://max.ru/{item[3]}?startapp&start_param={item[4]}"),
+            text=Format("{item[0]} {item[1]}"),
+            url=Format("https://max.ru/{item[2]}?startapp&start_param={item[3]}"),
             items="groups",
             id="select_group",
         ),

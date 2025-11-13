@@ -1,13 +1,21 @@
 from typing import Any
 
-from sqlalchemy import select, update, func
+from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError, ProgrammingError
 
 from maxhack.core.exceptions import MaxHackError
 from maxhack.core.ids import GroupId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID
-from maxhack.infra.database.models import GroupModel, UsersToGroupsModel, InviteModel, EventModel, RespondModel, \
-    EventNotifyModel, UsersToEvents, TagsToEvents
+from maxhack.infra.database.models import (
+    EventModel,
+    EventNotifyModel,
+    GroupModel,
+    InviteModel,
+    RespondModel,
+    TagsToEvents,
+    UsersToEvents,
+    UsersToGroupsModel,
+)
 from maxhack.infra.database.repos.base import BaseAlchemyRepo
 
 
@@ -138,4 +146,3 @@ class GroupRepo(BaseAlchemyRepo):
         result = await self._session.scalar(stmt)
 
         return bool(result)
-

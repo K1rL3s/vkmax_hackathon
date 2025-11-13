@@ -1,6 +1,8 @@
 import base64
+import json
 import secrets
 from datetime import datetime
+from typing import Any
 
 from maxhack.core.ids import InviteKey
 from maxhack.core.utils.datehelp import UTC_TIMEZONE
@@ -58,4 +60,8 @@ def create_cron_expression(
 
 
 def to_base64(data: str) -> str:
-    return base64.b64encode(data.encode('utf-8')).decode('utf-8')
+    return base64.b64encode(data.encode("utf-8")).decode("utf-8")
+
+
+def obj_to_base64(obj: Any) -> str:
+    return to_base64(json.dumps(obj))

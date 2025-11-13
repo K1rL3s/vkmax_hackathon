@@ -228,7 +228,6 @@ class GroupService(BaseService):
         if membership.role_id == CREATOR_ROLE_ID:
             raise NotEnoughRights("Нельзя удалить создателя группы")
 
-
         await self._users_to_groups_repo.left(slave_id, group_id)
 
     async def get_member(

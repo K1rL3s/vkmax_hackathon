@@ -6,9 +6,12 @@ from maxhack.core.exceptions import MaxHackError
 from maxhack.core.ids import GroupId, InviteId, RoleId, UserId
 from maxhack.core.role.ids import MEMBER_ROLE_ID
 from maxhack.infra.database.models import (
+    EventModel,
     GroupModel,
+    RespondModel,
     RoleModel,
-    UsersToGroupsModel, RespondModel, EventModel, UsersToEvents,
+    UsersToEvents,
+    UsersToGroupsModel,
 )
 from maxhack.infra.database.repos.base import BaseAlchemyRepo
 
@@ -148,7 +151,6 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
             .values(deleted_at=func.now())
         )
         result3 = await self._session.execute(update_responds_stmt)
-
 
     kick = left
 

@@ -9,11 +9,12 @@ from maxhack.core.ids import EventId, EventNotifyId, GroupId, TagId, UserId
 from maxhack.infra.database.models import (
     EventModel,
     EventNotifyModel,
+    RespondModel,
     TagModel,
     TagsToEvents,
     UserModel,
     UsersToEvents,
-    UsersToTagsModel, RespondModel,
+    UsersToTagsModel,
 )
 from maxhack.infra.database.repos.base import BaseAlchemyRepo
 
@@ -29,15 +30,15 @@ class EventRepo(BaseAlchemyRepo):
         return await self._session.scalar(stmt)
 
     async def create(
-            self,
-            title: str,
-            description: str | None,
-            cron: str,
-            is_cycle: bool,
-            type: str,
-            creator_id: UserId,
-            group_id: GroupId,
-            timezone: int = 0,
+        self,
+        title: str,
+        description: str | None,
+        cron: str,
+        is_cycle: bool,
+        type: str,
+        creator_id: UserId,
+        group_id: GroupId,
+        timezone: int = 0,
     ) -> EventModel:
         event = EventModel(
             title=title,
@@ -120,16 +121,13 @@ class EventRepo(BaseAlchemyRepo):
         return bool(result)
 
     async def get_by_group(
-            self,
-            group_id: GroupId,
-            user_id: UserId,
+        self,
+        group_id: GroupId,
+        user_id: UserId,
     ) -> list[EventModel]:
         stmt = (
             select(EventModel)
-            .join(
-                UsersToEvents,
-                UsersToEvents.event_id == EventModel.id
-            )
+            .join(UsersToEvents, UsersToEvents.event_id == EventModel.id)
             .where(
                 EventModel.group_id == group_id,
                 UsersToEvents.user_id == user_id,
@@ -140,9 +138,9 @@ class EventRepo(BaseAlchemyRepo):
         return list(await self._session.execute(stmt))
 
     async def get_by_user(
-            self,
-            user_id: UserId,
-            tag_ids: list[TagId] | None = None,
+        self,
+        user_id: UserId,
+        tag_ids: list[TagId] | None = None,
     ) -> list[EventModel]:
         stmt = (
             select(EventModel)
@@ -174,10 +172,10 @@ class EventRepo(BaseAlchemyRepo):
         return list(result.scalars().all())
 
     async def get_created_by_user(
-            self,
-            user_id: UserId,
-            limit: int | None = None,
-            offset: int | None = None,
+        self,
+        user_id: UserId,
+        limit: int | None = None,
+        offset: int | None = None,
     ) -> list[EventModel]:
         stmt = (
             select(EventModel)
@@ -192,9 +190,9 @@ class EventRepo(BaseAlchemyRepo):
         return list(await self._session.execute(stmt))
 
     async def add_tag(
-            self,
-            event_id: EventId,
-            tag_ids: list[TagId],
+        self,
+        event_id: EventId,
+        tag_ids: list[TagId],
     ) -> list[TagsToEvents]:
         relations = []
 
@@ -236,9 +234,9 @@ class EventRepo(BaseAlchemyRepo):
         return list(await self._session.execute(stmt))
 
     async def add_user(
-            self,
-            event_id: EventId,
-            user_ids: list[UserId],
+        self,
+        event_id: EventId,
+        user_ids: list[UserId],
     ) -> list[UsersToEvents]:
         relations = [
             UsersToEvents(event_id=event_id, user_id=user_id) for user_id in user_ids
@@ -310,10 +308,10 @@ class EventRepo(BaseAlchemyRepo):
         return result
 
     async def check_user_in_event(
-            self,
-            event_id: EventId,
-            user_id: UserId,
-            tag_ids: list[TagId] | None = None,
+        self,
+        event_id: EventId,
+        user_id: UserId,
+        tag_ids: list[TagId] | None = None,
     ) -> bool:
         stmt = (
             select(UsersToEvents)
@@ -342,10 +340,10 @@ class EventRepo(BaseAlchemyRepo):
         return result is not None
 
     async def list_user_events(
-            self,
-            group_id: GroupId,
-            user_id: UserId,
-            tag_ids: list[TagId] | None = None,
+        self,
+        group_id: GroupId,
+        user_id: UserId,
+        tag_ids: list[TagId] | None = None,
     ) -> list[EventModel]:
         stmt = (
             select(EventModel)
@@ -368,13 +366,12 @@ class EventRepo(BaseAlchemyRepo):
             )
             stmt = stmt.where(EventModel.id.in_(events_with_tags_subquery))
 
-        result = await self._session.scalars(stmt)
-        return list(result.all())
+        return list(await self._session.scalars(stmt))
 
     async def create_notify(
-            self,
-            event_id: EventId,
-            minutes_before: list[int],
+        self,
+        event_id: EventId,
+        minutes_before: list[int],
     ) -> list[EventNotifyModel]:
         minutes_before.append(0)
         minutes_before = set(minutes_before)
@@ -393,8 +390,8 @@ class EventRepo(BaseAlchemyRepo):
         return notifies
 
     async def get_notify_by_id(
-            self,
-            event_notify_id: EventNotifyId,
+        self,
+        event_notify_id: EventNotifyId,
     ) -> EventNotifyModel | None:
         stmt = select(EventNotifyModel).where(
             EventNotifyModel.id == event_notify_id,
@@ -403,7 +400,7 @@ class EventRepo(BaseAlchemyRepo):
         return await self._session.scalar(stmt)
 
     async def get_notify_by_date_interval(
-            self,
+        self,
     ) -> list[tuple[EventNotifyModel, EventModel]]:
         stmt = (
             select(EventNotifyModel, EventModel)
