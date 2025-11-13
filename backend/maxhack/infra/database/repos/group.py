@@ -1,12 +1,13 @@
 from typing import Any
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func
 from sqlalchemy.exc import IntegrityError, ProgrammingError
 
 from maxhack.core.exceptions import MaxHackError
 from maxhack.core.ids import GroupId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID
-from maxhack.infra.database.models import GroupModel, UsersToGroupsModel
+from maxhack.infra.database.models import GroupModel, UsersToGroupsModel, InviteModel, EventModel, RespondModel, \
+    EventNotifyModel, UsersToEvents, TagsToEvents
 from maxhack.infra.database.repos.base import BaseAlchemyRepo
 
 
@@ -60,3 +61,81 @@ class GroupRepo(BaseAlchemyRepo):
             raise MaxHackError from e  # TODO: Заменить на ошибку из БЛ
 
         return group
+
+    async def delete(self, group_id: GroupId) -> bool:
+
+        events_subquery = (
+            select(EventModel.id)
+            .where(
+                EventModel.group_id == group_id,
+                EventModel.is_not_deleted,
+            )
+            .scalar_subquery()
+        )
+
+        if events_subquery is not None:
+            update_tags_stmt = (
+                update(TagsToEvents)
+                .where(TagsToEvents.event_id.in_(events_subquery))
+                .values(deleted_at=func.now())
+            )
+            await self._session.execute(update_tags_stmt)
+
+            update_users_to_events_stmt = (
+                update(UsersToEvents)
+                .where(UsersToEvents.event_id.in_(events_subquery))
+                .values(deleted_at=func.now())
+            )
+            await self._session.execute(update_users_to_events_stmt)
+
+            update_notifies_stmt = (
+                update(EventNotifyModel)
+                .where(EventNotifyModel.event_id.in_(events_subquery))
+                .values(deleted_at=func.now())
+            )
+            await self._session.execute(update_notifies_stmt)
+
+            update_responds_stmt = (
+                update(RespondModel)
+                .where(RespondModel.event_id.in_(events_subquery))
+                .values(deleted_at=func.now())
+            )
+            await self._session.execute(update_responds_stmt)
+
+            update_events_stmt = (
+                update(EventModel)
+                .where(
+                    EventModel.group_id == group_id,
+                    EventModel.is_not_deleted,
+                )
+                .values(deleted_at=func.now())
+            )
+            await self._session.execute(update_events_stmt)
+
+        update_users_to_groups_stmt = (
+            update(UsersToGroupsModel)
+            .where(UsersToGroupsModel.group_id == group_id)
+            .values(deleted_at=func.now())
+        )
+        await self._session.execute(update_users_to_groups_stmt)
+
+        update_invites_stmt = (
+            update(InviteModel)
+            .where(InviteModel.group_id == group_id)
+            .values(deleted_at=func.now())
+        )
+        await self._session.execute(update_invites_stmt)
+
+        stmt = (
+            update(GroupModel)
+            .where(
+                GroupModel.id == group_id,
+                GroupModel.is_not_deleted,
+            )
+            .values(deleted_at=func.now())
+            .returning(GroupModel)
+        )
+        result = await self._session.scalar(stmt)
+
+        return bool(result)
+

@@ -107,8 +107,6 @@ class GroupService(BaseService):
         ):
             raise NotEnoughRights("Недостаточно прав для удаления группы")
 
-        # TODO: Удаление всех ивентов, тэгов, связей итп
-        # TODO: Удаление всех связанных сущностей
         await self._group_repo.update(group_id, deleted_at=datetime_now())
 
     async def join_group(

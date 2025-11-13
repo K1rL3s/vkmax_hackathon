@@ -177,7 +177,6 @@ class EventService(BaseService):
         elif event.creator_id != user_id:
             raise NotEnoughRights("Недостаточно прав для удаления события")
 
-        # TODO: Удаление всех связанных сущностей
         success = await self._event_repo.delete(event_id)
         if not success:
             raise GroupNotFound
@@ -295,8 +294,7 @@ class EventService(BaseService):
         if membership is None:
             raise NotEnoughRights("Пользователь не состоит в группе")
 
-        # TODO: Только возврат событий, в которых участвует юзер
-        return await self._event_repo.get_by_group(group_id)
+        return await self._event_repo.get_by_group(group_id, user_id)
 
     async def get_user_events(self, user_id: UserId) -> list[EventModel]:
         await self._ensure_user_exists(user_id)

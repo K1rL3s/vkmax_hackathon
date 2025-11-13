@@ -192,7 +192,6 @@ async def get_group_events_route(
     session: FromDishka[AsyncSession],
     current_user: CurrentUser,
 ) -> EventsResponse:
-    # TODO: Только возврат событий, в которых участвует юзер
     try:
         events = await event_service.get_group_events(
             group_id=group_id,

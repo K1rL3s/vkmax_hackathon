@@ -11,7 +11,7 @@ healthcheck_router = APIRouter(
 )
 
 
-# TODO: Чекать бд, редис, бота и шедулер
+
 @healthcheck_router.get(
     "",
     description="Проверка соединения",
