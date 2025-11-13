@@ -4,6 +4,7 @@ from pydantic import Field
 from pydantic.config import ExtraValues
 
 from .core import Model
+from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.ids import GroupId, InviteKey, MaxId, RoleId, TagId, UserId
 from maxhack.infra.database.models.users_to_groups import UsersToGroupsModel
 from maxhack.web.schemas.role import RoleResponse
@@ -53,6 +54,7 @@ class GroupMemberResponse(Model):
     user_id: UserId
     group_id: GroupId
     role_id: RoleId
+    notify_mode: NotifyMode
 
 
 class GroupUserItem(Model):
@@ -93,3 +95,7 @@ class GroupUserItem(Model):
             by_alias=by_alias,
             by_name=by_name,
         )
+
+
+class GroupNotifyModeRequest(Model):
+    notify_mode: NotifyMode

@@ -1,6 +1,7 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, HTTPException, status
 
+from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
 from maxhack.core.group.service import GroupService
 from maxhack.core.ids import GroupId, InviteKey, UserId
@@ -13,6 +14,7 @@ from maxhack.web.schemas.group import (
     GroupMemberAddRequest,
     GroupMemberResponse,
     GroupMemberUpdateRequest,
+    GroupNotifyModeRequest,
     GroupUpdateRequest,
     GroupUserItem,
 )
@@ -100,11 +102,7 @@ async def update_group_membership(
             master_id=current_user.db_user.id,
         )
 
-        return GroupMemberResponse(
-            user_id=membership.user_id,
-            group_id=membership.group_id,
-            role_id=membership.role_id,
-        )
+        return GroupMemberResponse.model_validate(membership)
     except EntityNotFound as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except NotEnoughRights as e:
@@ -275,4 +273,35 @@ async def join_group(
         user_id=current_user.db_user.id,
         group_id=group.id,
         role_id=MEMBER_ROLE_ID,
+        notify_mode=NotifyMode.DEFAULT,
     )
+
+
+@group_router.patch(
+    "/{group_id}/notify",
+    status_code=status.HTTP_200_OK,
+    description="Изменить режим уведомлений в группе для самого себя.",
+)
+async def update_group_notify_mode(
+    group_id: GroupId,
+    body: GroupNotifyModeRequest,
+    group_service: FromDishka[GroupService],
+    current_user: CurrentUser,
+) -> GroupMemberResponse:
+    try:
+        membership = await group_service.update_membership(
+            group_id=group_id,
+            slave_id=current_user.db_user.id,
+            master_id=current_user.db_user.id,
+            role_id=None,
+            tags=None,
+            notify_mode=body.notify_mode,
+        )
+    except EntityNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except NotEnoughRights as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+    except InvalidValue as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    return GroupMemberResponse.model_validate(membership)

@@ -88,7 +88,7 @@ class BaseService(ABC):
             group_id=group_id,
         )
         if membership is None or membership.role_id not in allowed_roles:
-            raise NotEnoughRights("Недостаточно прав")
+            raise NotEnoughRights
         return membership
 
     async def _ensure_respond_exists(self, respond_id: RespondId) -> RespondModel:

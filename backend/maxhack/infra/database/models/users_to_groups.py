@@ -1,6 +1,7 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.ids import GroupId, InviteId, RoleId, UserId
 from maxhack.infra.database.models import UserModel
 from maxhack.infra.database.models.base import BaseAlchemyModel
@@ -27,6 +28,11 @@ class UsersToGroupsModel(BaseAlchemyModel):
     invite_id: Mapped[InviteId | None] = mapped_column(
         ForeignKey("invites.id"),
         nullable=True,
+    )
+    notify_mode: Mapped[NotifyMode] = mapped_column(
+        String(16),
+        nullable=False,
+        default=NotifyMode.DEFAULT,
     )
 
     user: Mapped[UserModel] = relationship()

@@ -1,4 +1,5 @@
 from .core import Model
+from maxhack.core.enums.notify_mode import NotifyMode
 
 
 class UserCreateRequest(Model):
@@ -13,7 +14,10 @@ class UserCreateRequest(Model):
 class UserUpdateRequest(Model):
     first_name: str | None = None
     last_name: str | None = None
+    photo: str | None = None
     phone: str | None = None
+    timezone: int | None = None
+    notify_mode: NotifyMode | None = None
 
 
 class UserResponse(Model):
@@ -25,6 +29,7 @@ class UserResponse(Model):
     last_name: str | None = None
     phone: str
     timezone: int
+    notify_mode: NotifyMode
 
 
 class UserGroupItem(Model):

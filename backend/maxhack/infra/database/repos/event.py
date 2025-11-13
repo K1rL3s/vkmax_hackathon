@@ -168,8 +168,7 @@ class EventRepo(BaseAlchemyRepo):
 
         stmt = stmt.order_by(EventModel.created_at.desc())
 
-        result = await self._session.execute(stmt)
-        return list(result.scalars().all())
+        return list(await self._session.execute(stmt))
 
     async def get_created_by_user(
         self,

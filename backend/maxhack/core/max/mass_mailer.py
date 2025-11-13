@@ -4,7 +4,7 @@ from maxo.fsm import State
 
 from maxhack.core.max.notifier import MaxNotifier
 from maxhack.core.max.sender import MaxSender
-from maxhack.infra.database.models import EventModel, UserModel
+from maxhack.infra.database.models import EventModel, UserModel, UsersToGroupsModel
 
 
 class MaxMailer:
@@ -32,7 +32,14 @@ class MaxMailer:
             ),
         )
 
-    async def notify_event(self, event: EventModel, users: list[UserModel]) -> None:
+    async def event_notify(
+        self,
+        event: EventModel,
+        users: list[tuple[UserModel, UsersToGroupsModel]],
+    ) -> None:
         await asyncio.gather(
-            *(self._max_notifier.event_notify(event, user) for user in users),
+            *(
+                self._max_notifier.event_notify(event, user, membership)
+                for user, membership in users
+            ),
         )

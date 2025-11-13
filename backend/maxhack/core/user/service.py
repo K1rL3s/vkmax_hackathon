@@ -1,10 +1,12 @@
 from typing import Any
 
+from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.exceptions import (
     InvalidValue,
     NotEnoughRights,
     UserNotFound,
 )
+from maxhack.core.group.consts import PRIVATE_GROUP_NAME
 from maxhack.core.ids import MaxChatId, MaxId, UserId
 from maxhack.infra.database.models import (
     GroupModel,
@@ -49,7 +51,12 @@ class UserService:
             timezone=timezone,
         )
 
-        await self._group_repo.create(name="Личная", creator_id=user.id, timezone=timezone, description=None)
+        await self._group_repo.create(
+            name=PRIVATE_GROUP_NAME,
+            creator_id=user.id,
+            timezone=timezone,
+            description=None,
+        )
         return user
 
     async def get_user_by_id(
@@ -75,22 +82,29 @@ class UserService:
         user_id: UserId,
         first_name: str | None = None,
         last_name: str | None = None,
+        photo: str | None = None,
         phone: str | None = None,
-        timezone: int = 0,
+        notify_mode: NotifyMode | None = None,
+        timezone: int | None = None,
     ) -> UserModel:
         user = await self._user_repo.get_by_id(user_id)
         if user is None:
             raise UserNotFound
 
+        # TODO: ???????
         values: dict[str, Any] = {}
         if first_name is not None:
             values["first_name"] = first_name
         if last_name is not None:
             values["last_name"] = last_name
+        if photo is not None:
+            values["photo"] = photo
         if phone is not None:
             values["phone"] = phone
         if timezone is not None:
             values["timezone"] = timezone
+        if notify_mode is not None:
+            values["notify_mode"] = notify_mode
         user = await self._user_repo.update_user(user_id, **values)
         if user is None:
             raise UserNotFound

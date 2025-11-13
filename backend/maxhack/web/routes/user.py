@@ -90,6 +90,8 @@ async def update_user_route(
             first_name=body.first_name,
             last_name=body.last_name,
             phone=body.phone,
+            timezone=body.timezone,
+            notify_mode=body.notify_mode,
         )
         return await UserResponse.from_orm_async(user, session)
     except EntityNotFound as e:

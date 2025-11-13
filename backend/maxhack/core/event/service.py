@@ -18,7 +18,12 @@ from maxhack.core.service import BaseService
 from maxhack.core.tag.service import TagService
 from maxhack.core.user.service import UserService
 from maxhack.core.utils.datehelp import datetime_now
-from maxhack.infra.database.models import EventModel, EventNotifyModel, UserModel
+from maxhack.infra.database.models import (
+    EventModel,
+    EventNotifyModel,
+    UserModel,
+    UsersToGroupsModel,
+)
 from maxhack.infra.database.repos.event import EventRepo
 from maxhack.infra.database.repos.group import GroupRepo
 from maxhack.infra.database.repos.invite import InviteRepo
@@ -349,7 +354,7 @@ class EventService(BaseService):
 
     async def get_notify_by_date_interval(
         self,
-    ) -> list[tuple[list[UserModel], EventModel]]:
+    ) -> list[tuple[list[tuple[UserModel, UsersToGroupsModel]], EventModel]]:
         # TODO: отправляется на минуту позже WTF OMG LMAOOOOOOO
         time_now = datetime_now()
         last_start_str = await self._redis.get("last_start")
@@ -360,7 +365,7 @@ class EventService(BaseService):
         await self._redis.set("last_start", time_now.isoformat())
 
         events_with_notifies = await self._event_repo.get_notify_by_date_interval()
-        matching_notify: list[tuple[list[UserModel], EventModel]] = []
+        matches: list[tuple[list[tuple[UserModel, UsersToGroupsModel]], EventModel]] = []
 
         for event_notify, event in events_with_notifies:
             try:
@@ -370,8 +375,16 @@ class EventService(BaseService):
                         await self._event_repo.update(event.id, event_happened=True)
 
                     users = await self._event_repo.get_event_users(event.id)
+                    memberships: list[tuple[UserModel, UsersToGroupsModel]] = []
 
-                    matching_notify.append((users, event))
+                    for user in users:
+                        membership = await self._ensure_membership_role(
+                            user.id,
+                            event.group_id,
+                        )
+                        memberships.append((user, membership))
+
+                    matches.append((memberships, event))
 
             except Exception as e:
                 print(
@@ -379,7 +392,7 @@ class EventService(BaseService):
                 )
                 continue
 
-        return matching_notify
+        return matches
 
     async def get_by_user(
         self,

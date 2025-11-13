@@ -1,0 +1,1 @@
+PRIVATE_GROUP_NAME = "Личная"

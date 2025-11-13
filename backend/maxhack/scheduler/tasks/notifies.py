@@ -21,4 +21,4 @@ async def send_notifies(
 ) -> None:
     notifies = await events_service.get_notify_by_date_interval()
     for users, event in notifies:
-        await max_mailer.notify_event(event, users)
+        await max_mailer.event_notify(event, users)

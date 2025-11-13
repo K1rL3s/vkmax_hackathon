@@ -2,6 +2,7 @@ from sqlalchemy import and_, func, select, update
 from sqlalchemy.exc import IntegrityError, ProgrammingError
 from sqlalchemy.orm.strategy_options import joinedload
 
+from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.exceptions import MaxHackError
 from maxhack.core.ids import GroupId, InviteId, RoleId, UserId
 from maxhack.core.role.ids import MEMBER_ROLE_ID
@@ -70,26 +71,6 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
         )
         return list(await self._session.scalars(stmt))
 
-    async def change_role(
-        self,
-        user_id: UserId,
-        group_id: GroupId,
-        new_role_id: RoleId,
-    ) -> bool:
-        stmt = (
-            update(UsersToGroupsModel)
-            .where(
-                UsersToGroupsModel.user_id == user_id,
-                UsersToGroupsModel.group_id == group_id,
-                UsersToGroupsModel.is_not_deleted,
-            )
-            .values(role_id=new_role_id)
-            .returning(UsersToGroupsModel)
-        )
-        result = await self._session.scalar(stmt)
-        await self._session.flush()
-        return bool(result)
-
     async def join(
         self,
         user_id: UserId,
@@ -121,7 +102,8 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
             )
             .values(deleted_at=func.now())
         )
-        result1 = await self._session.execute(update_users_to_groups_stmt)
+        await self._session.execute(update_users_to_groups_stmt)
+        await self._session.flush()
 
         events_subquery = (
             select(EventModel.id)
@@ -140,7 +122,8 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
             )
             .values(deleted_at=func.now())
         )
-        result2 = await self._session.execute(update_users_to_events_stmt)
+        await self._session.execute(update_users_to_events_stmt)
+        await self._session.flush()
 
         update_responds_stmt = (
             update(RespondModel)
@@ -150,7 +133,8 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
             )
             .values(deleted_at=func.now())
         )
-        result3 = await self._session.execute(update_responds_stmt)
+        await self._session.execute(update_responds_stmt)
+        await self._session.flush()
 
     kick = left
 
@@ -187,6 +171,31 @@ class UsersToGroupsRepo(BaseAlchemyRepo):
                 UsersToGroupsModel.is_not_deleted,
             )
             .values(role_id=role_id)
+            .returning(UsersToGroupsModel)
+        )
+
+        try:
+            membership = await self._session.scalar(stmt)
+            await self._session.flush()
+        except (ProgrammingError, IntegrityError) as e:
+            raise MaxHackError from e
+
+        return membership
+
+    async def update_notify_mode(
+        self,
+        user_id: UserId,
+        group_id: GroupId,
+        notify_mode: NotifyMode,
+    ) -> UsersToGroupsModel | None:
+        stmt = (
+            update(UsersToGroupsModel)
+            .where(
+                UsersToGroupsModel.user_id == user_id,
+                UsersToGroupsModel.group_id == group_id,
+                UsersToGroupsModel.is_not_deleted,
+            )
+            .values(notify_mode=notify_mode)
             .returning(UsersToGroupsModel)
         )
 
