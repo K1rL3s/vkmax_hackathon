@@ -14,7 +14,7 @@ from maxhack.core.ids import GroupId, InviteKey, RoleId, TagId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.service import BaseService
 from maxhack.core.utils.datehelp import datetime_now
-from maxhack.infra.database.models import (
+from maxhack.database.models import (
     GroupModel,
     RoleModel,
     UsersToGroupsModel,

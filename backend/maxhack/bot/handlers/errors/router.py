@@ -105,7 +105,7 @@ async def on_unknown_error(
     logger.error("Неизвестная ошибка", exc_info=update.exception)
 
     await max_sender.send_message(
-        text="😵‍💫 Неизвестная ошибка\nНапиши /start, чтобы всё починилось",
+        text="😵‍💫 Неизвестная ошибка\nНапиши <code>/start</code>, чтобы всё починилось",
         chat_id=update_context.chat_id,
     )
 

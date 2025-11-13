@@ -6,7 +6,7 @@ from maxhack.core.exceptions import (
 from maxhack.core.ids import GroupId, RoleId, TagId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.service import BaseService
-from maxhack.infra.database.models import TagModel, UserModel
+from maxhack.database.models import TagModel, UserModel
 from maxhack.logger.setup import get_logger
 
 logger = get_logger(__name__)

@@ -8,14 +8,14 @@ from maxhack.core.exceptions import (
 )
 from maxhack.core.group.consts import PRIVATE_GROUP_NAME
 from maxhack.core.ids import MaxChatId, MaxId, UserId
-from maxhack.infra.database.models import (
+from maxhack.database.models import (
     GroupModel,
     RoleModel,
     UserModel,
 )
-from maxhack.infra.database.repos.group import GroupRepo
-from maxhack.infra.database.repos.user import UserRepo
-from maxhack.infra.database.repos.users_to_groups import UsersToGroupsRepo
+from maxhack.database.repos.group import GroupRepo
+from maxhack.database.repos.user import UserRepo
+from maxhack.database.repos.users_to_groups import UsersToGroupsRepo
 from maxhack.logger.setup import get_logger
 
 logger = get_logger(__name__)

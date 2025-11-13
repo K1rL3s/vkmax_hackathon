@@ -13,7 +13,7 @@ async def main() -> None:
 
     bot = await container.get(Bot)
     try:
-        await LongPolling(dp).start(bot)
+        await LongPolling(dp).start(bot, drop_pending_updates=True)
     except Exception:
         logger.exception("Ошибка при поллинге, конец работы")
     finally:

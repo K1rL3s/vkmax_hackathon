@@ -6,14 +6,14 @@ from maxhack.bot.states import Errors
 
 on_error_intent = Window(
     Const("😵‍💫 Произошла неизвестная ошибка..."),
-    Const("Чтобы всё заработало, напиши /start"),
+    Const("Чтобы всё заработало, напиши <code>/start</code>"),
     state=Errors.error_intent,
 )
 
 on_unexcepted_error = Window(
     Const("😵‍💫 Произошла неизвестная ошибка..."),
     Format("Возможная причина: {reason}", when="reason"),
-    Const("Чтобы всё заработало, напиши /start"),
+    Const("Чтобы всё заработало, напиши <code>/start</code>"),
     getter=get_error_reason,
     state=Errors.unexcepted_error,
 )

@@ -2,7 +2,7 @@ from maxhack.core.enums.respond_action import RespondStatus
 from maxhack.core.exceptions import NotEnoughRights, RespondNotFound
 from maxhack.core.ids import EventId, RespondId, UserId
 from maxhack.core.service import BaseService
-from maxhack.infra.database.models import RespondModel
+from maxhack.database.models import RespondModel
 from maxhack.logger.setup import get_logger
 
 logger = get_logger(__name__)

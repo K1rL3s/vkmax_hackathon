@@ -5,7 +5,7 @@ from maxhack.core.ids import GroupId, InviteKey, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.service import BaseService
 from maxhack.core.utils.datehelp import datetime_now
-from maxhack.infra.database.models import GroupModel, InviteModel
+from maxhack.database.models import GroupModel, InviteModel
 from maxhack.logger.setup import get_logger
 from maxhack.utils.utils import generate_invite_key
 
