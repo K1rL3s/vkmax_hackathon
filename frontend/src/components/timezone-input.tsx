@@ -1,6 +1,6 @@
 import { Flex, Typography } from '@maxhub/max-ui'
 import clsx from 'clsx'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { TimezoneSelectModal } from './timezone-select-modal'
 
 type Timezone = {
@@ -13,6 +13,8 @@ type TimezoneInputProps = {
   value?: Timezone | undefined
   disabled?: boolean
   onChange: (value: Timezone) => void
+  header?: React.ReactNode
+  before?: React.ReactNode
 }
 
 export function TimezoneInput({
@@ -20,6 +22,8 @@ export function TimezoneInput({
   onChange,
   mode = 'primary',
   disabled = false,
+  header,
+  before,
 }: TimezoneInputProps) {
   const [isSelecting, setIsSelecting] = useState(false)
 
@@ -32,19 +36,27 @@ export function TimezoneInput({
   return (
     <>
       <Flex direction="column" gapY={12} className="w-full">
-        <Typography.Title className="text-(--text-tertiary)">
-          Часовой пояс
-        </Typography.Title>
+        {header}
         <button
           type="button"
           onClick={() => !disabled && setIsSelecting(true)}
           className={clsx(
             'min-h-[52px] w-full rounded-(--size-border-radius-semantic-border-radius-card) cursor-pointer text-start px-3',
             modeStyles[mode],
-            { 'bg-(--states-background-disabled-neutral-fade)!': disabled },
+            {
+              'bg-(--states-background-disabled-neutral-fade)!':
+                disabled && mode === 'secondary',
+            },
+            {
+              'bg-(--states-text-disabled-primary)! text(--states-text-disabled-primary)':
+                disabled && mode === 'secondary',
+            },
           )}
         >
-          {value?.label}
+          <Flex align="center" gapX={12}>
+            {before}
+            {value?.label}
+          </Flex>
         </button>
       </Flex>
       <TimezoneSelectModal

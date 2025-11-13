@@ -123,6 +123,11 @@ function CreateGroupFormPage() {
                 children={(field) => (
                   <>
                     <TimezoneInput
+                      header={
+                        <Typography.Title className="text-(--text-tertiary)">
+                          Часовой пояс
+                        </Typography.Title>
+                      }
                       mode="secondary"
                       value={field.state.value}
                       onChange={field.handleChange}

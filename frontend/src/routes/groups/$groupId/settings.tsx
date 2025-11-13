@@ -102,6 +102,11 @@ function GroupSettingsPage() {
               name="timezone"
               children={(field) => (
                 <TimezoneInput
+                  header={
+                    <Typography.Title className="text-(--text-tertiary)">
+                      Часовой пояс
+                    </Typography.Title>
+                  }
                   disabled={!isEditing}
                   mode="secondary"
                   value={field.state.value}
