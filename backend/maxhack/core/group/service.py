@@ -30,6 +30,8 @@ class GroupService(BaseService):
         description: str | None,
         timezone: int | None = None,
     ) -> GroupModel:
+        if name == "Личная":
+            raise InvalidValue
         creator = await self._user_repo.get_by_id(master_id)
         if creator is None:
             raise UserNotFound
@@ -69,10 +71,12 @@ class GroupService(BaseService):
         description: str | None,
         timezone: int = 0,
     ) -> GroupModel:
+
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
             raise GroupNotFound
-
+        if group.name == "Личная":
+            raise InvalidValue
         if not await self.ensure_has_membership(
             CREATOR_ROLE_ID,
             EDITOR_ROLE_ID,
@@ -99,7 +103,8 @@ class GroupService(BaseService):
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
             raise GroupNotFound
-
+        if group.name == "Личная":
+            raise InvalidValue
         if not await self.ensure_has_membership(
             CREATOR_ROLE_ID,
             user_id=editor_id,
@@ -123,6 +128,8 @@ class GroupService(BaseService):
             raise InviteNotFound
 
         group = cast(GroupModel, await self._group_repo.get_by_id(invite.group_id))
+        if group.name == "Личная":
+            raise InvalidValue
 
         existing = await self._users_to_groups_repo.get_membership(
             user_id=user_id,
@@ -148,6 +155,8 @@ class GroupService(BaseService):
         tags: list[TagId] | None = None,
     ) -> UsersToGroupsModel:
         group = await self._group_repo.get_by_id(group_id)
+        if group.name == "Личная":
+            raise InvalidValue
         if group is None:
             raise GroupNotFound
 
@@ -209,6 +218,8 @@ class GroupService(BaseService):
         master_id: UserId,
     ) -> None:
         group = await self._group_repo.get_by_id(group_id)
+        if group.name == "Личная":
+            raise InvalidValue
         if group is None:
             raise GroupNotFound
 

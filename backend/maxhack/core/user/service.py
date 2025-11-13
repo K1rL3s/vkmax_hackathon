@@ -40,7 +40,7 @@ class UserService:
         if exists is not None:
             raise InvalidValue("Пользователь с таким max_id уже существует")
 
-        return await self._user_repo.create_user(
+        user = await self._user_repo.create_user(
             max_id=max_id,
             max_chat_id=max_chat_id,
             first_name=first_name,
@@ -48,6 +48,9 @@ class UserService:
             phone=phone,
             timezone=timezone,
         )
+
+        await self._group_repo.create(name="Личная", creator_id=user.id, timezone=timezone, description=None)
+        return user
 
     async def get_user_by_id(
         self,
