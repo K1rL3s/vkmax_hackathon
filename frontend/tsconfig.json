@@ -12,7 +12,6 @@
     "jsx": "react-jsx",
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "typeRoots": ["./src/integrations", "./node_modules/@types"],
     "types": ["vite/client"],
 
     "moduleResolution": "bundler",

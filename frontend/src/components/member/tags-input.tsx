@@ -20,6 +20,7 @@ export function TagsInput({
   header,
   before,
   fullWidth,
+  className,
 }: {
   value?: Array<TagResponse> | undefined
   onChange?: (tag: TagResponse) => void | undefined
@@ -28,6 +29,7 @@ export function TagsInput({
   header?: React.ReactNode
   before?: React.ReactNode
   fullWidth?: boolean
+  className?: string
 }) {
   const tagColorStyles = {
     red: 'bg-red-500',
@@ -41,7 +43,7 @@ export function TagsInput({
   }
 
   return (
-    <Container className="w-full">
+    <Container className={clsx('w-full', className)}>
       <Flex direction="column" gapY={12}>
         {header}
         <Card>

@@ -1,5 +1,4 @@
 import {
-  Avatar,
   CellList,
   CellSimple,
   Flex,

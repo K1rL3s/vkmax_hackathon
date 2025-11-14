@@ -1,4 +1,4 @@
-import { Flex, Typography } from '@maxhub/max-ui'
+import { Flex } from '@maxhub/max-ui'
 import clsx from 'clsx'
 import React, { useState } from 'react'
 import { TimezoneSelectModal } from './timezone-select-modal'

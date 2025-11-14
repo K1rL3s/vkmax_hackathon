@@ -21,7 +21,7 @@ export function TagCreateForm({ onCreate }: TagCreateForm) {
       }),
     },
     onSubmit: ({ value }) => {
-      onCreate?.({ color: value.color, name: value.name, descriptions: '' })
+      onCreate?.({ color: value.color, name: value.name, description: '' })
     },
   })
 

@@ -14,7 +14,6 @@ type GroupTagsInputPrpops = {
 }
 
 export function GroupTags({
-  tags,
   groupId,
   mode = 'secondary',
 }: GroupTagsInputPrpops) {
