@@ -24,8 +24,13 @@ async def _on_empty_button(
     )
 
 
-def empty_button(when: WhenCondition = None) -> Button:
-    return Button(text=Const("⠀"), on_click=_on_empty_button, id="__empty__", when=when)
+def empty_button(text: str = "⠀", when: WhenCondition = None) -> Button:
+    return Button(
+        text=Const(text),
+        on_click=_on_empty_button,
+        id="__empty__",
+        when=when,
+    )
 
 
 EmptyButton: Final = empty_button()

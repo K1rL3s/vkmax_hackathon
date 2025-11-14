@@ -23,24 +23,10 @@ _menu = Window(
         Format("{middleware_data[bot].state.info.username}"),
         id="webapp",
     ),
-    Radio(
-        Format("🔔 {item[1]}"),
-        Format("{item[1]}"),
-        item_id_getter=lambda item: item[0],
-        type_factory=lambda item: NotifyMode[item],
-        items=(
-            (NotifyMode.DEFAULT.name, "Со звуком"),
-            (NotifyMode.SILENT.name, "Бесшумно"),
-            (NotifyMode.DISABLE.name, "Игнор"),
-        ),
-        on_click=handlers.on_notify_mode,
-        id="notify_mode",
-    ),
     getter=get_current_user,
     state=Menu.menu,
 )
 
 menu_dialog = Dialog(
     _menu,
-    on_start=handlers.on_start_set_notify_mode,
 )
