@@ -192,14 +192,74 @@ class EventService(BaseService):
         if event_update_model.cron:
             is_cycle = any([event_update_model.cron.to_dict(exclude={"date"}).values()])
 
+        # Обновляем базовые поля события
         updated_event = await self._event_repo.update(
             event_id,
-            **event_update_model.to_dict(exclude_none=True),
+            **event_update_model.to_dict(exclude_none=True, exclude={"participants_ids", "tags_ids"}),
             is_cycle=is_cycle,
         )
         if updated_event is None:
             logger.error(f"Event {event_id} not found for update")
             raise EventNotFound
+
+        # Обновляем теги, если они указаны
+        if event_update_model.tags_ids is not None:
+            logger.debug(f"Updating tags for event {event_id} to {event_update_model.tags_ids}")
+            # Валидируем теги
+            if event_update_model.tags_ids:
+                tags = [await self._ensure_tag_exists(tag_id) for tag_id in event_update_model.tags_ids]
+                if event.group_id is not None:
+                    invalid_tags = [tag.id for tag in tags if tag.group_id != event.group_id]
+                    if invalid_tags:
+                        logger.warning(f"Invalid tags {invalid_tags} for event {event_id}")
+                        raise InvalidValue(
+                            f"Теги не принадлежат группе события: {invalid_tags}",
+                        )
+            await self._event_repo.update_event_tags(event_id, event_update_model.tags_ids)
+
+            # Если это событие типа "event", добавляем пользователей из тегов
+            if event.type == "event" and event.group_id is not None:
+                user_ids_from_tags = []
+                for tag_id in event_update_model.tags_ids:
+                    users = await self._tag_repo.list_tag_users(
+                        group_id=event.group_id,
+                        tag_id=tag_id,
+                    )
+                    for user, _ in users:
+                        user_ids_from_tags.append(user.id)
+                # Получаем текущих пользователей события
+                current_user_ids = set(await self._event_repo.get_event_user_ids(event_id))
+                # Объединяем с пользователями из тегов
+                if event_update_model.participants_ids is not None:
+                    all_user_ids = set(event_update_model.participants_ids) | set(user_ids_from_tags)
+                else:
+                    all_user_ids = current_user_ids | set(user_ids_from_tags)
+                if all_user_ids != current_user_ids:
+                    await self._event_repo.update_event_users(event_id, list(all_user_ids))
+                    # Создаем responds для новых пользователей из тегов
+                    new_user_ids_from_tags = set(user_ids_from_tags) - current_user_ids
+                    if new_user_ids_from_tags:
+                        await self._respond_service.create(list(new_user_ids_from_tags), event.id, status="mb")
+
+        # Обновляем пользователей, если они указаны
+        if event_update_model.participants_ids is not None:
+            logger.debug(f"Updating users for event {event_id} to {event_update_model.participants_ids}")
+            # Валидируем пользователей
+            for target_user_id in event_update_model.participants_ids:
+                await self._ensure_user_exists(target_user_id)
+                if event.group_id is not None:
+                    target_membership = await self._users_to_groups_repo.get_membership(
+                        user_id=target_user_id,
+                        group_id=event.group_id,
+                    )
+                    if target_membership is None:
+                        logger.warning(
+                            f"User {target_user_id} is not in group {event.group_id}",
+                        )
+                        raise InvalidValue(
+                            f"Пользователь {target_user_id} не состоит в группе события",
+                        )
+            await self._event_repo.update_event_users(event_id, event_update_model.participants_ids)
 
         logger.info(f"Event {event_id} updated successfully")
         return updated_event

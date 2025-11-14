@@ -54,6 +54,8 @@ class EventUpdate(DomainModel):
     timezone: int | None = field(default=None)
     cron: Cron | None = field(default=None)
     duration: int | None = field(default=None)
+    participants_ids: list[UserId] | None = field(default=None)
+    tags_ids: list[TagId] | None = field(default=None)
 
     @override
     def to_dict(

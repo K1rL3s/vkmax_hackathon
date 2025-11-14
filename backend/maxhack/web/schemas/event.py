@@ -42,6 +42,8 @@ class EventUpdateRequest(Model):
     timezone: int | None = None
     cron: CronSchema | None = None
     duration: int | None = None
+    participants_ids: list[UserId] | None = None
+    tags_ids: list[TagId] | None = None
 
 
 class RespondResponse(Model):

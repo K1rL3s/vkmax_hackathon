@@ -276,7 +276,77 @@ class EventRepo(BaseAlchemyRepo):
             TagsToEvents.event_id == event_id,
             TagsToEvents.is_not_deleted,
         )
-        return list(await self._session.execute(stmt))
+        result = await self._session.scalars(stmt)
+        return list(result)
+
+    async def update_event_tags(
+        self,
+        event_id: EventId,
+        tag_ids: list[TagId],
+    ) -> None:
+        """Обновляет теги события, заменяя текущие на новые."""
+        # Получаем текущие теги
+        current_tags = await self.get_event_tags(event_id)
+        current_tag_set = set(current_tags)
+        new_tag_set = set(tag_ids)
+
+        # Теги для удаления (есть в текущих, но нет в новых)
+        tags_to_remove = current_tag_set - new_tag_set
+        if tags_to_remove:
+            stmt = (
+                update(TagsToEvents)
+                .where(
+                    TagsToEvents.event_id == event_id,
+                    TagsToEvents.tag_id.in_(tags_to_remove),
+                    TagsToEvents.is_not_deleted,
+                )
+                .values(deleted_at=func.now())
+            )
+            await self._session.execute(stmt)
+
+        # Теги для добавления (есть в новых, но нет в текущих)
+        tags_to_add = new_tag_set - current_tag_set
+        if tags_to_add:
+            await self.add_tag(event_id, list(tags_to_add))
+
+    async def get_event_user_ids(self, event_id: EventId) -> list[UserId]:
+        """Получает список ID пользователей события."""
+        stmt = select(UsersToEvents.user_id).where(
+            UsersToEvents.event_id == event_id,
+            UsersToEvents.is_not_deleted,
+        )
+        result = await self._session.scalars(stmt)
+        return list(result)
+
+    async def update_event_users(
+        self,
+        event_id: EventId,
+        user_ids: list[UserId],
+    ) -> None:
+        """Обновляет пользователей события, заменяя текущих на новых."""
+        # Получаем текущих пользователей
+        current_users = await self.get_event_user_ids(event_id)
+        current_user_set = set(current_users)
+        new_user_set = set(user_ids)
+
+        # Пользователи для удаления (есть в текущих, но нет в новых)
+        users_to_remove = current_user_set - new_user_set
+        if users_to_remove:
+            stmt = (
+                update(UsersToEvents)
+                .where(
+                    UsersToEvents.event_id == event_id,
+                    UsersToEvents.user_id.in_(users_to_remove),
+                    UsersToEvents.is_not_deleted,
+                )
+                .values(deleted_at=func.now())
+            )
+            await self._session.execute(stmt)
+
+        # Пользователи для добавления (есть в новых, но нет в текущих)
+        users_to_add = new_user_set - current_user_set
+        if users_to_add:
+            await self.add_user(event_id, list(users_to_add))
 
     async def add_user(
         self,
