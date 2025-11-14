@@ -29,7 +29,7 @@ class UserResponse(Model):
     max_photo: str | None = None
     first_name: str
     last_name: str | None = None
-    phone: str
+    phone: str | None = None
     timezone: int
     notify_mode: NotifyMode
 
