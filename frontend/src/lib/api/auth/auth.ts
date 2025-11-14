@@ -10,24 +10,28 @@
 
  * OpenAPI spec version: 0.1.0
  */
-import { request } from '.././client'
-import type { CheckInitDataAuthGetParams, WebAppInitData } from '../gen.schemas'
+import type {
+  CheckInitDataAuthGetParams,
+  WebAppInitData
+} from '../gen.schemas';
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+import { request } from '.././client';
 
-/**
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+  /**
  * Валидация WebAppData из MAX
  * @summary Check Init Data
  */
 export const checkInitDataAuthGet = (
-  params: CheckInitDataAuthGetParams,
-  options?: SecondParameter<typeof request<WebAppInitData>>,
-) => {
-  return request<WebAppInitData>(
-    { url: `/auth`, method: 'GET', params },
-    options,
-  )
-}
-export type CheckInitDataAuthGetResult = NonNullable<
-  Awaited<ReturnType<typeof checkInitDataAuthGet>>
->
+    params: CheckInitDataAuthGetParams,
+ options?: SecondParameter<typeof request<WebAppInitData>>,) => {
+      return request<WebAppInitData>(
+      {url: `/auth`, method: 'GET',
+        params
+    },
+      options);
+    }
+  export type CheckInitDataAuthGetResult = NonNullable<Awaited<ReturnType<typeof checkInitDataAuthGet>>>

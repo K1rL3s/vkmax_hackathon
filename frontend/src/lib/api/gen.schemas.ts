@@ -11,359 +11,392 @@
  * OpenAPI spec version: 0.1.0
  */
 export interface CronSchema {
-  date: string
-  everyDay?: boolean
-  everyWeek?: boolean
-  everyMonth?: boolean
+  date: string;
+  everyDay?: boolean;
+  everyWeek?: boolean;
+  everyMonth?: boolean;
 }
 
 export interface EventAddTagRequest {
-  tagIds: Array<number>
+  tagIds: number[];
 }
 
 export interface EventAddUserRequest {
-  userIds: Array<number>
+  userIds: number[];
 }
 
-export type EventCreateRequestDescription = string | null
+export type EventCreateRequestDescription = string | null;
 
-export type EventCreateRequestTimezone = number | null
+export type EventCreateRequestTimezone = number | null;
 
 export interface EventCreateRequest {
-  title: string
-  description?: EventCreateRequestDescription
-  timezone?: EventCreateRequestTimezone
+  title: string;
+  description?: EventCreateRequestDescription;
+  timezone?: EventCreateRequestTimezone;
   /** Тип события */
-  type?: 'event'
-  cron: CronSchema
-  groupId: number
+  type?: 'event';
+  cron: CronSchema;
+  groupId: number;
   /** Упомянаемые пользователи */
-  participantsIds?: Array<number>
+  participantsIds?: number[];
   /** Привязанные теги */
-  tagsIds?: Array<number>
-  minutesBefore?: Array<number>
+  tagsIds?: number[];
+  minutesBefore?: number[];
 }
 
-export type EventResponseDescription = string | null
+export type EventDetailsResponseDescription = string | null;
+
+export type EventDetailsResponseType = typeof EventDetailsResponseType[keyof typeof EventDetailsResponseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EventDetailsResponseType = {
+  event: 'event',
+  message: 'message',
+} as const;
+
+export interface EventDetailsResponse {
+  id: number;
+  title: string;
+  description?: EventDetailsResponseDescription;
+  cron: string;
+  isCycle: boolean;
+  type: EventDetailsResponseType;
+  creatorId: number;
+  group: GroupResponse;
+  tags: TagResponse[];
+  notifies: EventNotifyResponse[];
+  timezone: number;
+}
+
+export interface EventNotifyResponse {
+  minutesBefore: number;
+}
+
+export type EventResponseDescription = string | null;
 
 export interface EventResponse {
-  id: number
-  title: string
-  description?: EventResponseDescription
-  cron: string
-  isCycle: boolean
-  type: string
-  creatorId: number
-  groupId: number
-  timezone: number
+  id: number;
+  title: string;
+  description?: EventResponseDescription;
+  cron: string;
+  isCycle: boolean;
+  type: string;
+  creatorId: number;
+  groupId: number;
+  timezone: number;
 }
 
-export type EventUpdateRequestTitle = string | null
+export type EventUpdateRequestTitle = string | null;
 
-export type EventUpdateRequestDescription = string | null
+export type EventUpdateRequestDescription = string | null;
 
-export type EventUpdateRequestType = string | null
+export type EventUpdateRequestType = string | null;
 
-export type EventUpdateRequestTimezone = number | null
+export type EventUpdateRequestTimezone = number | null;
 
-export type EventUpdateRequestCron = CronSchema | null
+export type EventUpdateRequestCron = CronSchema | null;
 
 export interface EventUpdateRequest {
-  title?: EventUpdateRequestTitle
-  description?: EventUpdateRequestDescription
-  type?: EventUpdateRequestType
-  timezone?: EventUpdateRequestTimezone
-  cron?: EventUpdateRequestCron
+  title?: EventUpdateRequestTitle;
+  description?: EventUpdateRequestDescription;
+  type?: EventUpdateRequestType;
+  timezone?: EventUpdateRequestTimezone;
+  cron?: EventUpdateRequestCron;
 }
 
 export interface EventsResponse {
-  events: Array<EventResponse>
+  events: EventResponse[];
 }
 
 export interface GetGroupResponse {
-  group: GroupResponse
-  role: RoleResponse
+  group: GroupResponse;
+  role: RoleResponse;
 }
 
-export type GroupCreateRequestDescription = string | null
+export type GroupCreateRequestDescription = string | null;
 
-export type GroupCreateRequestTimezone = number | null
+export type GroupCreateRequestTimezone = number | null;
 
 export interface GroupCreateRequest {
-  name: string
-  description?: GroupCreateRequestDescription
-  timezone?: GroupCreateRequestTimezone
+  name: string;
+  description?: GroupCreateRequestDescription;
+  timezone?: GroupCreateRequestTimezone;
 }
 
 export interface GroupMemberAddRequest {
-  inviteKey: string
+  inviteKey: string;
 }
 
 export interface GroupMemberResponse {
-  userId: number
-  groupId: number
-  roleId: number
-  notifyMode: NotifyMode
+  userId: number;
+  groupId: number;
+  roleId: number;
+  notifyMode: NotifyMode;
 }
 
 /**
  * Идентификатор роли
  */
-export type GroupMemberUpdateRequestRoleId = number | null
+export type GroupMemberUpdateRequestRoleId = number | null;
 
 /**
  * Список идентификаторов тегов
  */
-export type GroupMemberUpdateRequestTags = Array<number> | null
+export type GroupMemberUpdateRequestTags = number[] | null;
 
 export interface GroupMemberUpdateRequest {
   /** Идентификатор роли */
-  roleId?: GroupMemberUpdateRequestRoleId
+  roleId?: GroupMemberUpdateRequestRoleId;
   /** Список идентификаторов тегов */
-  tags?: GroupMemberUpdateRequestTags
+  tags?: GroupMemberUpdateRequestTags;
 }
 
 export interface GroupNotifyModeRequest {
-  notifyMode: NotifyMode
+  notifyMode: NotifyMode;
 }
 
-export type GroupResponseDescription = string | null
+export type GroupResponseDescription = string | null;
 
 export interface GroupResponse {
-  id: number
-  name: string
-  description?: GroupResponseDescription
-  timezone?: number
+  id: number;
+  name: string;
+  description?: GroupResponseDescription;
+  timezone?: number;
 }
 
-export type GroupUpdateRequestDescription = string | null
+export type GroupUpdateRequestDescription = string | null;
 
-export type GroupUpdateRequestTimezone = number | null
+export type GroupUpdateRequestTimezone = number | null;
 
 export interface GroupUpdateRequest {
-  name: string
-  description?: GroupUpdateRequestDescription
-  timezone?: GroupUpdateRequestTimezone
+  name: string;
+  description?: GroupUpdateRequestDescription;
+  timezone?: GroupUpdateRequestTimezone;
 }
 
-export type GroupUserItemFirstName = string | null
+export type GroupUserItemFirstName = string | null;
 
-export type GroupUserItemLastName = string | null
+export type GroupUserItemLastName = string | null;
 
-export type GroupUserItemPhone = string | null
+export type GroupUserItemPhone = string | null;
 
 export interface GroupUserItem {
-  userId: number
-  groupId: number
-  role: RoleResponse
-  maxId: number
-  firstName?: GroupUserItemFirstName
-  lastName?: GroupUserItemLastName
-  phone?: GroupUserItemPhone
+  userId: number;
+  groupId: number;
+  role: RoleResponse;
+  maxId: number;
+  firstName?: GroupUserItemFirstName;
+  lastName?: GroupUserItemLastName;
+  phone?: GroupUserItemPhone;
 }
 
 export interface HTTPValidationError {
-  detail?: Array<ValidationError>
+  detail?: ValidationError[];
 }
 
 export interface InviteCreateResponse {
-  inviteKey: string
+  inviteKey: string;
 }
 
-export type NotifyMode = (typeof NotifyMode)[keyof typeof NotifyMode]
+export type NotifyMode = typeof NotifyMode[keyof typeof NotifyMode];
 
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const NotifyMode = {
   DEFAULT: 'DEFAULT',
   SILENT: 'SILENT',
   DISABLE: 'DISABLE',
-} as const
+} as const;
 
-export type PersonalGroupResponseDescription = string | null
+export type PersonalGroupResponseDescription = string | null;
 
 export interface PersonalGroupResponse {
-  id: number
-  name: 'Личная'
-  description?: PersonalGroupResponseDescription
-  timezone: number
+  id: number;
+  name: 'Личная';
+  description?: PersonalGroupResponseDescription;
+  timezone: number;
 }
 
-export type RoleResponseName =
-  (typeof RoleResponseName)[keyof typeof RoleResponseName]
+export type RoleResponseName = typeof RoleResponseName[keyof typeof RoleResponseName];
 
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RoleResponseName = {
   Босс: 'Босс',
   Начальник: 'Начальник',
   Участник: 'Участник',
-} as const
+} as const;
 
 export interface RoleResponse {
-  id: number
-  name: RoleResponseName
+  id: number;
+  name: RoleResponseName;
 }
 
 export interface TagAssignRequest {
-  userId: number
-  tagId: number
+  userId: number;
+  tagId: number;
 }
 
-export type TagCreateRequestDescription = string | null
+export type TagCreateRequestDescription = string | null;
 
 export interface TagCreateRequest {
-  name: string
-  description?: TagCreateRequestDescription
-  color: string
+  name: string;
+  description?: TagCreateRequestDescription;
+  color: string;
 }
 
-export type TagResponseDescription = string | null
+export type TagResponseDescription = string | null;
 
 export interface TagResponse {
-  id: number
-  groupId: number
-  name: string
-  description?: TagResponseDescription
-  color: string
+  id: number;
+  groupId: number;
+  name: string;
+  description?: TagResponseDescription;
+  color: string;
 }
 
-export type TagUpdateRequestName = string | null
+export type TagUpdateRequestName = string | null;
 
-export type TagUpdateRequestDescription = string | null
+export type TagUpdateRequestDescription = string | null;
 
-export type TagUpdateRequestColor = string | null
+export type TagUpdateRequestColor = string | null;
 
 export interface TagUpdateRequest {
-  name?: TagUpdateRequestName
-  description?: TagUpdateRequestDescription
-  color?: TagUpdateRequestColor
+  name?: TagUpdateRequestName;
+  description?: TagUpdateRequestDescription;
+  color?: TagUpdateRequestColor;
 }
 
-export type TagUserItemLastName = string | null
+export type TagUserItemLastName = string | null;
 
-export type TagUserItemPhone = string | null
+export type TagUserItemPhone = string | null;
 
 export interface TagUserItem {
-  userId: number
-  maxId: number
-  firstName: string
-  lastName?: TagUserItemLastName
-  phone?: TagUserItemPhone
-  roleId: number
+  userId: number;
+  maxId: number;
+  firstName: string;
+  lastName?: TagUserItemLastName;
+  phone?: TagUserItemPhone;
+  roleId: number;
 }
 
-export type UserCreateRequestLastName = string | null
+export type UserCreateRequestLastName = string | null;
 
-export type UserCreateRequestPhone = string | null
+export type UserCreateRequestPhone = string | null;
 
 export interface UserCreateRequest {
-  maxId: number
-  maxChatId: number
-  firstName: string
-  lastName?: UserCreateRequestLastName
-  phone?: UserCreateRequestPhone
-  timezone?: number
+  maxId: number;
+  maxChatId: number;
+  firstName: string;
+  lastName?: UserCreateRequestLastName;
+  phone?: UserCreateRequestPhone;
+  timezone?: number;
 }
 
-export type UserGroupItemDescription = string | null
+export type UserGroupItemDescription = string | null;
 
 export interface UserGroupItem {
-  groupId: number
-  name: string
-  description?: UserGroupItemDescription
-  roleId: number
+  groupId: number;
+  name: string;
+  description?: UserGroupItemDescription;
+  roleId: number;
 }
 
 export interface UserGroupsResponse {
-  groups: Array<UserGroupItem>
+  groups: UserGroupItem[];
 }
 
-export type UserResponseMaxPhoto = string | null
+export type UserResponseMaxPhoto = string | null;
 
-export type UserResponseLastName = string | null
+export type UserResponseLastName = string | null;
 
 export interface UserResponse {
-  id: number
-  maxId: number
-  maxChatId: number
-  maxPhoto?: UserResponseMaxPhoto
-  firstName: string
-  lastName?: UserResponseLastName
-  phone: string
-  timezone: number
-  notifyMode: NotifyMode
+  id: number;
+  maxId: number;
+  maxChatId: number;
+  maxPhoto?: UserResponseMaxPhoto;
+  firstName: string;
+  lastName?: UserResponseLastName;
+  phone: string;
+  timezone: number;
+  notifyMode: NotifyMode;
 }
 
-export type UserUpdateRequestFirstName = string | null
+export type UserUpdateRequestFirstName = string | null;
 
-export type UserUpdateRequestLastName = string | null
+export type UserUpdateRequestLastName = string | null;
 
-export type UserUpdateRequestPhoto = string | null
+export type UserUpdateRequestPhoto = string | null;
 
-export type UserUpdateRequestPhone = string | null
+export type UserUpdateRequestPhone = string | null;
 
-export type UserUpdateRequestTimezone = number | null
+export type UserUpdateRequestTimezone = number | null;
 
-export type UserUpdateRequestNotifyMode = NotifyMode | null
+export type UserUpdateRequestNotifyMode = NotifyMode | null;
 
 export interface UserUpdateRequest {
-  firstName?: UserUpdateRequestFirstName
-  lastName?: UserUpdateRequestLastName
-  photo?: UserUpdateRequestPhoto
-  phone?: UserUpdateRequestPhone
-  timezone?: UserUpdateRequestTimezone
-  notifyMode?: UserUpdateRequestNotifyMode
+  firstName?: UserUpdateRequestFirstName;
+  lastName?: UserUpdateRequestLastName;
+  photo?: UserUpdateRequestPhoto;
+  phone?: UserUpdateRequestPhone;
+  timezone?: UserUpdateRequestTimezone;
+  notifyMode?: UserUpdateRequestNotifyMode;
 }
 
-export type ValidationErrorLocItem = string | number
+export type ValidationErrorLocItem = string | number;
 
 export interface ValidationError {
-  loc: Array<ValidationErrorLocItem>
-  msg: string
-  type: string
+  loc: ValidationErrorLocItem[];
+  msg: string;
+  type: string;
 }
 
 export interface WebAppChat {
-  id: number
-  type: string
+  id: number;
+  type: string;
 }
 
-export type WebAppInitDataIp = string | null
+export type WebAppInitDataIp = string | null;
 
-export type WebAppInitDataQueryId = string | null
+export type WebAppInitDataQueryId = string | null;
 
-export type WebAppInitDataAuthDate = string | null
+export type WebAppInitDataAuthDate = string | null;
 
 export interface WebAppInitData {
-  ip?: WebAppInitDataIp
-  query_id?: WebAppInitDataQueryId
-  chat: WebAppChat
-  user: WebAppUser
-  auth_date?: WebAppInitDataAuthDate
-  hash: string
+  ip?: WebAppInitDataIp;
+  query_id?: WebAppInitDataQueryId;
+  chat: WebAppChat;
+  user: WebAppUser;
+  auth_date?: WebAppInitDataAuthDate;
+  hash: string;
 }
 
-export type WebAppUserLastName = string | null
+export type WebAppUserLastName = string | null;
 
-export type WebAppUserUsername = string | null
+export type WebAppUserUsername = string | null;
 
-export type WebAppUserLanguageCode = string | null
+export type WebAppUserLanguageCode = string | null;
 
-export type WebAppUserPhotoUrl = string | null
+export type WebAppUserPhotoUrl = string | null;
 
 export interface WebAppUser {
-  id: number
-  first_name: string
-  last_name?: WebAppUserLastName
-  username?: WebAppUserUsername
-  language_code?: WebAppUserLanguageCode
-  photo_url?: WebAppUserPhotoUrl
+  id: number;
+  first_name: string;
+  last_name?: WebAppUserLastName;
+  username?: WebAppUserUsername;
+  language_code?: WebAppUserLanguageCode;
+  photo_url?: WebAppUserPhotoUrl;
 }
 
 export type CheckInitDataAuthGetParams = {
-  WebAppData: string
-}
+WebAppData: string;
+};
 
 export type ListUserEventsRouteUsersUserIdGroupsGroupIdEventsGetParams = {
-  /**
-   * Список ID тегов через запятую для фильтрации
-   */
-  tag_ids?: string | null
-}
+/**
+ * Список ID тегов через запятую для фильтрации
+ */
+tag_ids?: string | null;
+};
+

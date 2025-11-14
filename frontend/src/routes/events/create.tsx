@@ -15,7 +15,7 @@ import { z } from 'zod'
 import type { TagResponse } from '@/lib/api/gen.schemas'
 import { DynamicPageLayout } from '@/components/layout/dynamic-page-layout'
 import { TimezoneInput } from '@/components/timezone-input'
-import { TIMEZONES } from '@/components/timezone-select-modal'
+import { TIMEZONES } from '@/constants'
 import { TagsInput } from '@/components/member/tags-input'
 import { RetryInput } from '@/components/retry-input'
 import { usePersonalGroupWithTags } from '@/hooks/groups'
@@ -84,6 +84,7 @@ function CreateEventForm() {
           minutesBefore: [value.minutesBefore],
           tagsIds: value.tagsIds.map((tag) => tag.id),
           groupId: personalGroupQuery.data!.group.id,
+          participantsIds: [personalGroupQuery.data!.id],
         },
         {
           onSuccess: () => {

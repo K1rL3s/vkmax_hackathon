@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { EventCreateRequest } from '@/lib/api/gen.schemas'
 import {
   createEventRouteEventsPost,
+  getEventRouteEventsEventIdGet,
   getGroupEventsRouteEventsGroupsGroupIdGet,
 } from '@/lib/api/events/events'
 import {
@@ -36,8 +37,7 @@ export function useGroupEvents(groupId: number) {
 export function useEvent(id: number) {
   return useQuery({
     queryKey: ['events', id],
-    queryFn: () =>
-      Promise.resolve(EVENTS_MOCK.find((event) => event.id === id)),
+    queryFn: () => getEventRouteEventsEventIdGet(id),
   })
 }
 

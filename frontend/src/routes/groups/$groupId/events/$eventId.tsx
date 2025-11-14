@@ -13,14 +13,19 @@ import { DynamicPageLayout } from '@/components/layout/dynamic-page-layout'
 import { Loader } from '@/components/ui/loader'
 import { useEvent } from '@/hooks/events'
 import { Tag } from '@/components/tag'
+import { useGroup } from '@/hooks/groups'
 
-export const Route = createFileRoute('/events/$id')({
+export const Route = createFileRoute('/groups/$groupId/events/$eventId')({
   component: EventDetailsPage,
 })
 
 function EventDetailsPage() {
-  const { id } = useParams({ from: '/events/$id' })
-  const { data, isPending } = useEvent(Number(id))
+  const { groupId, eventId } = useParams({
+    from: '/groups/$groupId/events/$eventId',
+  })
+
+  const groupQuery = useGroup(Number(groupId))
+  const eventQuery = useEvent(Number(eventId))
 
   return (
     <DynamicPageLayout
@@ -42,7 +47,7 @@ function EventDetailsPage() {
         </Flex>
       }
     >
-      {isPending ? (
+      {eventQuery.isPending ? (
         <Loader size={38} />
       ) : (
         <CellList className="w-full" mode="island" filled>
@@ -52,7 +57,7 @@ function EventDetailsPage() {
                 Название
               </Typography.Label>
             }
-            title={data?.title}
+            title={eventQuery.data?.title}
           />
           <CellSimple
             before={
@@ -61,7 +66,7 @@ function EventDetailsPage() {
               </Typography.Label>
             }
           >
-            {data?.description}
+            {eventQuery.data?.description}
           </CellSimple>
           <CellSimple
             before={
@@ -71,12 +76,12 @@ function EventDetailsPage() {
             }
           >
             <Flex wrap="wrap">
-              {data?.tags.length === 0 && (
+              {eventQuery.data?.tags.length === 0 && (
                 <Typography.Body className="text-sm">
                   Теги не установлены
                 </Typography.Body>
               )}
-              {data?.tags.map((tag) => (
+              {eventQuery.data?.tags.map((tag) => (
                 <Tag tag={tag} />
               ))}
             </Flex>
@@ -89,7 +94,7 @@ function EventDetailsPage() {
             }
           >
             <span className="px-2 pb-1 bg-(--accent-themed) rounded-full w-fit">
-              {data?.group.name}
+              {eventQuery.data?.group.name}
             </span>
           </CellSimple>
         </CellList>

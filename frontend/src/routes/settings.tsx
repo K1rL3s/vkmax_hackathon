@@ -11,7 +11,7 @@ import { useForm } from '@tanstack/react-form'
 import { Header } from '@/components/header'
 import { RatioInput } from '@/components/ui/ratio-input'
 import { TimezoneInput } from '@/components/timezone-input'
-import { TIMEZONES } from '@/components/timezone-select-modal'
+import { TIMEZONES } from '@/constants'
 import { GroupTags } from '@/components/group/tag/group-tags'
 import { usePersonalGroup } from '@/hooks/groups'
 import { FallbackLoader } from '@/components/ui/fallback-loader'
@@ -87,7 +87,7 @@ function SettingsPage() {
 
                   <CellList
                     mode="island"
-                    header={<CellHeader>Времянная зона</CellHeader>}
+                    header={<CellHeader>Часовая зона</CellHeader>}
                   >
                     <form.Field
                       name="timezone"

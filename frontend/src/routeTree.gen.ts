@@ -21,6 +21,7 @@ import { Route as GroupsGroupIdMembersIndexRouteImport } from './routes/groups/$
 import { Route as GroupsGroupIdTagsCreateRouteImport } from './routes/groups/$groupId/tags/create'
 import { Route as GroupsGroupIdMembersMemberIdRouteImport } from './routes/groups/$groupId/members/$memberId'
 import { Route as GroupsGroupIdEventsCreateRouteImport } from './routes/groups/$groupId/events/create'
+import { Route as GroupsGroupIdEventsEventIdRouteImport } from './routes/groups/$groupId/events/$eventId'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -85,6 +86,12 @@ const GroupsGroupIdEventsCreateRoute =
     path: '/groups/$groupId/events/create',
     getParentRoute: () => rootRouteImport,
   } as any)
+const GroupsGroupIdEventsEventIdRoute =
+  GroupsGroupIdEventsEventIdRouteImport.update({
+    id: '/groups/$groupId/events/$eventId',
+    path: '/groups/$groupId/events/$eventId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/groups/create': typeof GroupsCreateRoute
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId': typeof GroupsGroupIdIndexRoute
+  '/groups/$groupId/events/$eventId': typeof GroupsGroupIdEventsEventIdRoute
   '/groups/$groupId/events/create': typeof GroupsGroupIdEventsCreateRoute
   '/groups/$groupId/members/$memberId': typeof GroupsGroupIdMembersMemberIdRoute
   '/groups/$groupId/tags/create': typeof GroupsGroupIdTagsCreateRoute
@@ -109,6 +117,7 @@ export interface FileRoutesByTo {
   '/groups/create': typeof GroupsCreateRoute
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId': typeof GroupsGroupIdIndexRoute
+  '/groups/$groupId/events/$eventId': typeof GroupsGroupIdEventsEventIdRoute
   '/groups/$groupId/events/create': typeof GroupsGroupIdEventsCreateRoute
   '/groups/$groupId/members/$memberId': typeof GroupsGroupIdMembersMemberIdRoute
   '/groups/$groupId/tags/create': typeof GroupsGroupIdTagsCreateRoute
@@ -124,6 +133,7 @@ export interface FileRoutesById {
   '/groups/create': typeof GroupsCreateRoute
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId/': typeof GroupsGroupIdIndexRoute
+  '/groups/$groupId/events/$eventId': typeof GroupsGroupIdEventsEventIdRoute
   '/groups/$groupId/events/create': typeof GroupsGroupIdEventsCreateRoute
   '/groups/$groupId/members/$memberId': typeof GroupsGroupIdMembersMemberIdRoute
   '/groups/$groupId/tags/create': typeof GroupsGroupIdTagsCreateRoute
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/groups/create'
     | '/groups/$groupId/settings'
     | '/groups/$groupId'
+    | '/groups/$groupId/events/$eventId'
     | '/groups/$groupId/events/create'
     | '/groups/$groupId/members/$memberId'
     | '/groups/$groupId/tags/create'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/groups/create'
     | '/groups/$groupId/settings'
     | '/groups/$groupId'
+    | '/groups/$groupId/events/$eventId'
     | '/groups/$groupId/events/create'
     | '/groups/$groupId/members/$memberId'
     | '/groups/$groupId/tags/create'
@@ -168,6 +180,7 @@ export interface FileRouteTypes {
     | '/groups/create'
     | '/groups/$groupId/settings'
     | '/groups/$groupId/'
+    | '/groups/$groupId/events/$eventId'
     | '/groups/$groupId/events/create'
     | '/groups/$groupId/members/$memberId'
     | '/groups/$groupId/tags/create'
@@ -183,6 +196,7 @@ export interface RootRouteChildren {
   GroupsCreateRoute: typeof GroupsCreateRoute
   GroupsGroupIdSettingsRoute: typeof GroupsGroupIdSettingsRoute
   GroupsGroupIdIndexRoute: typeof GroupsGroupIdIndexRoute
+  GroupsGroupIdEventsEventIdRoute: typeof GroupsGroupIdEventsEventIdRoute
   GroupsGroupIdEventsCreateRoute: typeof GroupsGroupIdEventsCreateRoute
   GroupsGroupIdMembersMemberIdRoute: typeof GroupsGroupIdMembersMemberIdRoute
   GroupsGroupIdTagsCreateRoute: typeof GroupsGroupIdTagsCreateRoute
@@ -275,6 +289,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupsGroupIdEventsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/groups/$groupId/events/$eventId': {
+      id: '/groups/$groupId/events/$eventId'
+      path: '/groups/$groupId/events/$eventId'
+      fullPath: '/groups/$groupId/events/$eventId'
+      preLoaderRoute: typeof GroupsGroupIdEventsEventIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -287,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   GroupsCreateRoute: GroupsCreateRoute,
   GroupsGroupIdSettingsRoute: GroupsGroupIdSettingsRoute,
   GroupsGroupIdIndexRoute: GroupsGroupIdIndexRoute,
+  GroupsGroupIdEventsEventIdRoute: GroupsGroupIdEventsEventIdRoute,
   GroupsGroupIdEventsCreateRoute: GroupsGroupIdEventsCreateRoute,
   GroupsGroupIdMembersMemberIdRoute: GroupsGroupIdMembersMemberIdRoute,
   GroupsGroupIdTagsCreateRoute: GroupsGroupIdTagsCreateRoute,
