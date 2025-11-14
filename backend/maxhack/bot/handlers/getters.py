@@ -3,6 +3,7 @@ from typing import Any
 from maxo.dialogs import DialogManager
 from maxo.dialogs.integrations.dishka import inject
 
+from maxhack.core.utils.timezones import TIMEZONES
 from maxhack.database.models import UserModel
 
 
@@ -15,5 +16,5 @@ async def get_current_user(dialog_manager: DialogManager, **__: Any) -> dict[str
         "first_name": user.first_name,
         "last_name": user.last_name,
         "phone": user.phone,
-        "formatted_timezone": user.timezone,
+        "formatted_timezone": TIMEZONES.get(user.timezone, user.timezone),
     }

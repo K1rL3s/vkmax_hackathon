@@ -1,7 +1,7 @@
 from magic_filter import F
 
 from maxo.dialogs import Dialog, Window
-from maxo.dialogs.widgets.kbd import Button, Radio, RequestContact, Url
+from maxo.dialogs.widgets.kbd import Button, Radio, RequestContact, RequestLocation, Url
 from maxo.dialogs.widgets.text import Const, Format, HtmlSafeFormat, Multi
 
 from . import getters, handlers
@@ -29,9 +29,11 @@ _profile = Window(
         id="delete_phone",
     ),
     Url(
-        Const("🌐 Изменить часовой пояс"),
+        Const("🌐 Ввести часовой пояс"),
         Format("{profile_deeplink}"),
-        id="webapp",
+    ),
+    RequestLocation(
+        Const("📍 Определить часовой пояс"),
     ),
     empty_button("🔔 Режим уведомлений:"),
     Radio(

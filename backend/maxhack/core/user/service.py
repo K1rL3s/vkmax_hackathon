@@ -9,6 +9,7 @@ from maxhack.core.exceptions import (
 )
 from maxhack.core.group.consts import PRIVATE_GROUP_NAME
 from maxhack.core.ids import MaxChatId, MaxId, UserId
+from maxhack.core.utils.timezones import TIMEZONES
 from maxhack.database.models import (
     EventModel,
     GroupModel,
@@ -122,6 +123,8 @@ class UserService:
         if phone is not None:
             values["phone"] = phone
         if timezone is not None:
+            if timezone not in TIMEZONES:
+                raise InvalidValue
             values["timezone"] = timezone
         if notify_mode is not None:
             values["notify_mode"] = notify_mode
