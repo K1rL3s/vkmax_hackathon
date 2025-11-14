@@ -3,7 +3,7 @@ from fastapi import APIRouter, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.event.service import EventService
-from maxhack.core.ids import GroupId, MaxChatId, MaxId, UserId
+from maxhack.core.ids import GroupId, MaxChatId, MaxId, TagId, UserId
 from maxhack.core.tag.service import TagService
 from maxhack.core.user.service import UserService
 from maxhack.web.dependencies import CurrentUser
@@ -129,13 +129,21 @@ async def list_user_groups_route(
 async def list_personal_events_route(
     user_service: FromDishka[UserService],
     current_user: CurrentUser,
+    tag_ids: str | None = Query(
+        None,
+        description="Список ID тегов через запятую для фильтрации",
+    ),
 ) -> list[EventResponse]:
     """
     Получение личных событий пользователя
     """
+    parsed_tag_ids: list[TagId] | None = None
+    if tag_ids:
+        parsed_tag_ids = [TagId(int(tid.strip())) for tid in tag_ids.split(",") if tid.strip()]
 
     events = await user_service.get_personal_events(
         user_id=UserId(current_user.db_user.id),
+        tag_ids=parsed_tag_ids,
     )
     response_events = []
     for event in events:
@@ -192,11 +200,15 @@ async def list_user_events_route(
         description="Список ID тегов через запятую для фильтрации",
     ),
 ) -> list[EventResponse]:
+    parsed_tag_ids: list[TagId] | None = None
+    if tag_ids:
+        parsed_tag_ids = [TagId(int(tid.strip())) for tid in tag_ids.split(",") if tid.strip()]
+
     events = await event_service.list_user_events(
         group_id=group_id,
         user_id=user_id,
         master_id=current_user.db_user.id,
-        tag_ids=tag_ids,
+        tag_ids=parsed_tag_ids,
     )
     response_events = []
     for event in events:

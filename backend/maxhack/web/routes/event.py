@@ -1,12 +1,12 @@
 from typing import Any
 
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.event.models import Cron, EventCreate, EventUpdate
 from maxhack.core.event.service import EventService
-from maxhack.core.ids import EventId, GroupId, UserId
+from maxhack.core.ids import EventId, GroupId, TagId, UserId
 from maxhack.web.dependencies import CurrentUser
 from maxhack.web.utils.ics import generate_ics_for_events
 from maxhack.web.schemas.event import (
@@ -179,10 +179,19 @@ async def get_group_events_route(
     group_id: GroupId,
     event_service: FromDishka[EventService],
     current_user: CurrentUser,
+    tag_ids: str | None = Query(
+        None,
+        description="Список ID тегов через запятую для фильтрации",
+    ),
 ) -> EventsResponse:
+    parsed_tag_ids: list[TagId] | None = None
+    if tag_ids:
+        parsed_tag_ids = [TagId(int(tid.strip())) for tid in tag_ids.split(",") if tid.strip()]
+
     events_with_responds = await event_service.get_group_events(
         group_id=group_id,
         user_id=UserId(current_user.db_user.id),
+        tag_ids=parsed_tag_ids,
     )
     response_events = []
     for event, respond in events_with_responds:
@@ -218,9 +227,18 @@ async def get_group_events_route(
 async def get_user_events_route(
     event_service: FromDishka[EventService],
     current_user: CurrentUser,
+    tag_ids: str | None = Query(
+        None,
+        description="Список ID тегов через запятую для фильтрации",
+    ),
 ) -> EventsResponse:
+    parsed_tag_ids: list[TagId] | None = None
+    if tag_ids:
+        parsed_tag_ids = [TagId(int(tid.strip())) for tid in tag_ids.split(",") if tid.strip()]
+
     events = await event_service.get_user_events(
         user_id=UserId(current_user.db_user.id),
+        tag_ids=parsed_tag_ids,
     )
     response_events = []
     for event in events:

@@ -8,7 +8,7 @@ from maxhack.core.exceptions import (
     UserNotFound,
 )
 from maxhack.core.group.consts import PRIVATE_GROUP_NAME
-from maxhack.core.ids import MaxChatId, MaxId, UserId
+from maxhack.core.ids import MaxChatId, MaxId, TagId, UserId
 from maxhack.core.utils.timezones import TIMEZONES
 from maxhack.database.models import (
     EventModel,
@@ -169,10 +169,17 @@ class UserService:
         logger.info("Personal group for user %d retrieved successfully", user.id)
         return group
 
-    async def get_personal_events(self, user_id: UserId) -> list[EventModel]:
-        logger.debug("Getting personal events for user %d", user_id)
+    async def get_personal_events(
+        self,
+        user_id: UserId,
+        tag_ids: list[TagId] | None = None,
+    ) -> list[EventModel]:
+        logger.debug("Getting personal events for user %d with tags %s", user_id, tag_ids)
         personal_group = await self.get_personal_group(user_id)
-        events = await self._event_repo.get_by_group_id(group_id=personal_group.id)
+        events = await self._event_repo.get_by_group_id(
+            group_id=personal_group.id,
+            tag_ids=tag_ids,
+        )
         logger.info(
             "%d Personal events for user %d retrieved successfully",
             len(events),

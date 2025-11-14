@@ -135,6 +135,7 @@ class EventRepo(BaseAlchemyRepo):
         self,
         group_id: GroupId,
         user_id: UserId,
+        tag_ids: list[TagId] | None = None,
     ) -> list[EventModel]:
         stmt = (
             select(EventModel)
@@ -145,11 +146,25 @@ class EventRepo(BaseAlchemyRepo):
                 UsersToEvents.user_id == user_id,
                 EventModel.is_not_deleted,
             )
-            .order_by(EventModel.created_at.desc())
         )
+        if tag_ids:
+            events_with_tags_subquery = (
+                select(TagsToEvents.event_id)
+                .where(
+                    TagsToEvents.tag_id.in_(tag_ids),
+                    TagsToEvents.is_not_deleted,
+                )
+                .scalar_subquery()
+            )
+            stmt = stmt.where(EventModel.id.in_(events_with_tags_subquery))
+        stmt = stmt.order_by(EventModel.created_at.desc())
         return list(await self._session.scalars(stmt))
 
-    async def get_by_group_id(self, group_id: GroupId) -> list[EventModel]:
+    async def get_by_group_id(
+        self,
+        group_id: GroupId,
+        tag_ids: list[TagId] | None = None,
+    ) -> list[EventModel]:
         stmt = (
             select(EventModel)
             .options(selectinload(EventModel.notifies))
@@ -157,8 +172,18 @@ class EventRepo(BaseAlchemyRepo):
                 EventModel.group_id == group_id,
                 EventModel.is_not_deleted,
             )
-            .order_by(EventModel.created_at.desc())
         )
+        if tag_ids:
+            events_with_tags_subquery = (
+                select(TagsToEvents.event_id)
+                .where(
+                    TagsToEvents.tag_id.in_(tag_ids),
+                    TagsToEvents.is_not_deleted,
+                )
+                .scalar_subquery()
+            )
+            stmt = stmt.where(EventModel.id.in_(events_with_tags_subquery))
+        stmt = stmt.order_by(EventModel.created_at.desc())
         return list(await self._session.scalars(stmt))
 
     async def get_by_user(
@@ -199,6 +224,7 @@ class EventRepo(BaseAlchemyRepo):
         user_id: UserId,
         limit: int | None = None,
         offset: int | None = None,
+        tag_ids: list[TagId] | None = None,
     ) -> list[EventModel]:
         stmt = (
             select(EventModel)
@@ -207,10 +233,18 @@ class EventRepo(BaseAlchemyRepo):
                 EventModel.creator_id == user_id,
                 EventModel.is_not_deleted,
             )
-            .order_by(EventModel.created_at.desc())
-            .limit(limit)
-            .offset(offset)
         )
+        if tag_ids:
+            events_with_tags_subquery = (
+                select(TagsToEvents.event_id)
+                .where(
+                    TagsToEvents.tag_id.in_(tag_ids),
+                    TagsToEvents.is_not_deleted,
+                )
+                .scalar_subquery()
+            )
+            stmt = stmt.where(EventModel.id.in_(events_with_tags_subquery))
+        stmt = stmt.order_by(EventModel.created_at.desc()).limit(limit).offset(offset)
         return list(await self._session.scalars(stmt))
 
     async def add_tag(

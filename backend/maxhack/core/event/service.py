@@ -355,6 +355,7 @@ class EventService(BaseService):
         self,
         group_id: GroupId,
         user_id: UserId,
+        tag_ids: list[TagId] | None = None,
     ) -> list[tuple[EventModel, RespondModel | None]]:
         logger.debug(f"Getting events for group {group_id} for user {user_id}")
         await self._ensure_group_exists(group_id)
@@ -368,12 +369,12 @@ class EventService(BaseService):
             raise NotEnoughRights
 
         if membership.role_id in {CREATOR_ROLE_ID, EDITOR_ROLE_ID}:
-            events = await self._event_repo.get_by_group_id(group_id)
+            events = await self._event_repo.get_by_group_id(group_id, tag_ids)
             logger.info(
                 f"Found {len(events)} events for group {group_id} (all events for role {membership.role_id})",
             )
         else:
-            events = await self._event_repo.get_by_group(group_id, user_id)
+            events = await self._event_repo.get_by_group(group_id, user_id, tag_ids)
             logger.info(
                 f"Found {len(events)} events for group {group_id} for user {user_id}",
             )
@@ -388,10 +389,14 @@ class EventService(BaseService):
 
         return result
 
-    async def get_user_events(self, user_id: UserId) -> list[EventModel]:
-        logger.debug(f"Getting events for user {user_id}")
+    async def get_user_events(
+        self,
+        user_id: UserId,
+        tag_ids: list[TagId] | None = None,
+    ) -> list[EventModel]:
+        logger.debug(f"Getting events for user {user_id} with tags {tag_ids}")
         await self._ensure_user_exists(user_id)
-        events = await self._event_repo.get_created_by_user(user_id)
+        events = await self._event_repo.get_created_by_user(user_id, tag_ids=tag_ids)
         logger.info(f"Found {len(events)} events for user {user_id}")
         return events
 
