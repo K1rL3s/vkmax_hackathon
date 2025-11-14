@@ -1,6 +1,6 @@
 from maxo.dialogs import Dialog, Window
 from maxo.dialogs.widgets.kbd import Button
-from maxo.dialogs.widgets.text import Const, Format
+from maxo.dialogs.widgets.text import Const, Format, HtmlSafeFormat
 
 from . import getters, handlers
 from maxhack.bot.handlers.utils import on_start_update_dialog_data
@@ -11,11 +11,11 @@ from maxhack.bot.widgets.to_menu import TO_MENU_BUTTON, to_menu_button
 from maxhack.bot.widgets.url_select import UrlSelect
 
 _groups = Window(
-    Const("💤 Твои группы"),
+    Const("👫 Твои группы"),
     CustomScrollingGroup(
         UrlSelect(
             text=Format("{item[0]} {item[1]}"),
-            url=Format("https://max.ru/{item[2]}?startapp&start_param={item[3]}"),
+            url=Format("{item[2]}"),
             items="groups",
             id="select_group",
         ),
@@ -26,7 +26,7 @@ _groups = Window(
 )
 
 _join_group = Window(
-    Format("💤 Тебя приглашают в группу {group.name}"),
+    HtmlSafeFormat("👫 Тебя приглашают в группу {group.name}"),
     Button(
         Const("✅ Принять приглашение"),
         id="join",

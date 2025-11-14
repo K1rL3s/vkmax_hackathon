@@ -16,9 +16,11 @@ from maxhack.bot.handlers import (
     errors_router,
     groups_dialog,
     menu_dialog,
+    phone_router,
     profile_dialog,
     respond_router,
     start_router,
+    unknown_router,
 )
 from maxhack.bot.middlewares import (
     AiogdUserContextMiddleware,
@@ -77,11 +79,13 @@ async def init_dispatcher(
         errors_router,
         commands_router,
         start_router,
+        phone_router,
         respond_router,
         errors_dialog,
         menu_dialog,
         profile_dialog,
         groups_dialog,
+        unknown_router,  # должен быть в конце
     )
 
     bg_factory = setup_dialogs(dp, events_isolation=DisabledEventIsolation())

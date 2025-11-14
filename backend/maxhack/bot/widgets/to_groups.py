@@ -8,7 +8,7 @@ from maxhack.bot.states import Groups
 
 
 def to_groups_button(
-    text: str = "💤 Группы",
+    text: str = "👫 Группы",
     show_mode: ShowMode = ShowMode.EDIT,
 ) -> Start:
     return Start(

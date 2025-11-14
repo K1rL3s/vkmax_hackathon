@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 from dishka import FromDishka
@@ -5,6 +6,7 @@ from dishka import FromDishka
 from maxo import Bot
 from maxo.dialogs import DialogManager
 from maxo.dialogs.integrations.dishka import inject
+from maxo.utils.deeplink import create_startapp_link
 
 from maxhack.core.exceptions import GroupNotFound, InviteNotFound, MaxHackError
 from maxhack.core.group.service import GroupService
@@ -15,7 +17,6 @@ from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.user.service import UserService
 from maxhack.database.models import UserModel
 from maxhack.database.repos.group import GroupRepo
-from maxhack.utils.utils import obj_to_base64
 
 
 @inject
@@ -31,8 +32,11 @@ async def get_my_groups(
             (
                 role.emoji,
                 group.name,
-                bot.state.info.username,
-                obj_to_base64({"path": f"/groups/{group.id}"}),
+                create_startapp_link(
+                    bot,
+                    json.dumps({"path": f"/groups/{group.id}"}),
+                    encode=True,
+                ),
             )
             for group, role in groups
         ],

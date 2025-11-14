@@ -1,5 +1,5 @@
 from maxo.dialogs import Dialog, Window
-from maxo.dialogs.widgets.text import Const, Format
+from maxo.dialogs.widgets.text import Const, HtmlSafeFormat
 
 from maxhack.bot.handlers.errors.getters import get_error_reason
 from maxhack.bot.states import Errors
@@ -12,7 +12,7 @@ on_error_intent = Window(
 
 on_unexcepted_error = Window(
     Const("😵‍💫 Произошла неизвестная ошибка..."),
-    Format("Возможная причина: {reason}", when="reason"),
+    HtmlSafeFormat("Возможная причина: {reason}", when="reason"),
     Const("Чтобы всё заработало, напиши <code>/start</code>"),
     getter=get_error_reason,
     state=Errors.unexcepted_error,
