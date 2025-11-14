@@ -1,13 +1,14 @@
 from typing import Any
 
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.event.models import Cron, EventCreate, EventUpdate
 from maxhack.core.event.service import EventService
 from maxhack.core.ids import EventId, GroupId, UserId
 from maxhack.web.dependencies import CurrentUser
+from maxhack.web.utils.ics import generate_ics_for_events
 from maxhack.web.schemas.event import (
     EventAddTagRequest,
     EventAddUserRequest,
@@ -100,6 +101,8 @@ async def get_event_route(
             EventNotifyResponse.model_validate(notify) for notify in event.notifies
         ],
         timezone=event.timezone,
+        duration=event.duration,
+        event_happened=event.event_happened,
     )
 
 
@@ -194,6 +197,8 @@ async def get_group_events_route(
             "creator_id": event.creator_id,
             "group_id": event.group_id,
             "timezone": event.timezone,
+            "duration": event.duration,
+            "event_happened": event.event_happened,
             "notifies": [notify.minutes_before for notify in event.notifies],
         }
         if respond is not None:
@@ -229,28 +234,95 @@ async def get_user_events_route(
             "creator_id": event.creator_id,
             "group_id": event.group_id,
             "timezone": event.timezone,
+            "duration": event.duration,
+            "event_happened": event.event_happened,
             "notifies": [notify.minutes_before for notify in event.notifies],
         }
         response_events.append(EventResponse.model_validate(event_dict))
     return EventsResponse(events=response_events)
 
 
-# @event_router.get(
-#     "/users/{slave_id}/events",
-#     response_model=EventsResponse,
-#     description="Просмотр событий другого пользователя (Если вы в одной группе)",
-# )
-# async def get_other_user_events_route(
-#     slave_id: UserId,
-#     event_service: FromDishka[EventService],
-#     session: FromDishka[AsyncSession],
-#     current_user: CurrentUser,
-# ) -> EventsResponse:
-#     events = await event_service.get_other_user_events(
-#         target_user_id=slave_id,
-#         user_id=current_user.db_user.id,
-#     )
-#     response_events = [
-#         await EventResponse.from_orm_async(event, session) for event in events
-#     ]
-#     return EventsResponse(events=response_events)
+@event_router.get(
+    "/export/all-groups",
+    description="Выгрузить все события группы, в которых участвует пользователь, во всех группах",
+    response_class=Response,
+)
+async def export_user_events_all_groups_route(
+    event_service: FromDishka[EventService],
+    current_user: CurrentUser,
+) -> Response:
+    """Выгружает все события, в которых участвует пользователь, из всех его групп."""
+    user_id = UserId(current_user.db_user.id)
+
+    events, groups_dict = await event_service.get_user_events_all_groups_for_export(user_id)
+
+    # Генерируем .ics файл
+    ics_content = generate_ics_for_events(events, groups_dict)
+
+    return Response(
+        content=ics_content,
+        media_type="text/calendar",
+        headers={
+            "Content-Disposition": 'attachment; filename="events_all_groups.ics"',
+        },
+    )
+
+
+@event_router.get(
+    "/export/groups/{group_id}/user",
+    description="Выгрузить все события пользователя в рамках одной группы",
+    response_class=Response,
+)
+async def export_user_events_in_group_route(
+    group_id: GroupId,
+    event_service: FromDishka[EventService],
+    current_user: CurrentUser,
+) -> Response:
+    """Выгружает все события пользователя в рамках одной группы."""
+    user_id = UserId(current_user.db_user.id)
+
+    events, groups_dict = await event_service.get_user_events_in_group_for_export(
+        group_id=group_id,
+        user_id=user_id,
+    )
+
+    # Генерируем .ics файл
+    ics_content = generate_ics_for_events(events, groups_dict)
+
+    return Response(
+        content=ics_content,
+        media_type="text/calendar",
+        headers={
+            "Content-Disposition": f'attachment; filename="events_group_{group_id}.ics"',
+        },
+    )
+
+
+@event_router.get(
+    "/export/groups/{group_id}/all",
+    description="Выгрузить все события группы (только для ролей 1 и 2)",
+    response_class=Response,
+)
+async def export_all_group_events_route(
+    group_id: GroupId,
+    event_service: FromDishka[EventService],
+    current_user: CurrentUser,
+) -> Response:
+    """Выгружает все события группы. Доступно только для ролей 1 (CREATOR) и 2 (EDITOR)."""
+    user_id = UserId(current_user.db_user.id)
+
+    events, groups_dict = await event_service.get_all_group_events_for_export(
+        group_id=group_id,
+        user_id=user_id,
+    )
+
+    # Генерируем .ics файл
+    ics_content = generate_ics_for_events(events, groups_dict)
+
+    return Response(
+        content=ics_content,
+        media_type="text/calendar",
+        headers={
+            "Content-Disposition": f'attachment; filename="all_events_group_{group_id}.ics"',
+        },
+    )

@@ -149,6 +149,8 @@ async def list_personal_events_route(
             "creator_id": event.creator_id,
             "group_id": event.group_id,
             "timezone": event.timezone,
+            "duration": event.duration,
+            "event_happened": event.event_happened,
             "notifies": [notify.minutes_before for notify in event.notifies],
         }
         response_events.append(EventResponse.model_validate(event_dict))
@@ -208,6 +210,8 @@ async def list_user_events_route(
             "creator_id": event.creator_id,
             "group_id": event.group_id,
             "timezone": event.timezone,
+            "duration": event.duration,
+            "event_happened": event.event_happened,
             "notifies": [notify.minutes_before for notify in event.notifies],
         }
         response_events.append(EventResponse.model_validate(event_dict))

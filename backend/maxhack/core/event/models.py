@@ -40,6 +40,7 @@ class EventCreate(DomainModel):
     type: EventType = field(default="event")
     timezone: int | None = field(default=None)
     group_id: GroupId
+    duration: int = field(default=0)
     participants_ids: list[UserId] = field(default_factory=list[UserId])
     tags_ids: list[TagId] = field(default_factory=list[TagId])
     minutes_before: list[int] = field(default_factory=list)
@@ -52,6 +53,7 @@ class EventUpdate(DomainModel):
     type: str | None = field(default=None)
     timezone: int | None = field(default=None)
     cron: Cron | None = field(default=None)
+    duration: int | None = field(default=None)
 
     @override
     def to_dict(

@@ -23,6 +23,7 @@ class EventCreateRequest(Model):
     type: Literal["event"] = Field("event", description="Тип события")
     cron: CronSchema
     group_id: GroupId
+    duration: int = Field(default=0)
     participants_ids: list[UserId] = Field(
         default_factory=list[UserId],
         description="Упомянаемые пользователи",
@@ -40,6 +41,7 @@ class EventUpdateRequest(Model):
     type: str | None = None
     timezone: int | None = None
     cron: CronSchema | None = None
+    duration: int | None = None
 
 
 class RespondResponse(Model):
@@ -61,6 +63,8 @@ class EventResponse(Model):
     creator_id: UserId
     group_id: GroupId
     timezone: int
+    duration: int = 0
+    event_happened: bool = False
     respond: RespondResponse | None = None
     notifies: list[int] = Field(default_factory=list)
 
@@ -77,6 +81,8 @@ class EventDetailsResponse(Model):
     tags: list[TagResponse]
     notifies: list[EventNotifyResponse]
     timezone: int
+    duration: int = 0
+    event_happened: bool = False
 
 
 class EventAddTagRequest(Model):

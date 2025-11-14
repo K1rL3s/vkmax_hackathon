@@ -20,6 +20,7 @@ from maxhack.core.utils.datehelp import datetime_now
 from maxhack.database.models import (
     EventModel,
     EventNotifyModel,
+    GroupModel,
     RespondModel,
     UserModel,
     UsersToGroupsModel,
@@ -133,6 +134,7 @@ class EventService(BaseService):
             type=event_create_scheme.type,
             creator_id=event_create_scheme.creator_id,
             group_id=event_create_scheme.group_id,
+            duration=event_create_scheme.duration,
         )
         logger.info(f"Event {event.id} created successfully")
         await self.add_tag_to_event(
@@ -371,13 +373,11 @@ class EventService(BaseService):
                 f"Found {len(events)} events for group {group_id} (all events for role {membership.role_id})",
             )
         else:
-            # Для обычных участников показываем только свои события
             events = await self._event_repo.get_by_group(group_id, user_id)
             logger.info(
                 f"Found {len(events)} events for group {group_id} for user {user_id}",
             )
 
-        # Получаем respond для каждого события
         result: list[tuple[EventModel, RespondModel | None]] = []
         for event in events:
             respond = await self._respond_repo.get_user_respond(
@@ -463,7 +463,6 @@ class EventService(BaseService):
         self,
     ) -> list[tuple[list[tuple[UserModel, UsersToGroupsModel | None]], EventModel]]:
         logger.debug("Getting notifications by date interval")
-        # TODO: отправляется на минуту позже WTF OMG LMAOOOOOOO
         time_now = datetime_now()
         last_start_str = await self._redis.get("last_start")
         if last_start_str:
@@ -472,8 +471,6 @@ class EventService(BaseService):
         else:
             last_start = time_now
             logger.debug("Last start time not found in redis, using current time")
-        await self._redis.set("last_start", time_now.isoformat())
-        logger.debug(f"New last start time set to redis: {time_now}")
 
         events_with_notifies = await self._event_repo.get_notifies()
         logger.debug(f"Found {len(events_with_notifies)} events with notifies")
@@ -483,12 +480,17 @@ class EventService(BaseService):
 
         for event_notify, event in events_with_notifies:
             try:
+                # Для уведомлений проверяем интервал: от (last_start - minutes_before) до time_now
+                # Это позволяет отправить уведомление, если событие произойдет между last_start и time_now
                 check_time = last_start - timedelta(minutes=event_notify.minutes_before)
-                if pycron.has_been(event.cron, since=check_time, dt=last_start):
+                if pycron.has_been(event.cron, since=check_time, dt=time_now):
                     logger.debug(f"Event {event.id} matches cron expression")
+                    # Помечаем событие как случившееся, если оно не повторяющееся и уведомление за 0 минут
                     if not event.is_cycle and event_notify.minutes_before == 0:
-                        await self._event_repo.update(event.id, event_happened=True)
-                        logger.debug(f"Event {event.id} marked as happened")
+                        # Проверяем, что событие действительно произошло между last_start и time_now
+                        if pycron.has_been(event.cron, since=last_start, dt=time_now):
+                            await self._event_repo.update(event.id, event_happened=True)
+                            logger.debug(f"Event {event.id} marked as happened")
 
                     users = await self._event_repo.get_event_users(event.id)
                     logger.debug(f"Found {len(users)} users for event {event.id}")
@@ -516,8 +518,129 @@ class EventService(BaseService):
                 )
                 continue
 
+        # Сохраняем time_now в redis как новый last_start только после обработки всех событий
+        await self._redis.set("last_start", time_now.isoformat())
+        logger.debug(f"New last start time set to redis: {time_now}")
+
         logger.info(f"Found {len(matching_notify)} matching notifications")
         return matching_notify
+
+    async def get_user_events_all_groups_for_export(
+        self,
+        user_id: UserId,
+    ) -> tuple[list[EventModel], dict[GroupId, GroupModel]]:
+        """Получает все события пользователя из всех его групп для экспорта.
+
+        Returns:
+            tuple[list[EventModel], dict[GroupId, GroupModel]]: События и словарь групп
+        """
+        logger.debug(f"Getting all user events from all groups for export for user {user_id}")
+        await self._ensure_user_exists(user_id)
+
+        # Получаем все группы пользователя
+        user_groups = await self._users_to_groups_repo.user_groups(user_id)
+
+        # Собираем все события из всех групп, где пользователь участвует
+        all_events: list[EventModel] = []
+        groups_dict: dict[GroupId, GroupModel] = {}
+
+        for group, _ in user_groups:
+            groups_dict[group.id] = group
+            # Получаем события пользователя в этой группе
+            events = await self._event_repo.list_user_events(
+                group_id=group.id,
+                user_id=user_id,
+                tag_ids=None,
+            )
+            all_events.extend(events)
+
+        logger.info(
+            f"Found {len(all_events)} events for user {user_id} in {len(groups_dict)} groups",
+        )
+        return all_events, groups_dict
+
+    async def get_user_events_in_group_for_export(
+        self,
+        group_id: GroupId,
+        user_id: UserId,
+    ) -> tuple[list[EventModel], dict[GroupId, GroupModel]]:
+        """Получает все события пользователя в рамках одной группы для экспорта.
+
+        Returns:
+            tuple[list[EventModel], dict[GroupId, GroupModel]]: События и словарь с одной группой
+        """
+        logger.debug(
+            f"Getting user events in group {group_id} for export for user {user_id}",
+        )
+        await self._ensure_group_exists(group_id)
+        await self._ensure_membership_role(user_id=user_id, group_id=group_id)
+
+        # Получаем события пользователя в группе
+        events = await self._event_repo.list_user_events(
+            group_id=group_id,
+            user_id=user_id,
+            tag_ids=None,
+        )
+
+        # Получаем информацию о группе
+        group = await self._group_repo.get_by_id(group_id)
+        if group is None:
+            logger.error(f"Group {group_id} not found")
+            raise GroupNotFound
+
+        groups_dict = {group_id: group}
+
+        logger.info(
+            f"Found {len(events)} events for user {user_id} in group {group_id}",
+        )
+        return events, groups_dict
+
+    async def get_all_group_events_for_export(
+        self,
+        group_id: GroupId,
+        user_id: UserId,
+    ) -> tuple[list[EventModel], dict[GroupId, GroupModel]]:
+        """Получает все события группы для экспорта. Доступно только для ролей 1 и 2.
+
+        Returns:
+            tuple[list[EventModel], dict[GroupId, GroupModel]]: События и словарь с одной группой
+        """
+        logger.debug(f"Getting all group events for export for group {group_id} by user {user_id}")
+        await self._ensure_group_exists(group_id)
+
+        # Проверяем права доступа
+        membership = await self._users_to_groups_repo.get_membership(
+            user_id=user_id,
+            group_id=group_id,
+        )
+        if membership is None:
+            logger.warning(f"User {user_id} is not in group {group_id}")
+            raise NotEnoughRights
+
+        # Проверяем, что пользователь имеет роль 1 или 2
+        if membership.role_id not in {CREATOR_ROLE_ID, EDITOR_ROLE_ID}:
+            logger.warning(
+                f"User {user_id} with role {membership.role_id} has no rights to export all events from group {group_id}",
+            )
+            raise NotEnoughRights
+
+        # Получаем все события группы
+        events_with_responds = await self.get_group_events(
+            group_id=group_id,
+            user_id=user_id,
+        )
+        events = [event for event, _ in events_with_responds]
+
+        # Получаем информацию о группе
+        group = await self._group_repo.get_by_id(group_id)
+        if group is None:
+            logger.error(f"Group {group_id} not found")
+            raise GroupNotFound
+
+        groups_dict = {group_id: group}
+
+        logger.info(f"Found {len(events)} events in group {group_id} for export")
+        return events, groups_dict
 
     async def get_by_user(
         self,
