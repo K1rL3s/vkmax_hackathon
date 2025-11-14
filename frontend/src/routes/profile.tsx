@@ -10,11 +10,9 @@ import {
 } from '@maxhub/max-ui'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import {  useForm } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { z } from 'zod'
 import { clsx } from 'clsx'
-import { LucideMessageCircleWarning } from 'lucide-react'
-import type {StandardSchemaV1Issue} from '@tanstack/react-form';
 import { Header } from '@/components/header'
 import { Avatar } from '@/components/avatar'
 import { useEditMe, useMe } from '@/hooks/user'
@@ -59,7 +57,7 @@ function ProfilePage() {
     <Flex className="h-screen" direction="column" gapY={24}>
       <Header />
       <Panel className="w-full h-full pb-4">
-        <FallbackLoader isLoading={false}>
+        <FallbackLoader isLoading={isPending}>
           <form
             onSubmit={(e) => {
               e.preventDefault()
@@ -75,11 +73,17 @@ function ProfilePage() {
                 direction="column"
               >
                 <Flex className="w-full h-full" direction="column" gapY={34}>
-                  <Flex className="w-full" justify="center">
+                  <Flex
+                    direction="column"
+                    gapY={24}
+                    className="w-full"
+                    align="center"
+                  >
                     <Avatar
                       size={88}
                       firstName={data?.firstName ?? ''}
                       lastName={data?.lastName ?? ''}
+                      image_url={data?.maxPhoto as string | undefined}
                     />
                     <Typography.Headline>
                       {data?.firstName} {data?.lastName}

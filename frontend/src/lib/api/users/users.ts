@@ -13,6 +13,7 @@
 import { request } from '.././client'
 import type {
   EventResponse,
+  ListUserEventsRouteUsersUserIdGroupsGroupIdEventsGetParams,
   TagResponse,
   UserCreateRequest,
   UserGroupsResponse,
@@ -102,10 +103,11 @@ export const listUserTagsRouteUsersUserIdGroupsGroupIdTagsGet = (
 export const listUserEventsRouteUsersUserIdGroupsGroupIdEventsGet = (
   userId: number,
   groupId: number,
+  params?: ListUserEventsRouteUsersUserIdGroupsGroupIdEventsGetParams,
   options?: SecondParameter<typeof request<Array<EventResponse>>>,
 ) => {
   return request<Array<EventResponse>>(
-    { url: `/users/${userId}/groups/${groupId}/events`, method: 'GET' },
+    { url: `/users/${userId}/groups/${groupId}/events`, method: 'GET', params },
     options,
   )
 }

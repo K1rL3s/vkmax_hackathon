@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GroupsCreateRouteImport } from './routes/groups/create'
+import { Route as EventsCreateRouteImport } from './routes/events/create'
 import { Route as EventsIdRouteImport } from './routes/events/$id'
 import { Route as GroupsGroupIdIndexRouteImport } from './routes/groups/$groupId/index'
 import { Route as GroupsGroupIdSettingsRouteImport } from './routes/groups/$groupId/settings'
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const GroupsCreateRoute = GroupsCreateRouteImport.update({
   id: '/groups/create',
   path: '/groups/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsCreateRoute = EventsCreateRouteImport.update({
+  id: '/events/create',
+  path: '/events/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventsIdRoute = EventsIdRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/profile': typeof ProfileRoute
   '/events/$id': typeof EventsIdRoute
+  '/events/create': typeof EventsCreateRoute
   '/groups/create': typeof GroupsCreateRoute
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId': typeof GroupsGroupIdIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/profile': typeof ProfileRoute
   '/events/$id': typeof EventsIdRoute
+  '/events/create': typeof EventsCreateRoute
   '/groups/create': typeof GroupsCreateRoute
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId': typeof GroupsGroupIdIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/profile': typeof ProfileRoute
   '/events/$id': typeof EventsIdRoute
+  '/events/create': typeof EventsCreateRoute
   '/groups/create': typeof GroupsCreateRoute
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId/': typeof GroupsGroupIdIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/profile'
     | '/events/$id'
+    | '/events/create'
     | '/groups/create'
     | '/groups/$groupId/settings'
     | '/groups/$groupId'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/'
     | '/profile'
     | '/events/$id'
+    | '/events/create'
     | '/groups/create'
     | '/groups/$groupId/settings'
     | '/groups/$groupId'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/profile'
     | '/events/$id'
+    | '/events/create'
     | '/groups/create'
     | '/groups/$groupId/settings'
     | '/groups/$groupId/'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProfileRoute: typeof ProfileRoute
   EventsIdRoute: typeof EventsIdRoute
+  EventsCreateRoute: typeof EventsCreateRoute
   GroupsCreateRoute: typeof GroupsCreateRoute
   GroupsGroupIdSettingsRoute: typeof GroupsGroupIdSettingsRoute
   GroupsGroupIdIndexRoute: typeof GroupsGroupIdIndexRoute
@@ -170,6 +183,13 @@ declare module '@tanstack/react-router' {
       path: '/groups/create'
       fullPath: '/groups/create'
       preLoaderRoute: typeof GroupsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events/create': {
+      id: '/events/create'
+      path: '/events/create'
+      fullPath: '/events/create'
+      preLoaderRoute: typeof EventsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/events/$id': {
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProfileRoute: ProfileRoute,
   EventsIdRoute: EventsIdRoute,
+  EventsCreateRoute: EventsCreateRoute,
   GroupsCreateRoute: GroupsCreateRoute,
   GroupsGroupIdSettingsRoute: GroupsGroupIdSettingsRoute,
   GroupsGroupIdIndexRoute: GroupsGroupIdIndexRoute,

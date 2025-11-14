@@ -379,6 +379,18 @@
                     'schema': { 'type': 'integer', 'title': 'Group Id' },
                   },
                   {
+                    'name': 'tag_ids',
+                    'in': 'query',
+                    'required': false,
+                    'schema':
+                      {
+                        'anyOf': [{ 'type': 'string' }, { 'type': 'null' }],
+                        'description': 'Список ID тегов через запятую для фильтрации',
+                        'title': 'Tag Ids',
+                      },
+                    'description': 'Список ID тегов через запятую для фильтрации',
+                  },
+                  {
                     'name': 'WebAppData',
                     'in': 'header',
                     'required': true,
@@ -985,6 +997,76 @@
               'responses':
                 {
                   '201':
+                    {
+                      'description': 'Successful Response',
+                      'content':
+                        {
+                          'application/json':
+                            {
+                              'schema':
+                                {
+                                  '$ref': '#/components/schemas/GroupMemberResponse',
+                                },
+                            },
+                        },
+                    },
+                  '422':
+                    {
+                      'description': 'Validation Error',
+                      'content':
+                        {
+                          'application/json':
+                            {
+                              'schema':
+                                {
+                                  '$ref': '#/components/schemas/HTTPValidationError',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+      '/groups/{group_id}/notify':
+        {
+          'patch':
+            {
+              'tags': ['Groups'],
+              'summary': 'Update Group Notify Mode',
+              'description': 'Изменить режим уведомлений в группе для самого себя.',
+              'operationId': 'update_group_notify_mode_groups__group_id__notify_patch',
+              'parameters':
+                [
+                  {
+                    'name': 'group_id',
+                    'in': 'path',
+                    'required': true,
+                    'schema': { 'type': 'integer', 'title': 'Group Id' },
+                  },
+                  {
+                    'name': 'WebAppData',
+                    'in': 'header',
+                    'required': true,
+                    'schema': { 'type': 'string', 'title': 'Webappdata' },
+                  },
+                ],
+              'requestBody':
+                {
+                  'required': true,
+                  'content':
+                    {
+                      'application/json':
+                        {
+                          'schema':
+                            {
+                              '$ref': '#/components/schemas/GroupNotifyModeRequest',
+                            },
+                        },
+                    },
+                },
+              'responses':
+                {
+                  '200':
                     {
                       'description': 'Successful Response',
                       'content':
@@ -1892,11 +1974,8 @@
                 {
                   'date':
                     {
-                      'anyOf':
-                        [
-                          { 'type': 'string', 'format': 'date-time' },
-                          { 'type': 'null' },
-                        ],
+                      'type': 'string',
+                      'format': 'date-time',
                       'title': 'Date',
                     },
                   'everyDay':
@@ -1919,6 +1998,7 @@
                     },
                 },
               'type': 'object',
+              'required': ['date'],
               'title': 'CronSchema',
             },
           'EventAddTagRequest':
@@ -2130,9 +2210,10 @@
                   'userId': { 'type': 'integer', 'title': 'Userid' },
                   'groupId': { 'type': 'integer', 'title': 'Groupid' },
                   'roleId': { 'type': 'integer', 'title': 'Roleid' },
+                  'notifyMode': { '$ref': '#/components/schemas/NotifyMode' },
                 },
               'type': 'object',
-              'required': ['userId', 'groupId', 'roleId'],
+              'required': ['userId', 'groupId', 'roleId', 'notifyMode'],
               'title': 'GroupMemberResponse',
             },
           'GroupMemberUpdateRequest':
@@ -2159,6 +2240,14 @@
                 },
               'type': 'object',
               'title': 'GroupMemberUpdateRequest',
+            },
+          'GroupNotifyModeRequest':
+            {
+              'properties':
+                { 'notifyMode': { '$ref': '#/components/schemas/NotifyMode' } },
+              'type': 'object',
+              'required': ['notifyMode'],
+              'title': 'GroupNotifyModeRequest',
             },
           'GroupResponse':
             {
@@ -2248,6 +2337,12 @@
               'type': 'object',
               'required': ['inviteKey'],
               'title': 'InviteCreateResponse',
+            },
+          'NotifyMode':
+            {
+              'type': 'string',
+              'enum': ['DEFAULT', 'SILENT', 'DISABLE'],
+              'title': 'NotifyMode',
             },
           'RoleResponse':
             {
@@ -2419,6 +2514,12 @@
                 {
                   'id': { 'type': 'integer', 'title': 'Id' },
                   'maxId': { 'type': 'integer', 'title': 'Maxid' },
+                  'maxChatId': { 'type': 'integer', 'title': 'Maxchatid' },
+                  'maxPhoto':
+                    {
+                      'anyOf': [{ 'type': 'string' }, { 'type': 'null' }],
+                      'title': 'Maxphoto',
+                    },
                   'firstName': { 'type': 'string', 'title': 'Firstname' },
                   'lastName':
                     {
@@ -2427,9 +2528,19 @@
                     },
                   'phone': { 'type': 'string', 'title': 'Phone' },
                   'timezone': { 'type': 'integer', 'title': 'Timezone' },
+                  'notifyMode': { '$ref': '#/components/schemas/NotifyMode' },
                 },
               'type': 'object',
-              'required': ['id', 'maxId', 'firstName', 'phone', 'timezone'],
+              'required':
+                [
+                  'id',
+                  'maxId',
+                  'maxChatId',
+                  'firstName',
+                  'phone',
+                  'timezone',
+                  'notifyMode',
+                ],
               'title': 'UserResponse',
             },
           'UserUpdateRequest':
@@ -2446,10 +2557,28 @@
                       'anyOf': [{ 'type': 'string' }, { 'type': 'null' }],
                       'title': 'Lastname',
                     },
+                  'photo':
+                    {
+                      'anyOf': [{ 'type': 'string' }, { 'type': 'null' }],
+                      'title': 'Photo',
+                    },
                   'phone':
                     {
                       'anyOf': [{ 'type': 'string' }, { 'type': 'null' }],
                       'title': 'Phone',
+                    },
+                  'timezone':
+                    {
+                      'anyOf': [{ 'type': 'integer' }, { 'type': 'null' }],
+                      'title': 'Timezone',
+                    },
+                  'notifyMode':
+                    {
+                      'anyOf':
+                        [
+                          { '$ref': '#/components/schemas/NotifyMode' },
+                          { 'type': 'null' },
+                        ],
                     },
                 },
               'type': 'object',

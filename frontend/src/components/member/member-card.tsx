@@ -1,6 +1,7 @@
-import { Avatar, CellSimple, Flex, Typography } from '@maxhub/max-ui'
+import { CellSimple, Flex, Typography } from '@maxhub/max-ui'
 import { useNavigate } from '@tanstack/react-router'
 import clsx from 'clsx'
+import { Avatar } from '../avatar'
 import type { GroupUserItem } from '@/lib/api/gen.schemas'
 
 export function MemberCard({ member }: { member: GroupUserItem }) {
@@ -16,12 +17,11 @@ export function MemberCard({ member }: { member: GroupUserItem }) {
       }
       key={member.maxId}
       before={
-        <Avatar.Container>
-          <Avatar.Text>
-            {member.firstName?.charAt(0)}
-            {member.lastName?.charAt(0)}
-          </Avatar.Text>
-        </Avatar.Container>
+        <Avatar
+          size={44}
+          firstName={member.firstName ?? ''}
+          lastName={member.lastName ?? ''}
+        />
       }
       title={
         <Typography.Body>

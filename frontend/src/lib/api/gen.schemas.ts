@@ -10,10 +10,8 @@
 
  * OpenAPI spec version: 0.1.0
  */
-export type CronSchemaDate = string | null
-
 export interface CronSchema {
-  date?: CronSchemaDate
+  date: string
   everyDay?: boolean
   everyWeek?: boolean
   everyMonth?: boolean
@@ -105,6 +103,7 @@ export interface GroupMemberResponse {
   userId: number
   groupId: number
   roleId: number
+  notifyMode: NotifyMode
 }
 
 /**
@@ -122,6 +121,10 @@ export interface GroupMemberUpdateRequest {
   roleId?: GroupMemberUpdateRequestRoleId
   /** Список идентификаторов тегов */
   tags?: GroupMemberUpdateRequestTags
+}
+
+export interface GroupNotifyModeRequest {
+  notifyMode: NotifyMode
 }
 
 export type GroupResponseDescription = string | null
@@ -166,6 +169,15 @@ export interface HTTPValidationError {
 export interface InviteCreateResponse {
   inviteKey: string
 }
+
+export type NotifyMode = (typeof NotifyMode)[keyof typeof NotifyMode]
+
+ 
+export const NotifyMode = {
+  DEFAULT: 'DEFAULT',
+  SILENT: 'SILENT',
+  DISABLE: 'DISABLE',
+} as const
 
 export type RoleResponseName =
   (typeof RoleResponseName)[keyof typeof RoleResponseName]
@@ -256,27 +268,41 @@ export interface UserGroupsResponse {
   groups: Array<UserGroupItem>
 }
 
+export type UserResponseMaxPhoto = string | null
+
 export type UserResponseLastName = string | null
 
 export interface UserResponse {
   id: number
   maxId: number
+  maxChatId: number
+  maxPhoto?: UserResponseMaxPhoto
   firstName: string
   lastName?: UserResponseLastName
   phone: string
   timezone: number
+  notifyMode: NotifyMode
 }
 
 export type UserUpdateRequestFirstName = string | null
 
 export type UserUpdateRequestLastName = string | null
 
+export type UserUpdateRequestPhoto = string | null
+
 export type UserUpdateRequestPhone = string | null
+
+export type UserUpdateRequestTimezone = number | null
+
+export type UserUpdateRequestNotifyMode = NotifyMode | null
 
 export interface UserUpdateRequest {
   firstName?: UserUpdateRequestFirstName
   lastName?: UserUpdateRequestLastName
+  photo?: UserUpdateRequestPhoto
   phone?: UserUpdateRequestPhone
+  timezone?: UserUpdateRequestTimezone
+  notifyMode?: UserUpdateRequestNotifyMode
 }
 
 export type ValidationErrorLocItem = string | number
@@ -326,4 +352,11 @@ export interface WebAppUser {
 
 export type CheckInitDataAuthGetParams = {
   WebAppData: string
+}
+
+export type ListUserEventsRouteUsersUserIdGroupsGroupIdEventsGetParams = {
+  /**
+   * Список ID тегов через запятую для фильтрации
+   */
+  tag_ids?: string | null
 }

@@ -20,7 +20,7 @@ type AvatarProps = {
     | 96
   firstName?: string
   lastName?: string
-  image_url?: string
+  image_url?: string | undefined
 }
 
 export function Avatar({

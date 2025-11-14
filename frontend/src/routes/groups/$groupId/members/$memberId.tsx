@@ -154,6 +154,14 @@ function MemberPage() {
                 name="tags"
                 children={(field) => (
                   <TagsInput
+                    header={
+                      <Typography.Headline
+                        variant="small"
+                        className="text-gray-400!"
+                      >
+                        Теги
+                      </Typography.Headline>
+                    }
                     value={field.state.value}
                     options={groupTagsQuery.data}
                     onChange={(tag) => {

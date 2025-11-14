@@ -32,12 +32,10 @@ const rootElement = document.getElementById('app')
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
-    <StrictMode>
-      <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-        <MaxUiProvider.Provider>
-          <RouterProvider router={router} />
-        </MaxUiProvider.Provider>
-      </TanStackQueryProvider.Provider>
-    </StrictMode>,
+    <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
+      <MaxUiProvider.Provider>
+        <RouterProvider router={router} />
+      </MaxUiProvider.Provider>
+    </TanStackQueryProvider.Provider>,
   )
 }

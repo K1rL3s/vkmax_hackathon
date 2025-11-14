@@ -17,6 +17,7 @@ import type {
   GroupMemberAddRequest,
   GroupMemberResponse,
   GroupMemberUpdateRequest,
+  GroupNotifyModeRequest,
   GroupUpdateRequest,
   GroupUserItem,
   InviteCreateResponse,
@@ -180,6 +181,25 @@ export const joinGroupGroupsJoinPost = (
     options,
   )
 }
+/**
+ * Изменить режим уведомлений в группе для самого себя.
+ * @summary Update Group Notify Mode
+ */
+export const updateGroupNotifyModeGroupsGroupIdNotifyPatch = (
+  groupId: number,
+  groupNotifyModeRequest: BodyType<GroupNotifyModeRequest>,
+  options?: SecondParameter<typeof request<GroupMemberResponse>>,
+) => {
+  return request<GroupMemberResponse>(
+    {
+      url: `/groups/${groupId}/notify`,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      data: groupNotifyModeRequest,
+    },
+    options,
+  )
+}
 export type CreateGroupRouteGroupsPostResult = NonNullable<
   Awaited<ReturnType<typeof createGroupRouteGroupsPost>>
 >
@@ -215,4 +235,7 @@ export type CreateInviteRouteGroupsGroupIdInvitePostResult = NonNullable<
 >
 export type JoinGroupGroupsJoinPostResult = NonNullable<
   Awaited<ReturnType<typeof joinGroupGroupsJoinPost>>
+>
+export type UpdateGroupNotifyModeGroupsGroupIdNotifyPatchResult = NonNullable<
+  Awaited<ReturnType<typeof updateGroupNotifyModeGroupsGroupIdNotifyPatch>>
 >

@@ -3,10 +3,13 @@ import type { InitData, UserData } from '@/integrations/max-bridge'
 export type MaxUser = {
   id: number
   maxId: number
+  maxChatId: number
+  maxPhoto: string | null
   firstName: string
   lastName: string
   phone: string
   timezone: number
+  notifyMode: 'DEFAULT'
 }
 
 const TEST_WEB_APP_SESSION =
@@ -14,12 +17,15 @@ const TEST_WEB_APP_SESSION =
 
 export function useMaxUser(): MaxUser {
   return {
-    id: 6,
+    id: 7,
     maxId: 85851413,
+    maxChatId: 20103780,
+    maxPhoto: null,
     firstName: 'Даниил',
     lastName: 'Карпенко',
-    phone: '82312312312',
+    phone: '890020045561',
     timezone: 300,
+    notifyMode: 'DEFAULT',
   }
 }
 
