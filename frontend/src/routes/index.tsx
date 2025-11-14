@@ -36,7 +36,11 @@ function Home() {
       <Flex direction="column" gapY={24}>
         <Header>
           <Flex gapX={8}>
-            <IconButton mode="secondary" size="medium">
+            <IconButton
+              onClick={() => navigate({ to: '/search' })}
+              mode="secondary"
+              size="medium"
+            >
               <Search size={16} />
             </IconButton>
             <IconButton

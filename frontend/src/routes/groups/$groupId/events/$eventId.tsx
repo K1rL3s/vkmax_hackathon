@@ -1,5 +1,4 @@
 import {
-  Avatar,
   CellList,
   CellSimple,
   Flex,
@@ -24,7 +23,7 @@ function EventDetailsPage() {
     from: '/groups/$groupId/events/$eventId',
   })
 
-  const groupQuery = useGroup(Number(groupId))
+  useGroup(Number(groupId))
   const eventQuery = useEvent(Number(eventId))
 
   return (

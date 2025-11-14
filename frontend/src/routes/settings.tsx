@@ -16,6 +16,7 @@ import { GroupTags } from '@/components/group/tag/group-tags'
 import { usePersonalGroup } from '@/hooks/groups'
 import { FallbackLoader } from '@/components/ui/fallback-loader'
 import { useEditMe } from '@/hooks/user'
+import type { NotifyMode } from '@/lib/api/gen.schemas'
 
 export const Route = createFileRoute('/settings')({
   component: SettingsPage,

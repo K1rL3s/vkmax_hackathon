@@ -7,7 +7,7 @@ import {
   Input,
   Typography,
 } from '@maxhub/max-ui'
-import { Search, X } from 'lucide-react'
+import { Search } from 'lucide-react'
 import clsx from 'clsx'
 import { Modal } from '../ui/modal'
 import { Avatar } from '../avatar'
