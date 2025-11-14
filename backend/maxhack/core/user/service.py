@@ -10,10 +10,12 @@ from maxhack.core.exceptions import (
 from maxhack.core.group.consts import PRIVATE_GROUP_NAME
 from maxhack.core.ids import MaxChatId, MaxId, UserId
 from maxhack.database.models import (
+    EventModel,
     GroupModel,
     RoleModel,
     UserModel,
 )
+from maxhack.database.repos.event import EventRepo
 from maxhack.database.repos.group import GroupRepo
 from maxhack.database.repos.user import UserRepo
 from maxhack.database.repos.users_to_groups import UsersToGroupsRepo
@@ -28,10 +30,12 @@ class UserService:
         user_repo: UserRepo,
         group_repo: GroupRepo,
         users_to_groups_repo: UsersToGroupsRepo,
+        event_repo: EventRepo,
     ) -> None:
         self._user_repo = user_repo
         self._group_repo = group_repo
         self._users_to_groups_repo = users_to_groups_repo
+        self._event_repo = event_repo
 
     async def create_user(
         self,
@@ -153,14 +157,22 @@ class UserService:
 
     async def get_personal_group(self, user_id: UserId) -> GroupModel:
         logger.debug("Getting personal group for user %d", user_id)
-        user = await self._user_repo.get_by_id(user_id)
-        if user is None:
-            logger.error("User %d not found", user_id)
-            raise UserNotFound
-
-        group = await self._users_to_groups_repo.personal_group(user_id)
+        user = await self.get_user_by_id(user_id)
+        group = await self._users_to_groups_repo.personal_group(user.id)
         if not group:
-            logger.error("Personal group for user %d not found", user_id)
+            logger.error("Personal group for user %d not found", user.id)
             raise GroupNotFound(message="Что то пошло не так, личная группа не найдена")
 
+        logger.info("Personal group for user %d retrieved successfully", user.id)
         return group
+
+    async def get_personal_events(self, user_id: UserId) -> list[EventModel]:
+        logger.debug("Getting personal events for user %d", user_id)
+        personal_group = await self.get_personal_group(user_id)
+        events = await self._event_repo.get_by_group_id(group_id=personal_group.id)
+        logger.info(
+            "%d Personal events for user %d retrieved successfully",
+            len(events),
+            user_id,
+        )
+        return events

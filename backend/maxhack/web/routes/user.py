@@ -87,7 +87,7 @@ async def update_user_route(
     "/me/groups/personal",
     description="Получить персональную группу пользователя.",
 )
-async def get_personal_group(
+async def get_personal_group_route(
     user_service: FromDishka[UserService],
     current_user: CurrentUser,
 ) -> PersonalGroupResponse:
@@ -123,6 +123,21 @@ async def list_user_groups_route(
         )
 
     return UserGroupsResponse(groups=items)
+
+
+@user_router.get("/me/events")
+async def list_personal_events_route(
+    user_service: FromDishka[UserService],
+    current_user: CurrentUser,
+) -> list[EventResponse]:
+    """
+    Получение личных событий пользователя
+    """
+
+    events = await user_service.get_personal_events(
+        user_id=UserId(current_user.db_user.id),
+    )
+    return [EventResponse.model_validate(e) for e in events]
 
 
 @user_router.get(

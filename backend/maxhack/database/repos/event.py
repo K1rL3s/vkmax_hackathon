@@ -137,6 +137,17 @@ class EventRepo(BaseAlchemyRepo):
         )
         return list(await self._session.execute(stmt))
 
+    async def get_by_group_id(self, group_id: GroupId) -> list[EventModel]:
+        stmt = (
+            select(EventModel)
+            .where(
+                EventModel.group_id == group_id,
+                EventModel.is_not_deleted,
+            )
+            .order_by(EventModel.created_at.desc())
+        )
+        return list(await self._session.scalars(stmt))
+
     async def get_by_user(
         self,
         user_id: UserId,
