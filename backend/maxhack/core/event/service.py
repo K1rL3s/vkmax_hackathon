@@ -192,7 +192,6 @@ class EventService(BaseService):
         if event_update_model.cron:
             is_cycle = any([event_update_model.cron.to_dict(exclude={"date"}).values()])
 
-        # Обновляем базовые поля события
         updated_event = await self._event_repo.update(
             event_id,
             **event_update_model.to_dict(exclude_none=True, exclude={"participants_ids", "tags_ids"}),
@@ -202,10 +201,8 @@ class EventService(BaseService):
             logger.error(f"Event {event_id} not found for update")
             raise EventNotFound
 
-        # Обновляем теги, если они указаны
         if event_update_model.tags_ids is not None:
             logger.debug(f"Updating tags for event {event_id} to {event_update_model.tags_ids}")
-            # Валидируем теги
             if event_update_model.tags_ids:
                 tags = [await self._ensure_tag_exists(tag_id) for tag_id in event_update_model.tags_ids]
                 if event.group_id is not None:
@@ -217,7 +214,6 @@ class EventService(BaseService):
                         )
             await self._event_repo.update_event_tags(event_id, event_update_model.tags_ids)
 
-            # Если это событие типа "event", добавляем пользователей из тегов
             if event.type == "event" and event.group_id is not None:
                 user_ids_from_tags = []
                 for tag_id in event_update_model.tags_ids:
@@ -227,24 +223,19 @@ class EventService(BaseService):
                     )
                     for user, _ in users:
                         user_ids_from_tags.append(user.id)
-                # Получаем текущих пользователей события
                 current_user_ids = set(await self._event_repo.get_event_user_ids(event_id))
-                # Объединяем с пользователями из тегов
                 if event_update_model.participants_ids is not None:
                     all_user_ids = set(event_update_model.participants_ids) | set(user_ids_from_tags)
                 else:
                     all_user_ids = current_user_ids | set(user_ids_from_tags)
                 if all_user_ids != current_user_ids:
                     await self._event_repo.update_event_users(event_id, list(all_user_ids))
-                    # Создаем responds для новых пользователей из тегов
                     new_user_ids_from_tags = set(user_ids_from_tags) - current_user_ids
                     if new_user_ids_from_tags:
                         await self._respond_service.create(list(new_user_ids_from_tags), event.id, status="mb")
 
-        # Обновляем пользователей, если они указаны
         if event_update_model.participants_ids is not None:
             logger.debug(f"Updating users for event {event_id} to {event_update_model.participants_ids}")
-            # Валидируем пользователей
             for target_user_id in event_update_model.participants_ids:
                 await self._ensure_user_exists(target_user_id)
                 if event.group_id is not None:
@@ -545,14 +536,10 @@ class EventService(BaseService):
 
         for event_notify, event in events_with_notifies:
             try:
-                # Для уведомлений проверяем интервал: от (last_start - minutes_before) до time_now
-                # Это позволяет отправить уведомление, если событие произойдет между last_start и time_now
                 check_time = last_start - timedelta(minutes=event_notify.minutes_before)
                 if pycron.has_been(event.cron, since=check_time, dt=time_now):
                     logger.debug(f"Event {event.id} matches cron expression")
-                    # Помечаем событие как случившееся, если оно не повторяющееся и уведомление за 0 минут
                     if not event.is_cycle and event_notify.minutes_before == 0:
-                        # Проверяем, что событие действительно произошло между last_start и time_now
                         if pycron.has_been(event.cron, since=last_start, dt=time_now):
                             await self._event_repo.update(event.id, event_happened=True)
                             logger.debug(f"Event {event.id} marked as happened")
@@ -583,7 +570,6 @@ class EventService(BaseService):
                 )
                 continue
 
-        # Сохраняем time_now в redis как новый last_start только после обработки всех событий
         await self._redis.set("last_start", time_now.isoformat())
         logger.debug(f"New last start time set to redis: {time_now}")
 
@@ -609,13 +595,11 @@ class EventService(BaseService):
         logger.debug(f"Importing events from .ics file for user {user_id}")
         await self._ensure_user_exists(user_id)
 
-        # Получаем личную группу пользователя
         personal_group = await self._users_to_groups_repo.personal_group(user_id)
         if personal_group is None:
             logger.error(f"Personal group for user {user_id} not found")
             raise GroupNotFound(message="Личная группа не найдена")
 
-        # Парсим .ics файл
         parsed_events = parse_ics_file(ics_content)
         logger.info(f"Parsed {len(parsed_events)} events from .ics file")
 
@@ -623,7 +607,6 @@ class EventService(BaseService):
 
         for parsed_event in parsed_events:
             try:
-                # Создаем событие из распарсенного события
                 cron = Cron(
                     date=parsed_event["date"],
                     every_day=parsed_event["every_day"],
@@ -640,7 +623,7 @@ class EventService(BaseService):
                     timezone=parsed_event["timezone"],
                     group_id=personal_group.id,
                     duration=parsed_event["duration"],
-                    participants_ids=[user_id],  # Добавляем пользователя как участника
+                    participants_ids=[user_id],
                     tags_ids=[],
                     minutes_before=[],
                 )
@@ -672,16 +655,13 @@ class EventService(BaseService):
         logger.debug(f"Getting all user events from all groups for export for user {user_id}")
         await self._ensure_user_exists(user_id)
 
-        # Получаем все группы пользователя
         user_groups = await self._users_to_groups_repo.user_groups(user_id)
 
-        # Собираем все события из всех групп, где пользователь участвует
         all_events: list[EventModel] = []
         groups_dict: dict[GroupId, GroupModel] = {}
 
         for group, _ in user_groups:
             groups_dict[group.id] = group
-            # Получаем события пользователя в этой группе
             events = await self._event_repo.list_user_events(
                 group_id=group.id,
                 user_id=user_id,
@@ -710,14 +690,12 @@ class EventService(BaseService):
         await self._ensure_group_exists(group_id)
         await self._ensure_membership_role(user_id=user_id, group_id=group_id)
 
-        # Получаем события пользователя в группе
         events = await self._event_repo.list_user_events(
             group_id=group_id,
             user_id=user_id,
             tag_ids=None,
         )
 
-        # Получаем информацию о группе
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
             logger.error(f"Group {group_id} not found")
@@ -743,7 +721,6 @@ class EventService(BaseService):
         logger.debug(f"Getting all group events for export for group {group_id} by user {user_id}")
         await self._ensure_group_exists(group_id)
 
-        # Проверяем права доступа
         membership = await self._users_to_groups_repo.get_membership(
             user_id=user_id,
             group_id=group_id,
@@ -752,21 +729,18 @@ class EventService(BaseService):
             logger.warning(f"User {user_id} is not in group {group_id}")
             raise NotEnoughRights
 
-        # Проверяем, что пользователь имеет роль 1 или 2
         if membership.role_id not in {CREATOR_ROLE_ID, EDITOR_ROLE_ID}:
             logger.warning(
                 f"User {user_id} with role {membership.role_id} has no rights to export all events from group {group_id}",
             )
             raise NotEnoughRights
 
-        # Получаем все события группы
         events_with_responds = await self.get_group_events(
             group_id=group_id,
             user_id=user_id,
         )
         events = [event for event, _ in events_with_responds]
 
-        # Получаем информацию о группе
         group = await self._group_repo.get_by_id(group_id)
         if group is None:
             logger.error(f"Group {group_id} not found")

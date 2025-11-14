@@ -37,38 +37,30 @@ def generate_ics_for_events(
     if end_date is None:
         end_date = start_date + timedelta(days=365)
 
-    # Фильтруем события, которые уже случились (для не повторяющихся)
     current_time = datetime.now(timezone.utc)
 
     for event in events:
-        # Пропускаем события, которые уже случились и не повторяющиеся
         if event.event_happened and not event.is_cycle:
             continue
         group = groups.get(event.group_id)
         organizer_name = group.name if group else "Unknown Group"
 
-        # Создаем timezone для события на основе timezone события (в минутах)
         event_tz_offset = timedelta(minutes=event.timezone)
         event_timezone = timezone(event_tz_offset)
 
-        # Парсим cron выражение
         try:
-            # Используем start_date с учетом timezone события
             event_start_date = start_date.replace(tzinfo=event_timezone)
             cron = croniter(event.cron, event_start_date)
         except Exception:
-            # Если cron невалидный, пропускаем событие
             continue
 
-        # Генерируем события на основе cron
         event_count = 0
-        max_events = 1000  # Ограничение на количество событий
+        max_events = 1000
         last_date = None
 
         while event_count < max_events:
             try:
                 next_date = cron.get_next(datetime)
-                # Приводим к timezone события
                 if next_date.tzinfo is None:
                     next_date = next_date.replace(tzinfo=event_timezone)
                 else:
@@ -77,38 +69,28 @@ def generate_ics_for_events(
                 if next_date > end_date.replace(tzinfo=event_timezone):
                     break
 
-                # Проверяем, что не генерируем одно и то же событие дважды
                 if last_date and next_date <= last_date:
                     break
 
-                # Пропускаем события, которые уже в прошлом
                 if next_date < current_time.replace(tzinfo=event_timezone):
                     continue
 
-                # Создаем событие в календаре
                 ical_event = ICalEvent()
                 ical_event.add("summary", event.title)
                 ical_event.add("dtstart", next_date)
                 ical_event.add("dtstamp", datetime.now(timezone.utc))
 
-                # Добавляем длительность
                 if event.duration:
                     end_datetime = next_date + timedelta(minutes=event.duration)
                     ical_event.add("dtend", end_datetime)
                 else:
-                    # Если длительность не указана, событие длится 1 час
                     ical_event.add("dtend", next_date + timedelta(hours=1))
 
-                # Описание
                 if event.description:
                     ical_event.add("description", event.description)
 
-                # Организатор (email оставляем пустым)
                 ical_event.add("organizer", f"CN={organizer_name}:mailto:")
 
-                # Location оставляем пустым (не добавляем поле)
-
-                # UID для уникальности события
                 ical_event.add(
                     "uid",
                     f"event-{event.id}-{int(next_date.timestamp())}@maxhack",
@@ -118,15 +100,12 @@ def generate_ics_for_events(
                 event_count += 1
                 last_date = next_date
 
-                # Если событие не повторяющееся, выходим после первого
                 if not event.is_cycle:
                     break
 
             except Exception:
-                # Если ошибка при генерации следующей даты, пропускаем
                 break
 
-    # Конвертируем календарь в bytes
     ics_bytes = cal.to_ical()
     return ics_bytes
 
@@ -164,46 +143,37 @@ def parse_ics_file(ics_content: bytes) -> list[ParsedICSEvent]:
             continue
 
         try:
-            # Извлекаем название
             summary = component.get("summary")
             if not summary:
                 continue
             title = str(summary)
 
-            # Извлекаем описание
             description = component.get("description")
             description_str = str(description) if description else None
 
-            # Извлекаем дату начала
             dtstart = component.get("dtstart")
             if not dtstart:
                 continue
 
             start_dt = dtstart.dt
             if isinstance(start_dt, datetime):
-                # Если есть timezone, используем его
                 if start_dt.tzinfo:
-                    # Конвертируем timezone в offset в минутах от UTC
                     utc_offset = start_dt.utcoffset()
                     if utc_offset:
                         timezone_offset_minutes = int(utc_offset.total_seconds() / 60)
                     else:
                         timezone_offset_minutes = 0
-                    # Приводим к UTC для хранения
                     start_dt = start_dt.astimezone(UTC_TIMEZONE)
                 else:
-                    # Если timezone нет, считаем что время в локальном timezone (по умолчанию UTC)
                     timezone_offset_minutes = 0
                     start_dt = start_dt.replace(tzinfo=UTC_TIMEZONE)
             else:
-                # Если это date без времени, конвертируем в datetime
                 start_dt = datetime.combine(start_dt, datetime.min.time())
                 start_dt = start_dt.replace(tzinfo=UTC_TIMEZONE)
                 timezone_offset_minutes = 0
 
-            # Извлекаем дату окончания для вычисления duration
             dtend = component.get("dtend")
-            duration_minutes = 60  # По умолчанию 1 час
+            duration_minutes = 60
             if dtend:
                 end_dt = dtend.dt
                 if isinstance(end_dt, datetime):
@@ -213,11 +183,9 @@ def parse_ics_file(ics_content: bytes) -> list[ParsedICSEvent]:
                         end_dt = end_dt.replace(tzinfo=UTC_TIMEZONE)
                     duration_delta = end_dt - start_dt
                     duration_minutes = int(duration_delta.total_seconds() / 60)
-                    # Если duration отрицательный или нулевой, устанавливаем 1 час
                     if duration_minutes <= 0:
                         duration_minutes = 60
 
-            # Определяем повторяемость из RRULE
             every_day = False
             every_week = False
             every_month = False
@@ -233,7 +201,6 @@ def parse_ics_file(ics_content: bytes) -> list[ParsedICSEvent]:
                         every_week = True
                     elif freq_str == "MONTHLY":
                         every_month = True
-                    # Другие частоты (YEARLY и т.д.) игнорируем, создаем разовое событие
 
             events.append(
                 {
@@ -249,7 +216,6 @@ def parse_ics_file(ics_content: bytes) -> list[ParsedICSEvent]:
             )
 
         except Exception:
-            # Пропускаем события, которые не удалось распарсить
             continue
 
     return events

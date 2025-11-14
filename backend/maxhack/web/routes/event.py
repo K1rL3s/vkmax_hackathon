@@ -195,7 +195,6 @@ async def get_group_events_route(
     )
     response_events = []
     for event, respond in events_with_responds:
-        # Создаем EventResponse вручную, исключая notifies из автоматической конвертации
         event_dict = {
             "id": event.id,
             "title": event.title,
@@ -313,7 +312,6 @@ async def export_user_events_all_groups_route(
 
     events, groups_dict = await event_service.get_user_events_all_groups_for_export(user_id)
 
-    # Генерируем .ics файл
     ics_content = generate_ics_for_events(events, groups_dict)
 
     return Response(
@@ -343,7 +341,6 @@ async def export_user_events_in_group_route(
         user_id=user_id,
     )
 
-    # Генерируем .ics файл
     ics_content = generate_ics_for_events(events, groups_dict)
 
     return Response(
@@ -373,7 +370,6 @@ async def export_all_group_events_route(
         user_id=user_id,
     )
 
-    # Генерируем .ics файл
     ics_content = generate_ics_for_events(events, groups_dict)
 
     return Response(

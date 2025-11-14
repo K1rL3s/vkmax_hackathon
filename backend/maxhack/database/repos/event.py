@@ -285,12 +285,10 @@ class EventRepo(BaseAlchemyRepo):
         tag_ids: list[TagId],
     ) -> None:
         """Обновляет теги события, заменяя текущие на новые."""
-        # Получаем текущие теги
         current_tags = await self.get_event_tags(event_id)
         current_tag_set = set(current_tags)
         new_tag_set = set(tag_ids)
 
-        # Теги для удаления (есть в текущих, но нет в новых)
         tags_to_remove = current_tag_set - new_tag_set
         if tags_to_remove:
             stmt = (
@@ -304,7 +302,6 @@ class EventRepo(BaseAlchemyRepo):
             )
             await self._session.execute(stmt)
 
-        # Теги для добавления (есть в новых, но нет в текущих)
         tags_to_add = new_tag_set - current_tag_set
         if tags_to_add:
             await self.add_tag(event_id, list(tags_to_add))
@@ -324,12 +321,10 @@ class EventRepo(BaseAlchemyRepo):
         user_ids: list[UserId],
     ) -> None:
         """Обновляет пользователей события, заменяя текущих на новых."""
-        # Получаем текущих пользователей
         current_users = await self.get_event_user_ids(event_id)
         current_user_set = set(current_users)
         new_user_set = set(user_ids)
 
-        # Пользователи для удаления (есть в текущих, но нет в новых)
         users_to_remove = current_user_set - new_user_set
         if users_to_remove:
             stmt = (
@@ -343,7 +338,6 @@ class EventRepo(BaseAlchemyRepo):
             )
             await self._session.execute(stmt)
 
-        # Пользователи для добавления (есть в новых, но нет в текущих)
         users_to_add = new_user_set - current_user_set
         if users_to_add:
             await self.add_user(event_id, list(users_to_add))
