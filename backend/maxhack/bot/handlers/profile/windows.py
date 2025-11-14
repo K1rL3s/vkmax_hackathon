@@ -34,6 +34,7 @@ _profile = Window(
     ),
     RequestLocation(
         Const("📍 Определить часовой пояс"),
+        quick=True,
     ),
     empty_button("🔔 Режим уведомлений:"),
     Radio(
