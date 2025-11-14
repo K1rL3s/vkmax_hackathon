@@ -137,7 +137,22 @@ async def list_personal_events_route(
     events = await user_service.get_personal_events(
         user_id=UserId(current_user.db_user.id),
     )
-    return [EventResponse.model_validate(e) for e in events]
+    response_events = []
+    for event in events:
+        event_dict = {
+            "id": event.id,
+            "title": event.title,
+            "description": event.description,
+            "cron": event.cron,
+            "is_cycle": event.is_cycle,
+            "type": event.type,
+            "creator_id": event.creator_id,
+            "group_id": event.group_id,
+            "timezone": event.timezone,
+            "notifies": [notify.minutes_before for notify in event.notifies],
+        }
+        response_events.append(EventResponse.model_validate(event_dict))
+    return response_events
 
 
 @user_router.get(
@@ -181,7 +196,19 @@ async def list_user_events_route(
         master_id=current_user.db_user.id,
         tag_ids=tag_ids,
     )
-    response_events = [
-        await EventResponse.from_orm_async(event, session) for event in events
-    ]
+    response_events = []
+    for event in events:
+        event_dict = {
+            "id": event.id,
+            "title": event.title,
+            "description": event.description,
+            "cron": event.cron,
+            "is_cycle": event.is_cycle,
+            "type": event.type,
+            "creator_id": event.creator_id,
+            "group_id": event.group_id,
+            "timezone": event.timezone,
+            "notifies": [notify.minutes_before for notify in event.notifies],
+        }
+        response_events.append(EventResponse.model_validate(event_dict))
     return response_events
