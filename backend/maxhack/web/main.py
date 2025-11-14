@@ -2,17 +2,14 @@ from typing import Literal, cast
 
 import fastapi
 from dishka.integrations.fastapi import setup_dishka
-from fastapi import Request
-from fastapi.responses import JSONResponse
-from starlette import status
 from starlette.middleware.cors import CORSMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from maxhack.config import load_config
-from maxhack.core.exceptions import EntityNotFound, InvalidValue, NotEnoughRights
 from maxhack.di import make_container
 from maxhack.logger import get_logger
 from maxhack.utils.log_config import set_logging
+from maxhack.web.errors import exception_handlers
 from maxhack.web.routes import (
     auth_router,
     event_router,
@@ -53,6 +50,7 @@ app = fastapi.FastAPI(
         "tryItOutEnabled": "true",
         "requestSnippetsEnabled": "true",
     },
+    exception_handlers=exception_handlers,
 )
 
 config = load_config()
@@ -71,77 +69,6 @@ set_logging(
     enable_additional_debug=config.app.additional_debug,
     app=app,
 )
-
-default_errors = {
-    401: {"description": "Unauthorized"},
-    403: {"description": "No permission"},
-    404: {"description": "Object not found"},
-    409: {"description": "Collision occurred. Entity already exists"},
-    410: {"description": "Already Expired"},
-}
-
-
-async def value_error_exception_handler(
-    request: Request,
-    exc: ValueError,
-) -> JSONResponse:
-    logger.warning("409_CONFLICT", exc_info=exc)
-    return JSONResponse(
-        status_code=status.HTTP_409_CONFLICT,
-        content={"detail": str(exc)},
-    )
-
-
-async def entity_not_found_exception_handler(
-    request: Request,
-    exc: EntityNotFound,
-) -> JSONResponse:
-    logger.warning("404_NOT_FOUND", exc_info=exc)
-    return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
-        content={"detail": str(exc)},
-    )
-
-
-async def not_enough_rights_exception_handler(
-    request: Request,
-    exc: NotEnoughRights,
-) -> JSONResponse:
-    logger.warning("404_NOT_FOUND", exc_info=exc)
-    return JSONResponse(
-        status_code=status.HTTP_403_FORBIDDEN,
-        content={"detail": str(exc)},
-    )
-
-
-async def invalid_value_exception_handler(
-    request: Request,
-    exc: InvalidValue,
-) -> JSONResponse:
-    logger.warning("409_CONFLICT", exc_info=exc)
-    return JSONResponse(
-        status_code=status.HTTP_409_CONFLICT,
-        content={"detail": str(exc)},
-    )
-
-
-async def unknown_exception_handler(
-    request: Request,
-    exc: Exception,
-) -> JSONResponse:
-    logger.exception("500_INTERNAL_SERVER_ERROR", exc)
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": "Internal Server Error"},
-    )
-
-
-app.add_exception_handler(ValueError, value_error_exception_handler)
-app.add_exception_handler(EntityNotFound, entity_not_found_exception_handler)
-app.add_exception_handler(NotEnoughRights, not_enough_rights_exception_handler)
-app.add_exception_handler(InvalidValue, invalid_value_exception_handler)
-app.add_exception_handler(Exception, unknown_exception_handler)
-
 
 if config.app.cors:
     allowed_origins = ["*"] if config.app.cors_policy_disabled else config.app.cors

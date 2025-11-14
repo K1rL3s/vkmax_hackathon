@@ -51,7 +51,7 @@ async def get_current_user(
         webapp = validate_web_app_data(max_config.token, web_app_data)
     except ValueError:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Невалидная WebAppData",
         )
 
