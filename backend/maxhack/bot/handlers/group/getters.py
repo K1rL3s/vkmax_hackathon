@@ -8,12 +8,8 @@ from maxo.dialogs import DialogManager
 from maxo.dialogs.integrations.dishka import inject
 from maxo.utils.deeplink import create_startapp_link
 
-from maxhack.core.exceptions import GroupNotFound, InviteNotFound, MaxHackError
-from maxhack.core.group.service import GroupService
+from maxhack.core.exceptions import GroupNotFound, InviteNotFound
 from maxhack.core.ids import GroupId
-from maxhack.core.invite.service import InviteService
-from maxhack.core.max import QRCoder
-from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.user.service import UserService
 from maxhack.database.models import UserModel
 from maxhack.database.repos.group import GroupRepo
@@ -40,31 +36,6 @@ async def get_my_groups(
             )
             for group, role in groups
         ],
-    }
-
-
-@inject
-async def get_one_group(
-    dialog_manager: DialogManager,
-    current_user: UserModel,
-    group_service: FromDishka[GroupService],
-    invite_service: FromDishka[InviteService],
-    qrcoder: FromDishka[QRCoder],
-    **__: Any,
-) -> dict[str, Any]:
-    group_id: GroupId = dialog_manager.dialog_data["group_id"]
-    group, role = await group_service.get_group(current_user.id, group_id)
-    try:
-        invite = await invite_service.get_invite(group_id, current_user.id)
-        invite_link = qrcoder.invite_deeplink(invite.key) if invite else None
-    except MaxHackError:
-        invite_link = None
-
-    return {
-        "group": group,
-        "role": role,
-        "invite_link": invite_link,
-        "is_editor": role.id in (EDITOR_ROLE_ID, CREATOR_ROLE_ID),
     }
 
 

@@ -18,7 +18,7 @@ from maxhack.web.schemas.group import (
     GroupUpdateRequest,
     GroupUserItem,
 )
-from maxhack.web.schemas.invite import InviteCreateResponse
+from maxhack.web.schemas.invite import InviteCreateResponse, InviteGetResponse
 from maxhack.web.schemas.role import RoleResponse
 
 group_router = APIRouter(
@@ -184,6 +184,30 @@ async def delete_group_route(
     await group_service.delete_group(
         group_id=group_id,
         editor_id=current_user.db_user.id,
+    )
+
+
+@group_router.get(
+    "/{group_id}/invite",
+    status_code=status.HTTP_200_OK,
+    description="""
+Получит ссылку-приглашение в группу.
+В группе может быть только одно активное приглашение.
+""".strip(),
+)
+async def get_invite_route(
+    group_id: GroupId,
+    invite_service: FromDishka[InviteService],
+    current_user: CurrentUser,
+    qrcoder: FromDishka[QRCoder],
+) -> InviteGetResponse:
+    invite_obj = await invite_service.get_invite(
+        group_id=group_id,
+        user_id=current_user.db_user.id,
+    )
+    return InviteGetResponse(
+        invite_key=invite_obj.key,
+        invite_link=qrcoder.invite_deeplink(invite_obj.key),
     )
 
 

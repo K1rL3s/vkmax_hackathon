@@ -47,7 +47,7 @@ class InviteService(BaseService):
         self,
         group_id: GroupId,
         user_id: UserId,
-    ) -> InviteModel | None:
+    ) -> InviteModel:
         logger.debug(f"Getting invite for group {group_id} by user {user_id}")
         await self._ensure_user_exists(user_id)
         await self._ensure_group_exists(group_id)
@@ -58,10 +58,11 @@ class InviteService(BaseService):
         )
 
         invite = await self._invite_repo.get_group_invite(group_id)
-        if invite:
-            logger.info(f"Invite {invite.id} found for group {group_id}")
-        else:
+        if invite is None:
             logger.info(f"No active invite found for group {group_id}")
+            raise InviteNotFound
+
+        logger.info(f"Invite {invite.id} found for group {group_id}")
         return invite
 
     async def delete_invite(
