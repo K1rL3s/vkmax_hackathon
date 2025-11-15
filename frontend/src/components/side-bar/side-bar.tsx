@@ -21,7 +21,6 @@ export function SideBar({
   const { data, isPending } = useGroups()
   const navigate = useNavigate()
   const onNavigate = (path: string) => {
-    console.log(path)
     navigate({ to: path })
     onClose()
   }

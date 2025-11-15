@@ -19,7 +19,7 @@ function Home() {
   const scrollRef = useRef<{ scrollToToday: () => void }>(null)
 
   const now = new Date()
-  const start = new Date(now.getFullYear(), now.getMonth() - 2, now.getDate())
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)
   const end = new Date(now.getFullYear(), now.getMonth() + 2, now.getDate())
 
   const formatted = data
