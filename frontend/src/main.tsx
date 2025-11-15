@@ -8,6 +8,8 @@ import { routeTree } from './routeTree.gen'
 
 import './styles.css'
 import '@maxhub/max-ui/dist/styles.css'
+import { NotFoundComponent } from './components/error/not-found.tsx'
+import { ErrorComponent } from './components/error/error.tsx'
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
 const router = createRouter({
@@ -19,6 +21,9 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
+
+  defaultErrorComponent: () => <ErrorComponent />,
+  defaultNotFoundComponent: () => <NotFoundComponent />,
 })
 
 declare module '@tanstack/react-router' {

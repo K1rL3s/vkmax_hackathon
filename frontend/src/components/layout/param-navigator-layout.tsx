@@ -1,4 +1,5 @@
-import { Navigate } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { useStartParams } from '@/integrations/max-ui/hooks/max-user'
 
 export function ParamNavigatorLayout({
@@ -7,13 +8,20 @@ export function ParamNavigatorLayout({
   children: React.ReactNode
 }) {
   const encryptedParams = useStartParams()
-  if (!encryptedParams) {
-    return children
-  }
-  const params = JSON.parse(atob(encryptedParams))
-  if (params?.path) {
-    return <Navigate to={params.path} />
-  } else {
-    return children
-  }
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!encryptedParams) return
+
+    try {
+      const params = JSON.parse(atob(encryptedParams))
+      if (params?.path) {
+        navigate({ to: params.path })
+      }
+    } catch (e) {
+      console.error('Invalid start params', e)
+    }
+  }, [encryptedParams, navigate])
+
+  return children
 }

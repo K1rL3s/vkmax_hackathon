@@ -1,5 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router'
+import {
+  ErrorComponent,
+  createFileRoute,
+  notFound,
+  useNavigate,
+  useParams,
+} from '@tanstack/react-router'
 import { PlusIcon, Search } from 'lucide-react'
 import { Flex, IconButton, Typography } from '@maxhub/max-ui'
 import { EventList } from '@/components/event/event-list'
@@ -17,13 +23,20 @@ export const Route = createFileRoute('/groups/$groupId/')({
 function GroupEventsPage() {
   const { groupId } = useParams({ from: '/groups/$groupId/' })
   const meQuery = useMe()
-  const { data, isPending } = useGroupEvents(Number(groupId), {})
+  const { data, isPending, isError, error } = useGroupEvents(
+    Number(groupId),
+    {},
+  )
   const scrollRef = useRef<{ scrollToToday: () => void }>(null)
   const navigate = useNavigate()
 
   const now = new Date()
   const start = new Date(now.getFullYear(), now.getMonth() - 2, now.getDate())
   const end = new Date(now.getFullYear(), now.getMonth() + 2, now.getDate())
+
+  if (isError) {
+    return notFound()
+  }
 
   const formatted =
     data?.events && meQuery.data?.timezone
@@ -36,7 +49,7 @@ function GroupEventsPage() {
     }
   }, [data])
 
-  if (isPending || !data) {
+  if (isPending) {
     return (
       <div className="mt-12 w-full h-full">
         <Loader size={38} />

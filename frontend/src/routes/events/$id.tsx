@@ -9,7 +9,13 @@ import {
   ToolButton,
   Typography,
 } from '@maxhub/max-ui'
-import { createFileRoute, useParams, useRouter } from '@tanstack/react-router'
+import {
+  ErrorComponent,
+  createFileRoute,
+  notFound,
+  useParams,
+  useRouter,
+} from '@tanstack/react-router'
 import { Check, Clock, Edit2, Paperclip, Trash2Icon, X } from 'lucide-react'
 import { useForm } from '@tanstack/react-form'
 import z from 'zod'
@@ -33,6 +39,10 @@ function EventDetailsPage() {
   const deleteEventMutation = useDeleteEvent()
 
   const [isEditing, setIsEditing] = useState(false)
+
+  if (eventQuery.isError) {
+    return notFound()
+  }
 
   const form = useForm({
     defaultValues: {
