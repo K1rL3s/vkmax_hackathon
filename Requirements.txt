@@ -1,48 +1,87 @@
-# Требования к проекту
-
-Смотрите также: Readme.md, Readme.md frontend, Readme.md backend
-
-Этот проект представляет собой полнофункциональное приложение, разработанное с использованием Python для бэкенда и TypeScript/React для фронтенда. Все приложение предназначено для запуска с использованием Docker.
-
-## Бэкенд (Python)
-
-Бэкенд построен с использованием фреймворка FastAPI и состоит из нескольких компонентов: веб-API, Telegram-бота и планировщика задач.
-
-**Фреймворки и библиотеки:**
-- **Веб-фреймворк:** FastAPI
-- **Асинхронная очередь задач:** Taskiq
-- **ORM:** SQLAlchemy 2.0 с Alembic для миграций
-- **Драйвер базы данных:** Psycopg (для PostgreSQL)
-- **Хранилище в памяти:** Redis
-- **Сервер приложений:** Uvicorn / Granian
-- **Пользовательские библиотеки:**
-  - `maxo`: Пользовательская библиотека для разработки ботов.
-  - `retejo`: Пользовательская библиотека для работы с сетью.
-- **Внедрение зависимостей:** dishka
-- **Валидация данных:** Pydantic
-
-**Сервисы:**
-- **PostgreSQL:** Основная база данных для постоянного хранения.
-- **Redis:** Используется в качестве брокера сообщений для Taskiq и для кэширования.
-
-## Фронтенд (TypeScript/React)
-
-Фронтенд представляет собой современное одностраничное приложение.
-
-**Основные библиотеки:**
-- **Фреймворк:** React 19
-- **Инструмент сборки:** Vite
-- **Маршрутизация:** TanStack Router
-- **Получение данных и состояние:** TanStack Query
-- **Формы:** TanStack Form
-- **HTTP-клиент:** Axios
-- **Компоненты пользовательского интерфейса:** @maxhub/max-ui
-- **Стилизация:** Tailwind CSS
-
-**Инфраструктура:**
-- **Веб-сервер:** Nginx (для обслуживания собранных статических файлов)
-
-## Инфраструктура и оркестрация
-
-- **Контейнеризация:** Docker
-- **Оркестрация:** Docker Compose
+adaptix==3.0.0b11
+aiofiles==24.1.0
+aiohappyeyeballs==2.6.1
+aiohttp==3.12.15
+aiomisc==17.9.6
+aiosignal==1.4.0
+alembic==1.17.1
+alembic_utils==0.8.8
+annotated-doc==0.0.3
+annotated-types==0.7.0
+anyio==4.9.0
+attrs==25.4.0
+black==25.9.0
+cachetools==5.5.2
+certifi==2025.11.12
+cffi==2.0.0
+click==8.3.0
+colorlog==6.10.1
+croniter==3.0.4
+dishka==1.7.2
+dotenv==0.9.9
+fast-depends==3.0.3
+fastapi==0.121.0
+faststream==0.6.3
+flatbuffers==25.9.23
+flupy==1.2.3
+frozenlist==1.8.0
+granian==2.5.7
+greenlet==3.2.4
+h11==0.16.0
+h3==4.3.1
+icalendar==5.0.11
+idna==3.11
+importlib_metadata==8.7.0
+iniconfig==2.3.0
+itsdangerous==2.2.0
+izulu==0.50.0
+Jinja2==3.1.6
+magic-filter==1.0.12
+Mako==1.3.10
+MarkupSafe==3.0.3
+maxo @ git+https://github.com/K1rL3s/maxo.git@42863288ebb6fbaa6d14b4131eae0508f87f7d3b
+multidict==6.7.0
+mypy==1.16.1
+mypy_extensions==1.1.0
+numpy==2.3.4
+orjson==3.11.4
+packaging==25.0
+parse==1.20.2
+pathspec==0.12.1
+platformdirs==4.5.0
+pluggy==1.6.0
+propcache==0.4.1
+psycopg==3.2.12
+psycopg-binary==3.2.12
+pycparser==2.23
+pycron==3.2.0
+pydantic==2.12.4
+pydantic_core==2.41.5
+pytest==8.3.5
+pytest-asyncio==1.2.0
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+python-multipart==0.0.12
+pytokens==0.3.0
+pytz==2025.2
+redis==6.4.0
+retejo @ git+https://github.com/K1rL3s/retejo.git@0582f2a06fd7dc035e627c89bb293199f1622c42
+ruff==0.11.13
+six==1.17.0
+sniffio==1.3.1
+SQLAlchemy==2.0.44
+starlette==0.49.3
+taskiq==0.11.20
+taskiq-dependencies==1.5.7
+taskiq-redis==1.1.2
+timezonefinder==8.1.0
+typing-inspection==0.4.2
+typing_extensions==4.15.0
+uv==0.9.8
+uvicorn==0.38.0
+uvloop==0.22.1
+vcfpy==0.14.2
+vulture==2.14
+watchfiles==1.1.1
+yarl==1.22.0
+zipp==3.23.0

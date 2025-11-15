@@ -1,7 +1,7 @@
 ![img.png](content/img.png)
 # MAX Уведомления
 
-Также есть информация в [backend/README.md](backend/README.md) и [frontend/README.md](frontend/README.md)`
+Также есть информация в [backend/README.md](backend/README.md) и [frontend/README.md](frontend/README.md)
 
 [Миро доска](https://miro.com/welcomeonboard/Um1qelFjZGFNYmx2dkJ5WU1rUGVKRGR2ZkVjUmlaeWw0VXdPM1RsR0NBcW5Wb2lLVnhmUHY0ZmZsWEo4V0ZFZHNzUlRQdWxpZGlBT2Z6T3VNbHEwTmJNRytPQ0xGNGw3QU5aMnFxMFM5UXJtbVBLU2YveUpkdjhuZmg4Z3JCYkZhWWluRVAxeXRuUUgwWDl3Mk1qRGVRPT0hdjE=?share_link_id=933724555292)
 
