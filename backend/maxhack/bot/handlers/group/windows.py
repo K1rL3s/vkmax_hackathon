@@ -1,7 +1,7 @@
 from magic_filter import F
 
 from maxo.dialogs import Dialog, ShowMode, Window
-from maxo.dialogs.widgets.kbd import Button, Radio, Select, SwitchTo, Url
+from maxo.dialogs.widgets.kbd import Button, Column, Radio, Select, SwitchTo, Url
 from maxo.dialogs.widgets.text import Const, Format
 
 from . import getters, handlers
@@ -40,7 +40,22 @@ _groups = Window(
 
 _one_group = Window(
     Format("Группа {group.name} 👫"),
+    Format("\nПриглашение: {invite_link}", when="invite_link"),
     Url(Const("⬆️ В группу"), Format("{group_url}")),
+    Column(
+        Button(
+            Const("Пересоздать приглашение 🎫"),
+            on_click=handlers.on_recreate_invite,
+            id="recreate_invite",
+        ),
+        Button(
+            Const("Удалить приглашение 🚮"),
+            on_click=handlers.on_delete_invite,
+            when="invite_link",
+            id="delete_invite",
+        ),
+        when=F["is_editor"] & ~F["is_private"],
+    ),
     Button(
         Const("📆 Выгрузить события группы"),
         on_click=handlers.on_get_all_group_events,

@@ -1,6 +1,7 @@
 from typing import cast
 
 from maxhack.core.exceptions import InviteNotFound
+from maxhack.core.group.consts import PRIVATE_GROUP_NAME
 from maxhack.core.ids import GroupId, InviteKey, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.service import BaseService
@@ -20,12 +21,15 @@ class InviteService(BaseService):
     ) -> InviteModel:
         logger.debug(f"Recreating invite for group {group_id} by user {creator_id}")
         await self._ensure_user_exists(creator_id)
-        await self._ensure_group_exists(group_id)
+        group = await self._ensure_group_exists(group_id)
         await self._ensure_membership_role(
             user_id=creator_id,
             group_id=group_id,
             allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
+
+        if group.name == PRIVATE_GROUP_NAME:
+            raise InviteNotFound
 
         key = generate_invite_key()
         current_invite = await self._invite_repo.get_group_invite(group_id)
@@ -50,12 +54,15 @@ class InviteService(BaseService):
     ) -> InviteModel:
         logger.debug(f"Getting invite for group {group_id} by user {user_id}")
         await self._ensure_user_exists(user_id)
-        await self._ensure_group_exists(group_id)
+        group = await self._ensure_group_exists(group_id)
         await self._ensure_membership_role(
             user_id=user_id,
             group_id=group_id,
             allowed_roles=(CREATOR_ROLE_ID, EDITOR_ROLE_ID),
         )
+
+        if group.name == PRIVATE_GROUP_NAME:
+            raise InviteNotFound
 
         invite = await self._invite_repo.get_group_invite(group_id)
         if invite is None:

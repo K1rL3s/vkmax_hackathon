@@ -33,7 +33,7 @@ _profile = Window(
         quick=True,
     ),
     Url(
-        Const("🌐 Ввести часовой пояс"),
+        Const("🌐 Выбрать часовой пояс"),
         Format("{settings_deeplink}"),
     ),
     Url(

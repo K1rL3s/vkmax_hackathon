@@ -538,8 +538,8 @@ class EventService(BaseService):
 
         for event_notify, event in events_with_notifies:
             try:
-                left_time = last_start - timedelta(minutes=event_notify.minutes_before)
-                right_time = time_now - timedelta(minutes=event_notify.minutes_before)
+                left_time = last_start + timedelta(minutes=event_notify.minutes_before)
+                right_time = time_now + timedelta(minutes=event_notify.minutes_before)
                 if pycron.has_been(event.cron, since=left_time, dt=right_time):
                     logger.debug(
                         f"Event {event.id} Notify {event_notify.id} matches cron expression",

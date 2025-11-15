@@ -16,6 +16,7 @@ from maxhack.core.exceptions import MaxHackError
 from maxhack.core.group.service import GroupService
 from maxhack.core.ics.service import IcsService
 from maxhack.core.ids import GroupId, InviteKey
+from maxhack.core.invite.service import InviteService
 from maxhack.database.models import UserModel
 
 
@@ -144,3 +145,29 @@ async def on_group_notify_mode(
         current_user.id,
         notify_mode=notify_mode,
     )
+
+
+@inject
+async def on_recreate_invite(
+    _: Any,
+    __: Any,
+    dialog_manager: DialogManager,
+    invite_service: FromDishka[InviteService],
+) -> None:
+    current_user: UserModel = dialog_manager.middleware_data["current_user"]
+    group_id: GroupId = dialog_manager.dialog_data["group_id"]
+
+    await invite_service.recreate_invite(group_id, current_user.id)
+
+
+@inject
+async def on_delete_invite(
+    _: Any,
+    __: Any,
+    dialog_manager: DialogManager,
+    invite_service: FromDishka[InviteService],
+) -> None:
+    current_user: UserModel = dialog_manager.middleware_data["current_user"]
+    group_id: GroupId = dialog_manager.dialog_data["group_id"]
+
+    await invite_service.delete_invite(group_id, current_user.id)
