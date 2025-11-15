@@ -21,9 +21,7 @@ class MaxNotifier:
         if NotifyMode.DISABLE in (user.notify_mode, membership.notify_mode):
             return
 
-        text = f"""
-🔔 Событие {event.title}
-        """
+        text = f"🔔 Напоминание о событии {event.title}"
         keyboard = [
             [
                 CallbackKeyboardButton(
