@@ -125,7 +125,6 @@ async def update_event_route(
     event_id: EventId,
     body: EventUpdateRequest,
     event_service: FromDishka[EventService],
-    session: FromDishka[AsyncSession],
     current_user: CurrentUser,
 ) -> EventResponse:
     event = await event_service.update_event(

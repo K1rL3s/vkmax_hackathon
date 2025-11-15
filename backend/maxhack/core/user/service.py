@@ -65,7 +65,6 @@ class UserService:
         await self._group_repo.create(
             name=PRIVATE_GROUP_NAME,
             creator_id=user.id,
-            timezone=timezone,
             description=None,
         )
         logger.debug(f"Private group for user {user.id} created successfully")
