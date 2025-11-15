@@ -3,7 +3,7 @@ import type { AxiosError, AxiosRequestConfig } from 'axios'
 import { useWebAppData } from '@/integrations/max-ui/hooks/max-user'
 
 export const api = axios.create({
-  baseURL: import.meta.env.API_URL || 'http://localhost:7001/',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:7001/',
   withCredentials: true,
 })
 
