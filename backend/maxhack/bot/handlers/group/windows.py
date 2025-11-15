@@ -15,7 +15,7 @@ from maxhack.core.ids import GroupId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 
 _groups = Window(
-    Const("👫 Твои группы"),
+    Const("Твои группы 👫"),
     CustomScrollingGroup(
         Select(
             text=Format("{item[1].emoji} {item[0].name}"),
@@ -37,7 +37,7 @@ _groups = Window(
 )
 
 _one_group = Window(
-    Format("👫 Группа {group.name}"),
+    Format("Группа {group.name} 👫"),
     Url(Const("⬆️ В группу"), Format("{group_url}")),
     Button(
         Const("📆 Выгрузить события группы"),
@@ -52,7 +52,7 @@ _one_group = Window(
         id="my_events",
     ),
     SwitchTo(
-        Const("⏮️ Твои группы"),
+        Const("Твои группы ⏮️"),
         state=Groups.all,
         show_mode=ShowMode.EDIT,
         id="back",

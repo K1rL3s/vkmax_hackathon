@@ -12,6 +12,7 @@ from maxhack.database.models import UserModel
 async def get_current_user(dialog_manager: DialogManager, **__: Any) -> dict[str, Any]:
     user: UserModel = dialog_manager.middleware_data["current_user"]
     user_time = datetime_now(tz_offset=user.timezone // 60)
+    greeting, greeting_emoji = _get_greeting_by_hour(user_time.hour)
     return {
         "current_user": user,
         "first_name": user.first_name,
@@ -19,15 +20,16 @@ async def get_current_user(dialog_manager: DialogManager, **__: Any) -> dict[str
         "phone": user.phone,
         "formatted_timezone": TIMEZONES.get(user.timezone, user.timezone),
         "user_time": user_time,
-        "user_greeting": _get_greeting_by_hour(user_time.hour),
+        "greeting": greeting,
+        "greeting_emoji": greeting_emoji,
     }
 
 
-def _get_greeting_by_hour(hour: int) -> str:
+def _get_greeting_by_hour(hour: int) -> tuple[str, str]:
     if 5 <= hour <= 11:
-        return "☀️ Доброе утро"
+        return "Доброе утро", "☀️"
     if 12 <= hour < 16:
-        return "🌤️ Добрый день"
+        return "Добрый день", "🌤️"
     if 17 <= hour <= 22:
-        return "🌅 Добрый вечер"
-    return "🌙 Доброй ночи"
+        return "Добрый вечер", "🌅"
+    return "Доброй ночи", "🌙"

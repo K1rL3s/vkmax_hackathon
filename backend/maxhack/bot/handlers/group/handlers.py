@@ -62,7 +62,7 @@ async def on_get_all_my_events(
     raw_ics = await ics_service.export_user_events_all_groups(current_user.id)
     filename = f"user{current_user.id}_events_{int(time.time())}.ics"
     await facade.send_media(
-        text="📆 Все твои события во всех группах",
+        text="Все твои события во всех группах 📆",
         media=BufferedInputFile(raw_ics, filename, UploadType.FILE),
     )
 
@@ -110,7 +110,7 @@ async def on_get_my_group_events(
         group, _ = await group_service.get_group(current_user.id, group_id)
         filename = f"user{current_user.id}_group{group_id}_events_{timestamp}.ics"
         await facade.send_media(
-            text=f"📆 Все твои события в группе {group.name}",
+            text=f"Все твои события в группе {group.name} 📆",
             media=BufferedInputFile(raw_ics, filename, UploadType.FILE),
         )
 
