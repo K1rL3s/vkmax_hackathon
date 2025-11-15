@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import {
-  ErrorComponent,
   createFileRoute,
   notFound,
   useNavigate,
@@ -23,10 +22,7 @@ export const Route = createFileRoute('/groups/$groupId/')({
 function GroupEventsPage() {
   const { groupId } = useParams({ from: '/groups/$groupId/' })
   const meQuery = useMe()
-  const { data, isPending, isError, error } = useGroupEvents(
-    Number(groupId),
-    {},
-  )
+  const { data, isPending, isError } = useGroupEvents(Number(groupId), {})
   const scrollRef = useRef<{ scrollToToday: () => void }>(null)
   const navigate = useNavigate()
 

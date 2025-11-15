@@ -10,7 +10,6 @@ import {
   Typography,
 } from '@maxhub/max-ui'
 import {
-  ErrorComponent,
   createFileRoute,
   notFound,
   useParams,
