@@ -5,11 +5,13 @@ from dishka import FromDishka
 
 from maxo.dialogs import DialogManager, ShowMode, StartMode
 from maxo.dialogs.integrations.dishka import inject
+from maxo.dialogs.widgets.kbd import ManagedRadio
 from maxo.enums import UploadType
 from maxo.utils.facades import MessageCreatedFacade
 from maxo.utils.upload_media import BufferedInputFile
 
 from maxhack.bot.states import Groups, Menu
+from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.exceptions import MaxHackError
 from maxhack.core.group.service import GroupService
 from maxhack.core.ics.service import IcsService
@@ -17,13 +19,22 @@ from maxhack.core.ids import GroupId, InviteKey
 from maxhack.database.models import UserModel
 
 
+@inject
 async def on_select_group(
     _: Any,
     __: Any,
     dialog_manager: DialogManager,
     group_id: GroupId,
+    group_service: FromDishka[GroupService],
 ) -> None:
     dialog_manager.dialog_data["group_id"] = group_id
+    current_user: UserModel = dialog_manager.middleware_data["current_user"]
+
+    member = await group_service.get_member(current_user.id, group_id, current_user.id)
+
+    radio: ManagedRadio[str] = dialog_manager.find("notify_mode")
+    await radio.set_checked(member.notify_mode)
+
     await dialog_manager.switch_to(state=Groups.one, show_mode=ShowMode.EDIT)
 
 
@@ -115,3 +126,21 @@ async def on_get_my_group_events(
         )
 
     dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+
+
+@inject
+async def on_group_notify_mode(
+    _: Any,
+    __: Any,
+    dialog_manager: DialogManager,
+    notify_mode: NotifyMode,
+    group_service: FromDishka[GroupService],
+) -> None:
+    current_user: UserModel = dialog_manager.middleware_data["current_user"]
+    group_id: GroupId = dialog_manager.dialog_data["group_id"]
+    await group_service.update_membership(
+        group_id,
+        current_user.id,
+        current_user.id,
+        notify_mode=notify_mode,
+    )

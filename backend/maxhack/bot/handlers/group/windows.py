@@ -1,15 +1,17 @@
 from magic_filter import F
 
 from maxo.dialogs import Dialog, ShowMode, Window
-from maxo.dialogs.widgets.kbd import Button, Select, SwitchTo, Url
+from maxo.dialogs.widgets.kbd import Button, Radio, Select, SwitchTo, Url
 from maxo.dialogs.widgets.text import Const, Format
 
 from . import getters, handlers
 from maxhack.bot.handlers.utils import on_start_update_dialog_data
 from maxhack.bot.states import Groups
+from maxhack.bot.widgets.empty_button import empty_button
 from maxhack.bot.widgets.scrolling_group import CustomScrollingGroup
 from maxhack.bot.widgets.to_groups import TO_GROUPS_BUTTON
 from maxhack.bot.widgets.to_menu import TO_MENU_BUTTON, to_menu_button
+from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.group.consts import PRIVATE_GROUP_NAME
 from maxhack.core.ids import GroupId
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
@@ -50,6 +52,20 @@ _one_group = Window(
         on_click=handlers.on_get_my_group_events,
         when=F["group"].name != PRIVATE_GROUP_NAME,
         id="my_events",
+    ),
+    empty_button("🔔 Режим уведомлений:"),
+    Radio(
+        Format("🔘 {item[1]}"),
+        Format("{item[1]}"),
+        item_id_getter=lambda item: item[0],
+        type_factory=lambda item: NotifyMode[item],
+        items=(
+            (NotifyMode.DEFAULT.name, "Звук"),
+            (NotifyMode.SILENT.name, "Тихо"),
+            (NotifyMode.DISABLE.name, "Игнор"),
+        ),
+        on_click=handlers.on_group_notify_mode,
+        id="notify_mode",
     ),
     SwitchTo(
         Const("Твои группы ⏮️"),
