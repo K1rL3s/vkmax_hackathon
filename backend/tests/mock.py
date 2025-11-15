@@ -1,9 +1,9 @@
 WebAppData = "chat%3D%257B%2522id%2522%253A19586807%252C%2522type%2522%253A%2522DIALOG%2522%257D%26hash%3Dd2c5a0d4beb3d9b28a181f996c313e1eba37504c61563c80cb70e8a1848492cd%26auth_date%3D1763064624%26query_id%3D14144a22-387a-4e8e-b10f-db98e4da9347%26user%3D%257B%2522id%2522%253A84271494%252C%2522first_name%2522%253A%2522%25D0%2598%25D0%25B2%25D0%25B0%25D0%25BD%2522%252C%2522last_name%2522%253A%2522%2522%252C%2522username%2522%253Anull%252C%2522language_code%2522%253A%2522ru%2522%252C%2522photo_url%2522%253A%2522https%253A%252F%252Fi.oneme.ru%252Fi%253Fr%253DBTGBPUwtwgYUeoFhO7rESmr87vXK78RNEylZtY73X-bptwUvN_NjxoJvc9qjK2WW5Zk%2522%257D%26ip%3D188.19.171.160"
 feaRRless_reg = {
-  "maxId": 84271494,
-  "maxChatId": 6033605,
-  "firstName": "Иван",
-  "lastName": "Дядечков",
-  "phone": "string",
-  "timezone": 0
+    "maxId": 84271494,
+    "maxChatId": 6033605,
+    "firstName": "Иван",
+    "lastName": "Дядечков",
+    "phone": "string",
+    "timezone": 0,
 }

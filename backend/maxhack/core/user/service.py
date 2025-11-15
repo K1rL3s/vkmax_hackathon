@@ -1,6 +1,5 @@
 from typing import Any
 
-from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.exceptions import (
     GroupNotFound,
     InvalidValue,
@@ -97,9 +96,9 @@ class UserService:
         return user
 
     async def update_user(
-            self,
-            user_id: UserId,
-            **kwargs: Any,
+        self,
+        user_id: UserId,
+        **kwargs: Any,
     ) -> UserModel:
         logger.debug(f"Updating user {user_id}")
 
@@ -110,7 +109,7 @@ class UserService:
 
         values = {key: value for key, value in kwargs.items() if value is not None}
 
-        if 'timezone' in values and values['timezone'] not in TIMEZONES:
+        if "timezone" in values and values["timezone"] not in TIMEZONES:
             raise InvalidValue
 
         logger.debug(f"Updating user {user_id} with values {values}")

@@ -1,9 +1,9 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.event.service import EventService
-from maxhack.core.ids import GroupId, MaxChatId, MaxId, TagId, UserId
+from maxhack.core.ids import GroupId, MaxId, TagId, UserId
 from maxhack.core.tag.service import TagService
 from maxhack.core.user.service import UserService
 from maxhack.web.dependencies import CurrentUser
@@ -11,7 +11,6 @@ from maxhack.web.schemas.event import EventResponse
 from maxhack.web.schemas.tag import TagResponse
 from maxhack.web.schemas.user import (
     PersonalGroupResponse,
-    UserCreateRequest,
     UserGroupItem,
     UserGroupsResponse,
     UserResponse,
@@ -23,7 +22,6 @@ user_router = APIRouter(
     tags=["Users"],
     route_class=DishkaRoute,
 )
-
 
 
 @user_router.get(

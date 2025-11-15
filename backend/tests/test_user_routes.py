@@ -3,7 +3,6 @@ from datetime import datetime
 
 from httpx import AsyncClient
 
-from maxhack.web.dependencies import CurrentUser
 from tests.mock import WebAppData
 from tests.utils import (
     add_tag_to_event,
@@ -397,4 +396,3 @@ class TestUserRoutes:
         assert resp.status_code == 200
         data = resp.json()
         assert len(data) == 0
-

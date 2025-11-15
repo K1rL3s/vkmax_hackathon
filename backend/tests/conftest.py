@@ -1,16 +1,15 @@
 import os
+from collections.abc import AsyncIterable
 from pathlib import Path
-from typing import AsyncIterable
 
 import fastapi
 from dishka import AsyncContainer
 from dishka.integrations.fastapi import setup_dishka
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from maxhack.config import load_config, Config
+from maxhack.config import Config, load_config
 from maxhack.database.models import BaseAlchemyModel
 from maxhack.di import make_container
-
 from maxhack.web.main import main
 
 os.environ["SERVER_PORT"] = "5001"
@@ -32,12 +31,10 @@ async def reinit_database(dishka_container: AsyncContainer) -> AsyncIterable[Non
 
 
 @pytest.fixture(scope="session")
-async def client(
-        app: fastapi.FastAPI
-):
+async def client(app: fastapi.FastAPI):
     async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test",
+        transport=ASGITransport(app=app),
+        base_url="http://test",
     ) as client:
         yield client
 
@@ -45,7 +42,7 @@ async def client(
 @pytest.fixture(scope="session")
 async def config() -> Config:
 
-    return load_config((Path(__file__).parent.parent/".env.test").resolve())
+    return load_config((Path(__file__).parent.parent / ".env.test").resolve())
 
 
 @pytest.fixture(scope="session")
@@ -55,8 +52,8 @@ async def app(config: Config) -> fastapi.FastAPI:
 
 @pytest.fixture(scope="session")
 async def dishka_container(
-        app: fastapi.FastAPI,
-        config: Config,
+    app: fastapi.FastAPI,
+    config: Config,
 ) -> AsyncIterable[AsyncContainer]:
     container_ = make_container(config=config)
     setup_dishka(container_, app)
@@ -67,7 +64,7 @@ async def dishka_container(
 
 @pytest.fixture
 async def request_dishka_container(
-        dishka_container: AsyncContainer,
+    dishka_container: AsyncContainer,
 ) -> AsyncIterable[AsyncContainer]:
     async with dishka_container() as request_container:
         yield request_container

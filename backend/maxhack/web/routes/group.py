@@ -1,17 +1,15 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, status
 
-from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.group.service import GroupService
 from maxhack.core.ids import GroupId, UserId
 from maxhack.core.invite.service import InviteService
 from maxhack.core.max import QRCoder
-from maxhack.core.role.ids import CREATOR_ROLE_ID, CREATOR_ROLE_NAME, MEMBER_ROLE_ID
+from maxhack.core.role.ids import CREATOR_ROLE_ID, CREATOR_ROLE_NAME
 from maxhack.web.dependencies import CurrentUser
 from maxhack.web.schemas.group import (
     GetGroupResponse,
     GroupCreateRequest,
-    GroupMemberAddRequest,
     GroupMemberResponse,
     GroupMemberUpdateRequest,
     GroupNotifyModeRequest,
@@ -250,6 +248,7 @@ async def delete_invite_route(
         group_id=group_id,
         user_id=current_user.db_user.id,
     )
+
 
 @group_router.patch(
     "/{group_id}/notify",
