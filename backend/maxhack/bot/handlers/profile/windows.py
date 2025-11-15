@@ -28,13 +28,13 @@ _profile = Window(
         when="phone",
         id="delete_phone",
     ),
-    Url(
-        Const("🌐 Ввести часовой пояс"),
-        Format("{profile_deeplink}"),
-    ),
     RequestLocation(
         Const("📍 Определить часовой пояс"),
         quick=True,
+    ),
+    Url(
+        Const("🌐 Ввести часовой пояс"),
+        Format("{profile_deeplink}"),
     ),
     empty_button("🔔 Режим уведомлений:"),
     Radio(
