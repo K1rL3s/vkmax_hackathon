@@ -1,5 +1,6 @@
 from dishka import FromDishka
 
+from maxhack.core.enums.respond_action import RespondStatus
 from maxo.enums.message_link_type import MessageLinkType
 from maxo.routing.routers.simple import Router
 from maxo.routing.updates.message_callback import MessageCallback
@@ -42,9 +43,18 @@ async def respond_handler(
             payload.status,
         )
 
+    if respond.status == RespondStatus.OK:
+        emoji = "Буду 👍"
+    elif respond.status == RespondStatus.NO:
+        emoji = "Не буду 👎"
+    elif respond.status == RespondStatus.MAYBE:
+        emoji = "Подумаю 🤔"
+    else:
+        emoji = "-"
+
     await facade.edit_message()
     await facade.send_message(
-        text=f"Отклик {respond}",
+        text=f"Отклик записан: {emoji}",
         link=NewMessageLink(
             mid=callback.unsafe_message.unsafe_body.mid,
             type=MessageLinkType.REPLY,

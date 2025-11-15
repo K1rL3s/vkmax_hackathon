@@ -22,7 +22,7 @@ class MaxNotifier:
             return
 
         text = f"""
-Событие {event.title}
+🔔 Событие {event.title}
         """
         keyboard = [
             [
