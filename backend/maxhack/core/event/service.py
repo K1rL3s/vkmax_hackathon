@@ -533,7 +533,9 @@ class EventService(BaseService):
                 left_time = last_start - timedelta(minutes=event_notify.minutes_before)
                 right_time = time_now - timedelta(minutes=event_notify.minutes_before)
                 if pycron.has_been(event.cron, since=left_time, dt=right_time):
-                    logger.debug(f"Event {event.id} Notify {event_notify.id} matches cron expression")
+                    logger.debug(
+                        f"Event {event.id} Notify {event_notify.id} matches cron expression",
+                    )
                     if not event.is_cycle and event_notify.minutes_before == 0:
                         await self._event_repo.update(event.id, event_happened=True)
                         logger.debug(f"Event {event.id} marked as happened")

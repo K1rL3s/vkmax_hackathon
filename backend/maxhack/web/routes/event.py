@@ -48,7 +48,21 @@ async def create_event_route(
             creator_id=current_user.db_user.id,
         ),
     )
-    return await EventResponse.from_orm_async(event, session)
+    event_dict = {
+        "id": event.id,
+        "title": event.title,
+        "description": event.description,
+        "cron": event.cron,
+        "is_cycle": event.is_cycle,
+        "type": event.type,
+        "creator_id": event.creator_id,
+        "group_id": event.group_id,
+        "timezone": event.timezone,
+        "duration": event.duration,
+        "event_happened": event.event_happened,
+        "notifies": [notify.minutes_before for notify in event.notifies],
+    }
+    return await EventResponse.model_validate(event_dict)
 
 
 @event_router.post(
@@ -128,7 +142,22 @@ async def update_event_route(
             ),
         ),
     )
-    return await EventResponse.from_orm_async(event, session)
+
+    event_dict = {
+        "id": event.id,
+        "title": event.title,
+        "description": event.description,
+        "cron": event.cron,
+        "is_cycle": event.is_cycle,
+        "type": event.type,
+        "creator_id": event.creator_id,
+        "group_id": event.group_id,
+        "timezone": event.timezone,
+        "duration": event.duration,
+        "event_happened": event.event_happened,
+        "notifies": [notify.minutes_before for notify in event.notifies],
+    }
+    return await EventResponse.model_validate(event_dict)
 
 
 @event_router.delete(
