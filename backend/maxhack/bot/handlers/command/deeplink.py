@@ -11,10 +11,12 @@ from maxo.routing.updates.bot_started import BotStarted
 
 from maxhack.bot.states import Groups
 from maxhack.core.exceptions import MaxHackError
+from maxhack.core.group.service import GroupService
 from maxhack.core.ids import InviteKey
 from maxhack.core.invite.service import InviteService
 from maxhack.core.max import MaxSender
 from maxhack.core.max.deeplinker import InvitePrefix
+from maxhack.database.models import UserModel
 
 deeplinks_router = Router(name=__name__)
 
@@ -29,7 +31,9 @@ async def invite_deeplink_handler(
     event: BotStarted,
     deeplink: str,
     dialog_manager: DialogManager,
+    current_user: UserModel,
     invite_service: FromDishka[InviteService],
+    group_service: FromDishka[GroupService],
     max_sender: FromDishka[MaxSender],
 ) -> None:
     raw_invite_key = deeplink[len(InvitePrefix) :]
@@ -49,11 +53,19 @@ async def invite_deeplink_handler(
         )
         raise SkipHandler from e
 
-    # TODO: Если юзер уже в этой группе - отправка сразу в группу
-
-    await dialog_manager.start(
-        state=Groups.join,
-        show_mode=ShowMode.SEND,
-        mode=StartMode.RESET_STACK,
-        data={"invite_key": invite.key, "group_id": group.id},
-    )
+    try:
+        await group_service.get_group(current_user.id, group.id)
+    except MaxHackError:
+        await dialog_manager.start(
+            state=Groups.join,
+            show_mode=ShowMode.SEND,
+            mode=StartMode.RESET_STACK,
+            data={"invite_key": invite.key, "group_id": group.id},
+        )
+    else:
+        await dialog_manager.start(
+            state=Groups.one,
+            show_mode=ShowMode.SEND,
+            mode=StartMode.RESET_STACK,
+            data={"group_id": group.id},
+        )
