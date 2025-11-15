@@ -37,7 +37,6 @@ class EventCreate(DomainModel):
     creator_id: UserId
     description: str = field(default="")
     type: EventType = field(default="event")
-    timezone: int | None = field(default=None)
     group_id: GroupId
     duration: int = field(default=0)
     participants_ids: list[UserId] = field(default_factory=list[UserId])
@@ -50,7 +49,6 @@ class EventUpdate(DomainModel):
     title: str | None = field(default=None)
     description: str | None = field(default=None)
     type: str | None = field(default=None)
-    timezone: int | None = field(default=None)
     cron: Cron | None = field(default=None)
     duration: int | None = field(default=None)
     participants_ids: list[UserId] | None = field(default=None)

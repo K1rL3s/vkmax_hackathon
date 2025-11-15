@@ -47,7 +47,6 @@ class EventRepo(BaseAlchemyRepo):
         type: str,
         creator_id: UserId,
         group_id: GroupId,
-        timezone: int = 0,
         duration: int = 0,
     ) -> EventModel:
         event = EventModel(
@@ -58,7 +57,6 @@ class EventRepo(BaseAlchemyRepo):
             type=type,
             creator_id=creator_id,
             group_id=group_id,
-            timezone=timezone,
             duration=duration,
         )
         try:

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 import pycron
 from redis.asyncio import Redis
@@ -124,23 +124,9 @@ class EventService(BaseService):
                 raise NotEnoughRights
 
         if event_create_scheme.cron.date.tzinfo is None:
-            if event_create_scheme.timezone:
-                offset_minutes = event_create_scheme.timezone
-                offset = timedelta(minutes=offset_minutes)
-                tz = timezone(offset=offset)
-            else:
-                tz = UTC_TIMEZONE
-
             event_create_scheme.cron.date = event_create_scheme.cron.date.replace(
-                tzinfo=tz,
+                tzinfo=UTC_TIMEZONE,
             )
-
-        utcoffset_minutes = int(
-            event_create_scheme.cron.date.tzinfo.utcoffset(
-                event_create_scheme.cron.date,
-            ).total_seconds()
-            // 60,
-        )
 
         event = await self._event_repo.create(
             title=event_create_scheme.title,
@@ -151,7 +137,6 @@ class EventService(BaseService):
             creator_id=event_create_scheme.creator_id,
             group_id=event_create_scheme.group_id,
             duration=event_create_scheme.duration,
-            timezone=utcoffset_minutes,
         )
         logger.info(f"Event {event.id} created successfully")
         await self.add_tag_to_event(

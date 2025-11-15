@@ -67,6 +67,7 @@ class IcsService(BaseService):
         self,
         events: list[EventModel],
         groups: dict[GroupId, GroupModel],
+        user_timezone: timezone,
         start_date: datetime | None = None,
         end_date: datetime | None = None,
     ) -> bytes:
@@ -100,11 +101,8 @@ class IcsService(BaseService):
             group = groups.get(event.group_id)
             organizer_name = group.name if group else "Unknown Group"
 
-            event_tz_offset = timedelta(minutes=event.timezone)
-            event_timezone = timezone(event_tz_offset)
-
             try:
-                event_start_date = start_date.replace(tzinfo=event_timezone)
+                event_start_date = start_date.replace(tzinfo=user_timezone)
                 cron = croniter(event.cron, event_start_date)
             except Exception:
                 continue
@@ -117,17 +115,17 @@ class IcsService(BaseService):
                 try:
                     next_date = cron.get_next(datetime)
                     if next_date.tzinfo is None:
-                        next_date = next_date.replace(tzinfo=event_timezone)
+                        next_date = next_date.replace(tzinfo=user_timezone)
                     else:
-                        next_date = next_date.astimezone(event_timezone)
+                        next_date = next_date.astimezone(user_timezone)
 
-                    if next_date > end_date.replace(tzinfo=event_timezone):
+                    if next_date > end_date.replace(tzinfo=user_timezone):
                         break
 
                     if last_date and next_date <= last_date:
                         break
 
-                    if next_date < current_time.replace(tzinfo=event_timezone):
+                    if next_date < current_time.replace(tzinfo=user_timezone):
                         continue
 
                     ical_event = ICalEvent()
@@ -299,13 +297,19 @@ class IcsService(BaseService):
                     every_month=parsed_event["every_month"],
                 )
 
+                if cron.date.tzinfo is None:
+                    cron.date.replace(
+                        tzinfo=timezone(
+                            offset=timedelta(minutes=parsed_event["timezone"]),
+                        ),
+                    )
+
                 event_create = EventCreate(
                     title=parsed_event["title"],
                     description=parsed_event["description"] or "",
                     cron=cron,
                     creator_id=user_id,
                     type="event",
-                    timezone=parsed_event["timezone"],
                     group_id=personal_group.id,
                     duration=parsed_event["duration"],
                     participants_ids=[user_id],
@@ -341,7 +345,7 @@ class IcsService(BaseService):
             bytes: Содержимое .ics файла
         """
         logger.debug(f"Exporting all user events from all groups for user {user_id}")
-        await self._ensure_user_exists(user_id)
+        user = await self._ensure_user_exists(user_id)
 
         user_groups = await self._users_to_groups_repo.user_groups(user_id)
 
@@ -360,7 +364,11 @@ class IcsService(BaseService):
         logger.info(
             f"Found {len(all_events)} events for user {user_id} in {len(groups_dict)} groups",
         )
-        return self.generate_ics(all_events, groups_dict)
+        return self.generate_ics(
+            all_events,
+            groups_dict,
+            timezone(offset=timedelta(minutes=user.timezone)),
+        )
 
     async def export_user_events_in_group(
         self,
@@ -379,7 +387,8 @@ class IcsService(BaseService):
         logger.debug(
             f"Exporting user events in group {group_id} for user {user_id}",
         )
-        await self._ensure_group_exists(group_id)
+        user = await self._ensure_user_exists(user_id)
+        group = await self._ensure_group_exists(group_id)
         await self._ensure_membership_role(user_id=user_id, group_id=group_id)
 
         events = await self._event_repo.list_user_events(
@@ -388,13 +397,16 @@ class IcsService(BaseService):
             tag_ids=None,
         )
 
-        group = await self._group_repo.get_by_id(group_id)
         groups_dict = {group_id: group}
 
         logger.info(
             f"Found {len(events)} events for user {user_id} in group {group_id}",
         )
-        return self.generate_ics(events, groups_dict)
+        return self.generate_ics(
+            events,
+            groups_dict,
+            timezone(offset=timedelta(minutes=user.timezone)),
+        )
 
     async def export_all_group_events(
         self,
@@ -413,8 +425,8 @@ class IcsService(BaseService):
         logger.debug(
             f"Exporting all group events for group {group_id} by user {user_id}",
         )
-        await self._ensure_group_exists(group_id)
-
+        user = await self._ensure_user_exists(user_id)
+        group = await self._ensure_group_exists(group_id)
         await self._ensure_membership_role(
             user_id=user_id,
             group_id=group_id,
@@ -423,8 +435,11 @@ class IcsService(BaseService):
 
         events = await self._event_repo.get_by_group_id(group_id, tag_ids=None)
 
-        group = await self._group_repo.get_by_id(group_id)
         groups_dict = {group_id: group}
 
         logger.info(f"Found {len(events)} events in group {group_id} for export")
-        return self.generate_ics(events, groups_dict)
+        return self.generate_ics(
+            events,
+            groups_dict,
+            timezone(offset=timedelta(minutes=user.timezone)),
+        )

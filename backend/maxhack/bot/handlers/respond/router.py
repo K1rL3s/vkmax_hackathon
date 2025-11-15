@@ -1,6 +1,5 @@
 from dishka import FromDishka
 
-from maxhack.core.enums.respond_action import RespondStatus
 from maxo.enums.message_link_type import MessageLinkType
 from maxo.routing.routers.simple import Router
 from maxo.routing.updates.message_callback import MessageCallback
@@ -8,6 +7,7 @@ from maxo.types.new_message_link import NewMessageLink
 from maxo.utils.facades import MessageCallbackFacade
 
 from maxhack.bot.filters.respond import RespondData
+from maxhack.core.enums.respond_action import RespondStatus
 from maxhack.core.exceptions import MaxHackError
 from maxhack.core.ids import EventId
 from maxhack.core.responds.service import RespondService

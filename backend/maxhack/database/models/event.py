@@ -25,7 +25,6 @@ class EventModel(BaseAlchemyModel, IdMixin[EventId]):
     type: Mapped[str] = mapped_column(String(16), nullable=False)
     creator_id: Mapped[UserId] = mapped_column(ForeignKey("users.id"), nullable=False)
     group_id: Mapped[GroupId] = mapped_column(ForeignKey("groups.id"), nullable=False)
-    timezone: Mapped[int] = mapped_column(Integer, nullable=False)
     duration: Mapped[int] = mapped_column(Integer, default=0)
     event_happened: Mapped[bool] = mapped_column(Boolean, default=False)
 

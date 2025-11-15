@@ -56,7 +56,6 @@ async def create_event_route(
         "type": event.type,
         "creator_id": event.creator_id,
         "group_id": event.group_id,
-        "timezone": event.timezone,
         "duration": event.duration,
         "event_happened": event.event_happened,
         "notifies": [notify.minutes_before for notify in event.notifies],
@@ -110,7 +109,6 @@ async def get_event_route(
         notifies=[
             EventNotifyResponse.model_validate(notify) for notify in event.notifies
         ],
-        timezone=event.timezone,
         duration=event.duration,
         event_happened=event.event_happened,
     )
@@ -150,7 +148,6 @@ async def update_event_route(
         "type": event.type,
         "creator_id": event.creator_id,
         "group_id": event.group_id,
-        "timezone": event.timezone,
         "duration": event.duration,
         "event_happened": event.event_happened,
         "notifies": [notify.minutes_before for notify in event.notifies],
@@ -230,7 +227,6 @@ async def get_group_events_route(
             "type": event.type,
             "creator_id": event.creator_id,
             "group_id": event.group_id,
-            "timezone": event.timezone,
             "duration": event.duration,
             "event_happened": event.event_happened,
             "notifies": [notify.minutes_before for notify in event.notifies],
@@ -278,7 +274,6 @@ async def get_user_events_route(
             "type": event.type,
             "creator_id": event.creator_id,
             "group_id": event.group_id,
-            "timezone": event.timezone,
             "duration": event.duration,
             "event_happened": event.event_happened,
             "notifies": [notify.minutes_before for notify in event.notifies],
@@ -316,7 +311,6 @@ async def import_ics_route(
             "type": event.type,
             "creator_id": event.creator_id,
             "group_id": event.group_id,
-            "timezone": event.timezone,
             "duration": event.duration,
             "event_happened": event.event_happened,
             "notifies": [notify.minutes_before for notify in event.notifies],
