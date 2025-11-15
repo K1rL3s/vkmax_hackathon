@@ -1,6 +1,5 @@
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, File, Query, Response, UploadFile, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from maxhack.core.event.models import Cron, EventCreate, EventUpdate
 from maxhack.core.event.service import EventService

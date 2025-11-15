@@ -25,6 +25,7 @@ class UserRepo(BaseAlchemyRepo):
         first_name: str,
         last_name: str | None,
         phone: str | None,
+        max_photo: str | None,
         timezone: int = 0,
     ) -> UserModel:
         user = UserModel(
@@ -33,6 +34,7 @@ class UserRepo(BaseAlchemyRepo):
             first_name=first_name,
             last_name=last_name,
             phone=phone,
+            max_photo=max_photo,
             timezone=timezone,
         )
         try:

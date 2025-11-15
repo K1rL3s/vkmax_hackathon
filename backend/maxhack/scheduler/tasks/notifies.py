@@ -1,5 +1,3 @@
-import asyncio
-
 from dishka import FromDishka
 from dishka.integrations.taskiq import inject
 from taskiq import async_shared_broker

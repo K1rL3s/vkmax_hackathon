@@ -17,6 +17,7 @@ def setup_logger(log_level: str) -> None:
     get_logger("retejo.http.request", groups=("retejo",))
     get_logger("taskiq", groups=("taskiq", "scheduler"))
 
+
 def get_logger(
     name: str,
     *,

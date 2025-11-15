@@ -8,6 +8,7 @@ from maxhack.core.exceptions import (
 )
 from maxhack.core.group.consts import PRIVATE_GROUP_NAME
 from maxhack.core.ids import MaxChatId, MaxId, TagId, UserId
+from maxhack.core.utils.datehelp import MOSCOW_TIMEZONE_MINUTES
 from maxhack.core.utils.timezones import TIMEZONES
 from maxhack.database.models import (
     EventModel,
@@ -44,7 +45,8 @@ class UserService:
         first_name: str,
         last_name: str | None = None,
         phone: str | None = None,
-        timezone: int = 0,
+        max_photo: str | None = None,
+        timezone: int = MOSCOW_TIMEZONE_MINUTES,
     ) -> UserModel:
         logger.debug(f"Creating user with max_id {max_id}")
         exists = await self._user_repo.get_by_max_id(max_id)
@@ -58,6 +60,7 @@ class UserService:
             first_name=first_name,
             last_name=last_name,
             phone=phone,
+            max_photo=max_photo,
             timezone=timezone,
         )
         logger.info(f"User {user.id} created successfully")

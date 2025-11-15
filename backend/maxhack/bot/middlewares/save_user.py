@@ -40,7 +40,6 @@ class SaveUserMiddleware(BaseMiddleware[Any]):
                 max_chat_id=MaxChatId(update_context.chat_id),
                 first_name=max_user.first_name,
                 last_name=max_user.last_name,
-                phone=None,
             )
             logger.info("Новый пользователь: %s", db_user)
 
