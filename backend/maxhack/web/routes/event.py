@@ -62,7 +62,7 @@ async def create_event_route(
         "event_happened": event.event_happened,
         "notifies": [notify.minutes_before for notify in event.notifies],
     }
-    return await EventResponse.model_validate(event_dict)
+    return EventResponse.model_validate(event_dict)
 
 
 @event_router.post(
@@ -157,7 +157,7 @@ async def update_event_route(
         "event_happened": event.event_happened,
         "notifies": [notify.minutes_before for notify in event.notifies],
     }
-    return await EventResponse.model_validate(event_dict)
+    return EventResponse.model_validate(event_dict)
 
 
 @event_router.delete(
