@@ -17,7 +17,7 @@ const TEST_WEB_APP_SESSION =
 
 export function useMaxUser(): MaxUser {
   return {
-    id: 7,
+    id: 3,
     maxId: 85851413,
     maxChatId: 20103780,
     maxPhoto: null,

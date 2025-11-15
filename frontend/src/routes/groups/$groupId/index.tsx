@@ -15,7 +15,7 @@ export const Route = createFileRoute('/groups/$groupId/')({
 
 function GroupEventsPage() {
   const { groupId } = useParams({ from: '/groups/$groupId/' })
-  const { data, isPending } = useGroupEvents(Number(groupId))
+  const { data, isPending } = useGroupEvents(Number(groupId), {})
   const scrollRef = useRef<{ scrollToToday: () => void }>(null)
   const navigate = useNavigate()
 
@@ -47,7 +47,16 @@ function GroupEventsPage() {
       groupId={Number(groupId)}
       heading={
         <Flex gapX={8}>
-          <IconButton mode="secondary" size="medium">
+          <IconButton
+            onClick={() =>
+              navigate({
+                to: '/groups/$groupId/search',
+                params: { groupId: groupId },
+              })
+            }
+            mode="secondary"
+            size="medium"
+          >
             <Search size={16} />
           </IconButton>
           <IconButton
@@ -60,7 +69,16 @@ function GroupEventsPage() {
         </Flex>
       }
     >
-      <EventList events={formatted} ref={scrollRef} />
+      <EventList
+        events={formatted}
+        ref={scrollRef}
+        onClick={(event) =>
+          navigate({
+            to: '/groups/$groupId/events/$eventId',
+            params: { eventId: String(event.id), groupId: groupId },
+          })
+        }
+      />
 
       <FloatingIconButton
         onClick={() =>

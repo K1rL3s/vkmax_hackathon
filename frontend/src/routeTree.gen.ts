@@ -18,6 +18,7 @@ import { Route as EventsCreateRouteImport } from './routes/events/create'
 import { Route as EventsIdRouteImport } from './routes/events/$id'
 import { Route as GroupsGroupIdIndexRouteImport } from './routes/groups/$groupId/index'
 import { Route as GroupsGroupIdSettingsRouteImport } from './routes/groups/$groupId/settings'
+import { Route as GroupsGroupIdSearchRouteImport } from './routes/groups/$groupId/search'
 import { Route as GroupsGroupIdMembersIndexRouteImport } from './routes/groups/$groupId/members/index'
 import { Route as GroupsGroupIdTagsCreateRouteImport } from './routes/groups/$groupId/tags/create'
 import { Route as GroupsGroupIdMembersMemberIdRouteImport } from './routes/groups/$groupId/members/$memberId'
@@ -69,6 +70,11 @@ const GroupsGroupIdSettingsRoute = GroupsGroupIdSettingsRouteImport.update({
   path: '/groups/$groupId/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GroupsGroupIdSearchRoute = GroupsGroupIdSearchRouteImport.update({
+  id: '/groups/$groupId/search',
+  path: '/groups/$groupId/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GroupsGroupIdMembersIndexRoute =
   GroupsGroupIdMembersIndexRouteImport.update({
     id: '/groups/$groupId/members/',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/events/$id': typeof EventsIdRoute
   '/events/create': typeof EventsCreateRoute
   '/groups/create': typeof GroupsCreateRoute
+  '/groups/$groupId/search': typeof GroupsGroupIdSearchRoute
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId': typeof GroupsGroupIdIndexRoute
   '/groups/$groupId/events/$eventId': typeof GroupsGroupIdEventsEventIdRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/events/$id': typeof EventsIdRoute
   '/events/create': typeof EventsCreateRoute
   '/groups/create': typeof GroupsCreateRoute
+  '/groups/$groupId/search': typeof GroupsGroupIdSearchRoute
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId': typeof GroupsGroupIdIndexRoute
   '/groups/$groupId/events/$eventId': typeof GroupsGroupIdEventsEventIdRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/events/$id': typeof EventsIdRoute
   '/events/create': typeof EventsCreateRoute
   '/groups/create': typeof GroupsCreateRoute
+  '/groups/$groupId/search': typeof GroupsGroupIdSearchRoute
   '/groups/$groupId/settings': typeof GroupsGroupIdSettingsRoute
   '/groups/$groupId/': typeof GroupsGroupIdIndexRoute
   '/groups/$groupId/events/$eventId': typeof GroupsGroupIdEventsEventIdRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/events/$id'
     | '/events/create'
     | '/groups/create'
+    | '/groups/$groupId/search'
     | '/groups/$groupId/settings'
     | '/groups/$groupId'
     | '/groups/$groupId/events/$eventId'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/events/$id'
     | '/events/create'
     | '/groups/create'
+    | '/groups/$groupId/search'
     | '/groups/$groupId/settings'
     | '/groups/$groupId'
     | '/groups/$groupId/events/$eventId'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/events/$id'
     | '/events/create'
     | '/groups/create'
+    | '/groups/$groupId/search'
     | '/groups/$groupId/settings'
     | '/groups/$groupId/'
     | '/groups/$groupId/events/$eventId'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   EventsIdRoute: typeof EventsIdRoute
   EventsCreateRoute: typeof EventsCreateRoute
   GroupsCreateRoute: typeof GroupsCreateRoute
+  GroupsGroupIdSearchRoute: typeof GroupsGroupIdSearchRoute
   GroupsGroupIdSettingsRoute: typeof GroupsGroupIdSettingsRoute
   GroupsGroupIdIndexRoute: typeof GroupsGroupIdIndexRoute
   GroupsGroupIdEventsEventIdRoute: typeof GroupsGroupIdEventsEventIdRoute
@@ -281,6 +294,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupsGroupIdSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/groups/$groupId/search': {
+      id: '/groups/$groupId/search'
+      path: '/groups/$groupId/search'
+      fullPath: '/groups/$groupId/search'
+      preLoaderRoute: typeof GroupsGroupIdSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/groups/$groupId/members/': {
       id: '/groups/$groupId/members/'
       path: '/groups/$groupId/members'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsIdRoute: EventsIdRoute,
   EventsCreateRoute: EventsCreateRoute,
   GroupsCreateRoute: GroupsCreateRoute,
+  GroupsGroupIdSearchRoute: GroupsGroupIdSearchRoute,
   GroupsGroupIdSettingsRoute: GroupsGroupIdSettingsRoute,
   GroupsGroupIdIndexRoute: GroupsGroupIdIndexRoute,
   GroupsGroupIdEventsEventIdRoute: GroupsGroupIdEventsEventIdRoute,

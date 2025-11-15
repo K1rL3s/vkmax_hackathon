@@ -49,6 +49,24 @@ export function usePersonalGroup() {
   })
 }
 
+export function useGroupWithTags(groupId: number) {
+  return useQuery({
+    queryKey: ['groups', groupId],
+    queryFn: async () => {
+      const [group, user] = await Promise.all([
+        getGroupGroupsGroupIdGet(groupId),
+        getUserByIdRouteUsersMeGet(),
+      ])
+
+      const tags = await listGroupTagsRouteGroupsGroupIdTagsGet(group.group.id)
+      return {
+        ...user,
+        group: { ...group, tags: tags },
+      }
+    },
+  })
+}
+
 export function usePersonalGroupWithTags() {
   return useQuery({
     queryKey: ['me', 'groups', 'personal', 'tagged'],

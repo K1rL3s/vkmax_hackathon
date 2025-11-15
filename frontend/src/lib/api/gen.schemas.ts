@@ -10,6 +10,11 @@
     
  * OpenAPI spec version: 0.1.0
  */
+export interface BodyImportIcsRouteEventsImportIcsPost {
+  /** .ics файл для импорта */
+  file: Blob;
+}
+
 export interface CronSchema {
   date: string;
   everyDay?: boolean;
@@ -108,6 +113,10 @@ export type EventUpdateRequestCron = CronSchema | null;
 
 export type EventUpdateRequestDuration = number | null;
 
+export type EventUpdateRequestParticipantsIds = number[] | null;
+
+export type EventUpdateRequestTagsIds = number[] | null;
+
 export interface EventUpdateRequest {
   title?: EventUpdateRequestTitle;
   description?: EventUpdateRequestDescription;
@@ -115,6 +124,8 @@ export interface EventUpdateRequest {
   timezone?: EventUpdateRequestTimezone;
   cron?: EventUpdateRequestCron;
   duration?: EventUpdateRequestDuration;
+  participantsIds?: EventUpdateRequestParticipantsIds;
+  tagsIds?: EventUpdateRequestTagsIds;
 }
 
 export interface EventsResponse {
@@ -134,10 +145,6 @@ export interface GroupCreateRequest {
   name: string;
   description?: GroupCreateRequestDescription;
   timezone?: GroupCreateRequestTimezone;
-}
-
-export interface GroupMemberAddRequest {
-  inviteKey: string;
 }
 
 export interface GroupMemberResponse {
@@ -302,19 +309,6 @@ export interface TagUserItem {
   lastName?: TagUserItemLastName;
   phone?: TagUserItemPhone;
   roleId: number;
-}
-
-export type UserCreateRequestLastName = string | null;
-
-export type UserCreateRequestPhone = string | null;
-
-export interface UserCreateRequest {
-  maxId: number;
-  maxChatId: number;
-  firstName: string;
-  lastName?: UserCreateRequestLastName;
-  phone?: UserCreateRequestPhone;
-  timezone?: number;
 }
 
 export type UserGroupItemDescription = string | null;

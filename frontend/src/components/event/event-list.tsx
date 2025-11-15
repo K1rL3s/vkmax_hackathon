@@ -13,8 +13,10 @@ export type CalendarEvent = {
 export const EventList = forwardRef(function EventList(
   {
     events,
+    onClick,
   }: {
     events: Array<CalendarEvent>
+    onClick: (event: CalendarEvent) => void
   },
   ref,
 ) {
@@ -116,7 +118,11 @@ export const EventList = forwardRef(function EventList(
                           <Typography.Label className="font-semibold">
                             {time}
                           </Typography.Label>
-                          <EventCard key={event.id} event={event} />
+                          <EventCard
+                            key={event.id}
+                            event={event}
+                            onClick={() => onClick(event)}
+                          />
                         </Flex>
                         <Devider />
                       </Container>

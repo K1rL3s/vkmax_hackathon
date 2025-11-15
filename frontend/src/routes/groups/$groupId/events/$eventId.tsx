@@ -1,103 +1,283 @@
 import {
   CellList,
-  CellSimple,
+  Container,
   Flex,
   Grid,
+  Input,
+  Panel,
+  Textarea,
   ToolButton,
   Typography,
 } from '@maxhub/max-ui'
-import { createFileRoute, useParams } from '@tanstack/react-router'
-import { Edit2, Trash2Icon } from 'lucide-react'
+import { createFileRoute, useParams, useRouter } from '@tanstack/react-router'
+import {
+  Check,
+  Clock,
+  Edit2,
+  Globe,
+  Paperclip,
+  Trash2Icon,
+  X,
+} from 'lucide-react'
+import { useForm } from '@tanstack/react-form'
+import { useState } from 'react'
+import z from 'zod'
+import type { TagResponse } from '@/lib/api/gen.schemas'
+import { ADMIN_ROLE_ID, SUPERVISOR_ROLE_ID, TIMEZONES } from '@/constants'
 import { DynamicPageLayout } from '@/components/layout/dynamic-page-layout'
-import { Loader } from '@/components/ui/loader'
-import { useEvent } from '@/hooks/events'
-import { Tag } from '@/components/tag'
-import { useGroup } from '@/hooks/groups'
+import { useDeleteEvent, useEditEvent, useEvent } from '@/hooks/events'
+import { useGroupWithTags } from '@/hooks/groups'
+import { TagsInput } from '@/components/member/tags-input'
+import { TimezoneInput } from '@/components/timezone-input'
 
 export const Route = createFileRoute('/groups/$groupId/events/$eventId')({
   component: EventDetailsPage,
 })
 
 function EventDetailsPage() {
+  const router = useRouter()
   const { groupId, eventId } = useParams({
     from: '/groups/$groupId/events/$eventId',
   })
-
-  useGroup(Number(groupId))
+  const groupQuery = useGroupWithTags(Number(groupId))
   const eventQuery = useEvent(Number(eventId))
+  const updateEventMutation = useEditEvent()
+  const deleteEventMutation = useDeleteEvent()
+
+  const [isEditing, setIsEditing] = useState(false)
+
+  const form = useForm({
+    defaultValues: {
+      title: eventQuery.data?.title ?? '',
+      description: eventQuery.data?.description ?? '',
+      timezone:
+        TIMEZONES.find((ts) => ts.value === eventQuery.data?.timezone) ??
+        TIMEZONES[0],
+      tagsIds: eventQuery.data?.tags || [],
+      duration: eventQuery.data?.duration ?? 60,
+    },
+    validators: {
+      onChange: z.object({
+        title: z.string().min(1, { error: 'Название не должно быть пустым' }),
+        description: z.string(),
+        timezone: z.object({
+          value: z.number(),
+          label: z.string(),
+        }),
+        duration: z.number().min(1),
+        tagsIds: z.array(
+          z.object({
+            id: z.number(),
+            name: z.string(),
+            color: z.string(),
+            groupId: z.number(),
+          }),
+        ),
+      }),
+    },
+    onSubmit: ({ value }) => {
+      updateEventMutation.mutate(
+        {
+          eventId: Number(eventId),
+          input: {
+            title: value.title,
+            description: value.description,
+            timezone: value.timezone.value,
+            // tagsIds: value.tagsIds.map((tag) => tag.id),
+            // participantsIds: [personalGroupQuery.data!.id],
+          },
+        },
+        {
+          onSuccess: () => {
+            setIsEditing(false)
+          },
+        },
+      )
+    },
+  })
+
+  const canEdit =
+    groupQuery.data?.id === eventQuery.data?.creatorId ||
+    [ADMIN_ROLE_ID, SUPERVISOR_ROLE_ID].includes(groupQuery.data.group.role.id)
 
   return (
     <DynamicPageLayout
       footer={
-        <Flex
-          className="w-full py-1 px-3 bg-(--background-surface-card) rounded-t-4xl"
-          gapX={12}
-          justify="center"
-        >
-          <Grid cols={2} gapX={8}>
-            <ToolButton
-              onClick={() => console.log(1)}
-              icon={<Edit2 size={24} />}
-            >
-              Изменить
-            </ToolButton>
-            <ToolButton icon={<Trash2Icon size={24} />}>Удалить</ToolButton>
-          </Grid>
-        </Flex>
-      }
-    >
-      {eventQuery.isPending ? (
-        <Loader size={38} />
-      ) : (
-        <CellList className="w-full" mode="island" filled>
-          <CellSimple
-            before={
-              <Typography.Label className="w-16 text-start">
-                Название
-              </Typography.Label>
-            }
-            title={eventQuery.data?.title}
-          />
-          <CellSimple
-            before={
-              <Typography.Label className="w-16 text-start">
-                Описание
-              </Typography.Label>
-            }
+        !canEdit ? (
+          <></>
+        ) : (
+          <Flex
+            className="w-full py-1 px-3 bg-(--background-surface-card) rounded-t-4xl"
+            gapX={12}
+            justify="center"
           >
-            {eventQuery.data?.description}
-          </CellSimple>
-          <CellSimple
-            before={
-              <Typography.Label className="w-16 text-start">
-                Теги
-              </Typography.Label>
-            }
-          >
-            <Flex wrap="wrap">
-              {eventQuery.data?.tags.length === 0 && (
-                <Typography.Body className="text-sm">
-                  Теги не установлены
-                </Typography.Body>
+            <Grid cols={2} gapX={8}>
+              {isEditing ? (
+                <>
+                  <ToolButton
+                    type="submit"
+                    key={'submit'}
+                    form="edit-event"
+                    icon={<Check size={24} />}
+                  >
+                    Применить
+                  </ToolButton>
+                  <ToolButton
+                    onClick={() => {
+                      form.reset()
+                      setIsEditing(false)
+                    }}
+                    key={'cancel'}
+                    icon={<X size={24} />}
+                  >
+                    Отменить
+                  </ToolButton>
+                </>
+              ) : (
+                <>
+                  <ToolButton
+                    key={'edit'}
+                    onClick={() => setIsEditing(true)}
+                    icon={<Edit2 size={24} />}
+                  >
+                    Изменить
+                  </ToolButton>
+                  <ToolButton
+                    onClick={() => {
+                      deleteEventMutation.mutate(Number(id))
+                      router.history.back()
+                    }}
+                    key={'delete'}
+                    icon={<Trash2Icon size={24} />}
+                  >
+                    Удалить
+                  </ToolButton>
+                </>
               )}
-              {eventQuery.data?.tags.map((tag) => (
-                <Tag tag={tag} />
-              ))}
-            </Flex>
-          </CellSimple>
-          <CellSimple
-            before={
-              <Typography.Label className="w-16 text-start">
-                Группа
-              </Typography.Label>
-            }
+            </Grid>
+          </Flex>
+        )
+      }
+      heading={<Typography.Headline>Просмотр события</Typography.Headline>}
+    >
+      <Panel className="w-full">
+        <Container className="w-full">
+          <Flex
+            direction="column"
+            justify="space-between"
+            className="w-full h-full"
           >
-            <span className="px-2 pb-1 bg-(--accent-themed) rounded-full w-fit">
-              {eventQuery.data?.group.name}
-            </span>
-          </CellSimple>
-        </CellList>
-      )}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                form.handleSubmit()
+              }}
+              id="edit-event"
+              className="w-full h-full"
+            >
+              <CellList filled mode="island" className="*:overflow-visible!">
+                <form.Field
+                  name="title"
+                  children={(field) => (
+                    <Input
+                      placeholder="Название"
+                      value={field.state.value}
+                      disabled={!isEditing}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                  )}
+                />
+                <div className="border-b border-gray-200/10" />
+                <form.Field
+                  name="description"
+                  children={(field) => (
+                    <Textarea
+                      className="min-h-25"
+                      placeholder="Описание"
+                      value={field.state.value}
+                      disabled={!isEditing}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                  )}
+                />
+
+                <div className="border-b border-gray-200/10" />
+                <form.Field
+                  name="duration"
+                  children={(field) => (
+                    <Input
+                      className="w-full"
+                      iconBefore={
+                        <Flex align="center" gapX={10}>
+                          <Clock size={18} />
+                          <span className="text-nowrap text-(--text-secondary)">
+                            Длится минут
+                          </span>
+                        </Flex>
+                      }
+                      withClearButton={false}
+                      value={field.state.value}
+                      disabled={!isEditing}
+                      onChange={(e) => {
+                        if (
+                          isNaN(Number(e.target.value)) ||
+                          Number(e.target.value) < 0
+                        )
+                          return
+                        field.handleChange(Number(e.target.value))
+                      }}
+                    />
+                  )}
+                />
+
+                <div className="border-b border-gray-200/10" />
+                <form.Field
+                  name="timezone"
+                  children={(field) => (
+                    <TimezoneInput
+                      before={
+                        <Globe
+                          size={19}
+                          color="currentColor"
+                          className="text-(--icon-primary)"
+                        />
+                      }
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      disabled={!isEditing}
+                    />
+                  )}
+                />
+                <div className="border-b border-gray-200/10" />
+                <form.Field
+                  name="tagsIds"
+                  children={(field) => (
+                    <TagsInput
+                      disabled={!isEditing}
+                      fullWidth
+                      onChange={(tag: TagResponse) => {
+                        if (
+                          field.state.value.map((t) => t.id).includes(tag.id)
+                        ) {
+                          field.handleChange(
+                            field.state.value.filter((t) => t.id !== tag.id),
+                          )
+                        } else {
+                          field.handleChange([...field.state.value, tag])
+                        }
+                      }}
+                      value={field.state.value}
+                      before={<Paperclip size={18} />}
+                      options={groupQuery.data?.group.tags || []}
+                    />
+                  )}
+                />
+              </CellList>
+            </form>
+          </Flex>
+        </Container>
+      </Panel>
     </DynamicPageLayout>
   )
 }

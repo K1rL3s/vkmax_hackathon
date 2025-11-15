@@ -36,10 +36,16 @@ export function usePersonalEvents({
   })
 }
 
-export function useGroupEvents(groupId: number) {
+export function useGroupEvents(
+  groupId: number,
+  { tag_ids = [] }: { tag_ids?: Array<string> },
+) {
   return useQuery({
-    queryKey: ['events', 'groups', groupId],
-    queryFn: () => getGroupEventsRouteEventsGroupsGroupIdGet(groupId),
+    queryKey: ['events', 'groups', groupId, tag_ids.join(',')],
+    queryFn: () =>
+      getGroupEventsRouteEventsGroupsGroupIdGet(groupId, {
+        tag_ids: tag_ids.join(','),
+      }),
   })
 }
 

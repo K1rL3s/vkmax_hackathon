@@ -20,12 +20,12 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * Проверка соединения
  * @summary Check Connection
  */
-export const checkConnectionHealthcheckGet = (
+export const checkConnectionHealthGet = (
     
  options?: SecondParameter<typeof request<unknown>>,) => {
       return request<unknown>(
-      {url: `/healthcheck`, method: 'GET'
+      {url: `/health`, method: 'GET'
     },
       options);
     }
-  export type CheckConnectionHealthcheckGetResult = NonNullable<Awaited<ReturnType<typeof checkConnectionHealthcheckGet>>>
+  export type CheckConnectionHealthGetResult = NonNullable<Awaited<ReturnType<typeof checkConnectionHealthGet>>>

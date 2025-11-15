@@ -53,7 +53,13 @@ function Home() {
           </Flex>
         </Header>
         <FallbackLoader isLoading={isPending || !data}>
-          <EventList events={formatted} ref={scrollRef} />
+          <EventList
+            events={formatted}
+            ref={scrollRef}
+            onClick={(event) =>
+              navigate({ to: '/events/$id', params: { id: String(event.id) } })
+            }
+          />
         </FallbackLoader>
       </Flex>
       <FloatingIconButton

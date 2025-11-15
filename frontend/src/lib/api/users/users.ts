@@ -16,7 +16,6 @@ import type {
   ListUserEventsRouteUsersUserIdGroupsGroupIdEventsGetParams,
   PersonalGroupResponse,
   TagResponse,
-  UserCreateRequest,
   UserGroupsResponse,
   UserResponse,
   UserUpdateRequest
@@ -29,20 +28,6 @@ import type { BodyType } from '.././client';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  /**
- * Создание пользователя
- * @summary Create User Route
- */
-export const createUserRouteUsersPost = (
-    userCreateRequest: BodyType<UserCreateRequest>,
- options?: SecondParameter<typeof request<UserResponse>>,) => {
-      return request<UserResponse>(
-      {url: `/users`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: userCreateRequest
-    },
-      options);
-    }
   /**
  * Получить пользователя. Можно только самого себя.
  * @summary Get User By Id Route
@@ -133,8 +118,7 @@ export const listUserEventsRouteUsersUserIdGroupsGroupIdEventsGet = (
     },
       options);
     }
-  export type CreateUserRouteUsersPostResult = NonNullable<Awaited<ReturnType<typeof createUserRouteUsersPost>>>
-export type GetUserByIdRouteUsersMeGetResult = NonNullable<Awaited<ReturnType<typeof getUserByIdRouteUsersMeGet>>>
+  export type GetUserByIdRouteUsersMeGetResult = NonNullable<Awaited<ReturnType<typeof getUserByIdRouteUsersMeGet>>>
 export type UpdateUserRouteUsersPatchResult = NonNullable<Awaited<ReturnType<typeof updateUserRouteUsersPatch>>>
 export type GetPersonalGroupRouteUsersMeGroupsPersonalGetResult = NonNullable<Awaited<ReturnType<typeof getPersonalGroupRouteUsersMeGroupsPersonalGet>>>
 export type ListUserGroupsRouteUsersMeGroupsGetResult = NonNullable<Awaited<ReturnType<typeof listUserGroupsRouteUsersMeGroupsGet>>>

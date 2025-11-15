@@ -76,3 +76,7 @@ export const TIMEZONES: Array<Timezone> = [
 
   { label: 'Кирибати, Тарава (Лайн, о-ва) +14:00', value: 840 },
 ]
+
+export const ADMIN_ROLE_ID = 1
+export const SUPERVISOR_ROLE_ID = 2
+export const MEMBER_ROLE_ID = 3

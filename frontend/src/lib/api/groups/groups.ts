@@ -13,7 +13,6 @@
 import type {
   GetGroupResponse,
   GroupCreateRequest,
-  GroupMemberAddRequest,
   GroupMemberResponse,
   GroupMemberUpdateRequest,
   GroupNotifyModeRequest,
@@ -178,20 +177,6 @@ export const deleteInviteRouteGroupsGroupIdInviteDelete = (
       options);
     }
   /**
- * Добавление пользователя в группу
- * @summary Join Group
- */
-export const joinGroupGroupsJoinPost = (
-    groupMemberAddRequest: BodyType<GroupMemberAddRequest>,
- options?: SecondParameter<typeof request<GroupMemberResponse>>,) => {
-      return request<GroupMemberResponse>(
-      {url: `/groups/join`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: groupMemberAddRequest
-    },
-      options);
-    }
-  /**
  * Изменить режим уведомлений в группе для самого себя.
  * @summary Update Group Notify Mode
  */
@@ -217,5 +202,4 @@ export type ListGroupUsersRouteGroupsGroupIdUsersGetResult = NonNullable<Awaited
 export type GetInviteRouteGroupsGroupIdInviteGetResult = NonNullable<Awaited<ReturnType<typeof getInviteRouteGroupsGroupIdInviteGet>>>
 export type CreateInviteRouteGroupsGroupIdInvitePostResult = NonNullable<Awaited<ReturnType<typeof createInviteRouteGroupsGroupIdInvitePost>>>
 export type DeleteInviteRouteGroupsGroupIdInviteDeleteResult = NonNullable<Awaited<ReturnType<typeof deleteInviteRouteGroupsGroupIdInviteDelete>>>
-export type JoinGroupGroupsJoinPostResult = NonNullable<Awaited<ReturnType<typeof joinGroupGroupsJoinPost>>>
 export type UpdateGroupNotifyModeGroupsGroupIdNotifyPatchResult = NonNullable<Awaited<ReturnType<typeof updateGroupNotifyModeGroupsGroupIdNotifyPatch>>>

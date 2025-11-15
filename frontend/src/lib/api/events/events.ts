@@ -11,6 +11,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
+  BodyImportIcsRouteEventsImportIcsPost,
   EventAddTagRequest,
   EventAddUserRequest,
   EventCreateRequest,
@@ -142,6 +143,22 @@ export const getUserEventsRouteEventsGet = (
       options);
     }
   /**
+ * Импортировать события из .ics файла в личную группу пользователя
+ * @summary Import Ics Route
+ */
+export const importIcsRouteEventsImportIcsPost = (
+    bodyImportIcsRouteEventsImportIcsPost: BodyType<BodyImportIcsRouteEventsImportIcsPost>,
+ options?: SecondParameter<typeof request<EventsResponse>>,) => {const formData = new FormData();
+formData.append(`file`, bodyImportIcsRouteEventsImportIcsPost.file)
+
+      return request<EventsResponse>(
+      {url: `/events/import/ics`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData
+    },
+      options);
+    }
+  /**
  * Выгрузить все события группы, в которых участвует пользователь, во всех группах
  * @summary Export User Events All Groups Route
  */
@@ -185,6 +202,7 @@ export type DeleteEventRouteEventsEventIdDeleteResult = NonNullable<Awaited<Retu
 export type AddUserToEventRouteEventsEventIdUsersPostResult = NonNullable<Awaited<ReturnType<typeof addUserToEventRouteEventsEventIdUsersPost>>>
 export type GetGroupEventsRouteEventsGroupsGroupIdGetResult = NonNullable<Awaited<ReturnType<typeof getGroupEventsRouteEventsGroupsGroupIdGet>>>
 export type GetUserEventsRouteEventsGetResult = NonNullable<Awaited<ReturnType<typeof getUserEventsRouteEventsGet>>>
+export type ImportIcsRouteEventsImportIcsPostResult = NonNullable<Awaited<ReturnType<typeof importIcsRouteEventsImportIcsPost>>>
 export type ExportUserEventsAllGroupsRouteEventsExportAllGroupsGetResult = NonNullable<Awaited<ReturnType<typeof exportUserEventsAllGroupsRouteEventsExportAllGroupsGet>>>
 export type ExportUserEventsInGroupRouteEventsExportGroupsGroupIdUserGetResult = NonNullable<Awaited<ReturnType<typeof exportUserEventsInGroupRouteEventsExportGroupsGroupIdUserGet>>>
 export type ExportAllGroupEventsRouteEventsExportGroupsGroupIdAllGetResult = NonNullable<Awaited<ReturnType<typeof exportAllGroupEventsRouteEventsExportGroupsGroupIdAllGet>>>
