@@ -106,6 +106,7 @@ def downgrade() -> None:
         table_name="users_to_tags",
         postgresql_where="users_to_tags.deleted_at IS NULL",
     )
+    op.execute("ALTER TABLE users_to_tags DROP CONSTRAINT pk_users_to_tags CASCADE")
     op.drop_column("users_to_tags", "id")
     op.create_primary_key(
         op.f("pk_users_to_tags"),
@@ -118,6 +119,7 @@ def downgrade() -> None:
         table_name="users_to_groups",
         postgresql_where="users_to_groups.deleted_at IS NULL",
     )
+    op.execute("ALTER TABLE users_to_groups DROP CONSTRAINT pk_users_to_groups CASCADE")
     op.drop_column("users_to_groups", "id")
     op.create_primary_key(
         op.f("pk_users_to_groups"),
@@ -130,6 +132,7 @@ def downgrade() -> None:
         table_name="users_to_events",
         postgresql_where="users_to_events.deleted_at IS NULL",
     )
+    op.execute("ALTER TABLE users_to_events DROP CONSTRAINT pk_users_to_events CASCADE")
     op.drop_column("users_to_events", "id")
     op.create_primary_key(
         op.f("pk_users_to_events"),
@@ -142,6 +145,7 @@ def downgrade() -> None:
         table_name="tags_to_events",
         postgresql_where="tags_to_events.deleted_at IS NULL",
     )
+    op.execute("ALTER TABLE tags_to_events DROP CONSTRAINT pk_tags_to_events CASCADE")
     op.drop_column("tags_to_events", "id")
     op.create_primary_key(
         op.f("pk_tags_to_events"),
