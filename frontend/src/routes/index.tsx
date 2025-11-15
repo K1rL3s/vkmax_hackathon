@@ -22,7 +22,9 @@ function Home() {
   const start = new Date(now.getFullYear(), now.getMonth() - 2, now.getDate())
   const end = new Date(now.getFullYear(), now.getMonth() + 2, now.getDate())
 
-  const formatted = data ? expandCronEvents(data.events, start, end) : []
+  const formatted = data
+    ? expandCronEvents(data.group.events, start, end, data.timezone)
+    : []
 
   useEffect(() => {
     if (scrollRef.current) {

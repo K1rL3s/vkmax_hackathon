@@ -33,9 +33,10 @@ function SearchPersonalEventsPage() {
   const [query, setQuery] = useState('')
 
   const expanded = expandCronEvents(
-    eventsQuery.data?.events || [],
+    eventsQuery.data?.group.events || [],
     new Date(),
     new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    groupQuery.data?.timezone || 180,
   )
 
   const calendar: { [date: string]: Array<CalendarEvent> | undefined } =

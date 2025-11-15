@@ -24,7 +24,6 @@ function CreateGroupFormPage() {
     defaultValues: {
       name: '',
       description: '',
-      timezone: { label: 'Москва', value: 180 },
     },
     validators: {
       onChange: z.object({
@@ -35,10 +34,6 @@ function CreateGroupFormPage() {
         description: z.string().max(500, {
           message: 'Описание группы не может превышать 500 символов',
         }),
-        timezone: z.object({
-          label: z.string(),
-          value: z.number(),
-        }),
       }),
     },
     onSubmit: ({ value }) => {
@@ -46,7 +41,6 @@ function CreateGroupFormPage() {
         {
           name: value.name,
           description: value.description,
-          timezone: value.timezone.value,
         },
         {
           onSuccess: ({ group }) => {
@@ -115,23 +109,6 @@ function CreateGroupFormPage() {
                           .join(',')}
                       </em>
                     )}
-                  </>
-                )}
-              />
-              <form.Field
-                name="timezone"
-                children={(field) => (
-                  <>
-                    <TimezoneInput
-                      header={
-                        <Typography.Title className="text-(--text-tertiary)">
-                          Часовой пояс
-                        </Typography.Title>
-                      }
-                      mode="secondary"
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                    />
                   </>
                 )}
               />

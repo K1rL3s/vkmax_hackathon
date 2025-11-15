@@ -2,7 +2,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMember } from './members'
 import type {
   GroupCreateRequest,
+  GroupResponse,
   GroupUpdateRequest,
+  NotifyMode,
+  RoleResponse,
+  TagResponse,
+  UserResponseLastName,
+  UserResponseMaxPhoto,
+  UserResponsePhone,
 } from '@/lib/api/gen.schemas'
 import {
   createGroupRouteGroupsPost,
@@ -10,7 +17,7 @@ import {
   getGroupGroupsGroupIdGet,
   updateGroupRouteGroupsGroupIdPatch,
 } from '@/lib/api/groups/groups'
-import { useMaxUser } from '@/integrations/max-ui/hooks/max-user'
+import { useCurrentUser } from '@/integrations/max-ui/hooks/max-user'
 import {
   getPersonalGroupRouteUsersMeGroupsPersonalGet,
   getUserByIdRouteUsersMeGet,
@@ -52,7 +59,22 @@ export function usePersonalGroup() {
 export function useGroupWithTags(groupId: number) {
   return useQuery({
     queryKey: ['groups', groupId],
-    queryFn: async () => {
+    queryFn: async (): Promise<{
+      group: {
+        tags: Array<TagResponse>
+        group?: GroupResponse
+        role?: RoleResponse
+      }
+      id: number
+      maxId: number
+      maxChatId: number
+      maxPhoto?: UserResponseMaxPhoto
+      firstName: string
+      lastName?: UserResponseLastName
+      phone?: UserResponsePhone
+      timezone: number
+      notifyMode: NotifyMode
+    }> => {
       const [group, user] = await Promise.all([
         getGroupGroupsGroupIdGet(groupId),
         getUserByIdRouteUsersMeGet(),
@@ -99,7 +121,7 @@ export function useCreateGroup() {
 }
 
 export function useMemberHasRole(groupId: number, rolesIds: Array<number>) {
-  const { id } = useMaxUser()
+  const { id } = useCurrentUser()
   const { data } = useMember(groupId, id)
   return data && rolesIds.includes(data.member.role.id)
 }

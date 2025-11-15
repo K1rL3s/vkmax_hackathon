@@ -10,15 +10,7 @@ import {
   Typography,
 } from '@maxhub/max-ui'
 import { createFileRoute, useParams, useRouter } from '@tanstack/react-router'
-import {
-  Check,
-  Clock,
-  Edit2,
-  Globe,
-  Paperclip,
-  Trash2Icon,
-  X,
-} from 'lucide-react'
+import { Check, Clock, Edit2, Paperclip, Trash2Icon, X } from 'lucide-react'
 import { useForm } from '@tanstack/react-form'
 import z from 'zod'
 import { useState } from 'react'
@@ -26,8 +18,6 @@ import type { TagResponse } from '@/lib/api/gen.schemas'
 import { DynamicPageLayout } from '@/components/layout/dynamic-page-layout'
 import { useDeleteEvent, useEditEvent, useEvent } from '@/hooks/events'
 import { TagsInput } from '@/components/member/tags-input'
-import { TimezoneInput } from '@/components/timezone-input'
-import { TIMEZONES } from '@/constants'
 import { usePersonalGroupWithTags } from '@/hooks/groups'
 
 export const Route = createFileRoute('/events/$id')({
@@ -48,9 +38,6 @@ function EventDetailsPage() {
     defaultValues: {
       title: eventQuery.data?.title ?? '',
       description: eventQuery.data?.description ?? '',
-      timezone:
-        TIMEZONES.find((ts) => ts.value === eventQuery.data?.timezone) ??
-        TIMEZONES[0],
       tagsIds: personalGroupQuery.data?.group.tags || [],
       duration: eventQuery.data?.duration ?? 60,
     },
@@ -58,10 +45,6 @@ function EventDetailsPage() {
       onChange: z.object({
         title: z.string().min(1, { error: 'Название не должно быть пустым' }),
         description: z.string(),
-        timezone: z.object({
-          value: z.number(),
-          label: z.string(),
-        }),
         duration: z.number().min(1),
         tagsIds: z.array(
           z.object({
@@ -80,7 +63,7 @@ function EventDetailsPage() {
           input: {
             title: value.title,
             description: value.description,
-            timezone: value.timezone.value,
+            duration: value.duration,
             // до лучших времен
             // tagsIds: value.tagsIds.map((tag) => tag.id),
             // participantsIds: [personalGroupQuery.data!.id],
@@ -218,25 +201,6 @@ function EventDetailsPage() {
                           return
                         field.handleChange(Number(e.target.value))
                       }}
-                    />
-                  )}
-                />
-
-                <div className="border-b border-gray-200/10" />
-                <form.Field
-                  name="timezone"
-                  children={(field) => (
-                    <TimezoneInput
-                      before={
-                        <Globe
-                          size={19}
-                          color="currentColor"
-                          className="text-(--icon-primary)"
-                        />
-                      }
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                      disabled={!isEditing}
                     />
                   )}
                 />

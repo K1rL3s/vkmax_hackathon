@@ -33,6 +33,7 @@ function SettingsPage() {
     },
     onSubmit: ({ value }) => {
       mutate({ notifyMode: value.notifyMode, timezone: value.timezone?.value })
+      form.update({ defaultValues: value })
     },
   })
 
@@ -95,7 +96,7 @@ function SettingsPage() {
                       children={(field) => (
                         <TimezoneInput
                           value={field.state.value}
-                          onChange={field.handleChange}
+                          onChange={(tz) => field.handleChange(() => tz as any)}
                         />
                       )}
                     />

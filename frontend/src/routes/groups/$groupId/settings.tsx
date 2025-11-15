@@ -24,9 +24,6 @@ function GroupSettingsPage() {
     defaultValues: {
       name: groupQuery.data?.group.name || '',
       description: groupQuery.data?.group.description || '',
-      timezone: TIMEZONES.find(
-        (tz) => tz.value === groupQuery.data?.group.timezone,
-      ),
     },
     onSubmit: ({ value }) => {
       editGroupMutation.mutate(
@@ -35,7 +32,6 @@ function GroupSettingsPage() {
           input: {
             name: value.name,
             description: value.description,
-            timezone: value.timezone?.value,
           },
         },
         { onSuccess: () => setIsEditing(false) },
@@ -94,22 +90,6 @@ function GroupSettingsPage() {
                     className="w-full"
                   />
                 </Flex>
-              )}
-            />
-            <form.Field
-              name="timezone"
-              children={(field) => (
-                <TimezoneInput
-                  header={
-                    <Typography.Title className="text-(--text-tertiary)">
-                      Часовой пояс
-                    </Typography.Title>
-                  }
-                  disabled={!isEditing}
-                  mode="secondary"
-                  value={field.state.value}
-                  onChange={(value) => field.handleChange(value)}
-                />
               )}
             />
 

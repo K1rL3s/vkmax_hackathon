@@ -9,13 +9,11 @@ import {
   Textarea,
   Typography,
 } from '@maxhub/max-ui'
-import { Bell, Clock, Clock3, Globe, Paperclip, RefreshCcw } from 'lucide-react'
+import { Bell, Clock, Clock3, Paperclip, RefreshCcw } from 'lucide-react'
 import { useForm } from '@tanstack/react-form'
 import { z } from 'zod'
 import type { TagResponse } from '@/lib/api/gen.schemas'
 import { DynamicPageLayout } from '@/components/layout/dynamic-page-layout'
-import { TimezoneInput } from '@/components/timezone-input'
-import { TIMEZONES } from '@/constants'
 import { TagsInput } from '@/components/member/tags-input'
 import { RetryInput } from '@/components/retry-input'
 import { usePersonalGroupWithTags } from '@/hooks/groups'
@@ -34,10 +32,7 @@ function CreateEventForm() {
     defaultValues: {
       title: '',
       description: '',
-      timezone:
-        TIMEZONES.find(
-          (ts) => ts.value === personalGroupQuery.data?.timezone,
-        ) ?? TIMEZONES[0],
+
       retry: {
         everyDay: false,
         everyWeek: false,
@@ -52,10 +47,7 @@ function CreateEventForm() {
       onChange: z.object({
         title: z.string().min(1, { error: 'Название не должно быть пустым' }),
         description: z.string(),
-        timezone: z.object({
-          value: z.number(),
-          label: z.string(),
-        }),
+
         date: z.string().min(1, { error: 'Дата не должна быть пустой' }),
         minutesBefore: z
           .number()
@@ -83,7 +75,6 @@ function CreateEventForm() {
         {
           title: value.title,
           description: value.description,
-          timezone: value.timezone.value,
           cron: { date: value.date, ...value.retry },
           minutesBefore: [value.minutesBefore],
           tagsIds: value.tagsIds.map((tag) => tag.id),
@@ -195,23 +186,7 @@ function CreateEventForm() {
                     />
                   )}
                 />
-                <div className="border-b border-gray-200/10" />
-                <form.Field
-                  name="timezone"
-                  children={(field) => (
-                    <TimezoneInput
-                      before={
-                        <Globe
-                          size={19}
-                          color="currentColor"
-                          className="text-(--icon-primary)"
-                        />
-                      }
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                    />
-                  )}
-                />
+
                 <div className="border-b border-gray-200/10" />
                 <form.Field
                   name="minutesBefore"

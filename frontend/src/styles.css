@@ -8,3 +8,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.bg-image {
+  background-image: url(https://web.max.ru/_app/immutable/assets/pattern_space.aFb4MW9l.svg);
+}

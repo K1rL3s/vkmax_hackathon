@@ -1,11 +1,11 @@
 import {
   CellList,
   CellSimple,
+  Container,
   Flex,
   Input,
   Panel,
   Typography,
-  Container,
 } from '@maxhub/max-ui'
 import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router'
 import { Calendar, Search } from 'lucide-react'
@@ -17,6 +17,7 @@ import { useGroupEvents } from '@/hooks/events'
 import { useGroupWithTags } from '@/hooks/groups'
 import { expandCronEvents } from '@/lib/utils/cron'
 import { DynamicPageLayout } from '@/components/layout/dynamic-page-layout'
+import { FallbackLoader } from '@/components/ui/fallback-loader'
 
 export const Route = createFileRoute('/groups/$groupId/search')({
   component: SearchPersonalEventsPage,
@@ -36,6 +37,7 @@ function SearchPersonalEventsPage() {
     eventsQuery.data?.events || [],
     new Date(),
     new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    groupQuery.data?.timezone || 180,
   )
 
   const calendar: { [date: string]: Array<CalendarEvent> | undefined } =
@@ -63,9 +65,18 @@ function SearchPersonalEventsPage() {
   return (
     <DynamicPageLayout
       heading={
-        <Typography.Headline>
-          {groupQuery.data?.group.group.name}
-        </Typography.Headline>
+        <div>
+          <FallbackLoader
+            isLoading={
+              groupQuery.isPending || !groupQuery.data?.group.group?.name
+            }
+            size={18}
+          >
+            <Typography.Headline>
+              {groupQuery.data?.group.group?.name}
+            </Typography.Headline>
+          </FallbackLoader>
+        </div>
       }
     >
       <Panel className="w-full">

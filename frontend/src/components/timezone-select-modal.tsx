@@ -14,6 +14,7 @@ import { TIMEZONES } from '@/constants'
 export type Timezone = {
   label: string
   value: number
+  tz: string
 }
 
 type TimezoneSelectModalProps = {

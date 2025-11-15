@@ -4,7 +4,6 @@ import {
   Bell,
   Clock,
   Clock3,
-  Globe,
   Paperclip,
   RefreshCcw,
   Users2,
@@ -24,8 +23,7 @@ import type { TagResponse } from '@/lib/api/gen.schemas'
 import { DynamicPageLayout } from '@/components/layout/dynamic-page-layout'
 import { TagsInput } from '@/components/member/tags-input'
 import { RetryInput } from '@/components/retry-input'
-import { TimezoneInput } from '@/components/timezone-input'
-import { TIMEZONES } from '@/constants'
+
 import { useCreateEvent } from '@/hooks/events'
 import { useGroup } from '@/hooks/groups'
 import { toLocalDatetimeString } from '@/lib/utils/datetime'
@@ -49,9 +47,6 @@ function CreateGroupEventForm() {
     defaultValues: {
       title: '',
       description: '',
-      timezone:
-        TIMEZONES.find((ts) => ts.value === groupQuery.data?.group.timezone) ??
-        TIMEZONES[0],
       retry: {
         everyDay: false,
         everyWeek: false,
@@ -68,10 +63,6 @@ function CreateGroupEventForm() {
       onChange: z.object({
         title: z.string().min(1, { error: 'Название не должно быть пустым' }),
         description: z.string(),
-        timezone: z.object({
-          value: z.number(),
-          label: z.string(),
-        }),
         date: z.string().min(1, { error: 'Дата не должна быть пустой' }),
         minutesBefore: z
           .number()
@@ -100,7 +91,6 @@ function CreateGroupEventForm() {
         {
           title: value.title,
           description: value.description,
-          timezone: value.timezone.value,
           cron: { date: value.date, ...value.retry },
           minutesBefore: [value.minutesBefore],
           tagsIds: value.tagsIds.map((tag) => tag.id),
@@ -210,23 +200,6 @@ function CreateGroupEventForm() {
                       }
                       onChange={(retry) => field.handleChange(retry)}
                       value={field.state.value}
-                    />
-                  )}
-                />
-                <div className="border-b border-gray-200/10" />
-                <form.Field
-                  name="timezone"
-                  children={(field) => (
-                    <TimezoneInput
-                      before={
-                        <Globe
-                          size={19}
-                          color="currentColor"
-                          className="text-(--icon-primary)"
-                        />
-                      }
-                      value={field.state.value}
-                      onChange={field.handleChange}
                     />
                   )}
                 />

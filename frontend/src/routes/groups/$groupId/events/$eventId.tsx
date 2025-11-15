@@ -10,25 +10,16 @@ import {
   Typography,
 } from '@maxhub/max-ui'
 import { createFileRoute, useParams, useRouter } from '@tanstack/react-router'
-import {
-  Check,
-  Clock,
-  Edit2,
-  Globe,
-  Paperclip,
-  Trash2Icon,
-  X,
-} from 'lucide-react'
+import { Check, Clock, Edit2, Paperclip, Trash2Icon, X } from 'lucide-react'
 import { useForm } from '@tanstack/react-form'
 import { useState } from 'react'
 import z from 'zod'
 import type { TagResponse } from '@/lib/api/gen.schemas'
-import { ADMIN_ROLE_ID, SUPERVISOR_ROLE_ID, TIMEZONES } from '@/constants'
+import { ADMIN_ROLE_ID, SUPERVISOR_ROLE_ID } from '@/constants'
 import { DynamicPageLayout } from '@/components/layout/dynamic-page-layout'
 import { useDeleteEvent, useEditEvent, useEvent } from '@/hooks/events'
 import { useGroupWithTags } from '@/hooks/groups'
 import { TagsInput } from '@/components/member/tags-input'
-import { TimezoneInput } from '@/components/timezone-input'
 
 export const Route = createFileRoute('/groups/$groupId/events/$eventId')({
   component: EventDetailsPage,
@@ -50,9 +41,6 @@ function EventDetailsPage() {
     defaultValues: {
       title: eventQuery.data?.title ?? '',
       description: eventQuery.data?.description ?? '',
-      timezone:
-        TIMEZONES.find((ts) => ts.value === eventQuery.data?.timezone) ??
-        TIMEZONES[0],
       tagsIds: eventQuery.data?.tags || [],
       duration: eventQuery.data?.duration ?? 60,
     },
@@ -60,10 +48,6 @@ function EventDetailsPage() {
       onChange: z.object({
         title: z.string().min(1, { error: 'Название не должно быть пустым' }),
         description: z.string(),
-        timezone: z.object({
-          value: z.number(),
-          label: z.string(),
-        }),
         duration: z.number().min(1),
         tagsIds: z.array(
           z.object({
@@ -82,9 +66,7 @@ function EventDetailsPage() {
           input: {
             title: value.title,
             description: value.description,
-            timezone: value.timezone.value,
-            // tagsIds: value.tagsIds.map((tag) => tag.id),
-            // participantsIds: [personalGroupQuery.data!.id],
+            duration: value.duration,
           },
         },
         {
@@ -99,6 +81,7 @@ function EventDetailsPage() {
   const canEdit =
     groupQuery.data?.id === eventQuery.data?.creatorId ||
     (groupQuery.data?.group &&
+      groupQuery.data.group.role &&
       [ADMIN_ROLE_ID, SUPERVISOR_ROLE_ID].includes(
         groupQuery.data.group.role.id,
       ))
@@ -234,24 +217,6 @@ function EventDetailsPage() {
                   )}
                 />
 
-                <div className="border-b border-gray-200/10" />
-                <form.Field
-                  name="timezone"
-                  children={(field) => (
-                    <TimezoneInput
-                      before={
-                        <Globe
-                          size={19}
-                          color="currentColor"
-                          className="text-(--icon-primary)"
-                        />
-                      }
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                      disabled={!isEditing}
-                    />
-                  )}
-                />
                 <div className="border-b border-gray-200/10" />
                 <form.Field
                   name="tagsIds"

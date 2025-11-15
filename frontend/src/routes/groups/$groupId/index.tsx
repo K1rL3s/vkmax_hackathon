@@ -8,6 +8,7 @@ import { Loader } from '@/components/ui/loader'
 import { useGroupEvents } from '@/hooks/events'
 import { expandCronEvents } from '@/lib/utils/cron'
 import { FloatingIconButton } from '@/components/ui/floating-button'
+import { useMe } from '@/hooks/user'
 
 export const Route = createFileRoute('/groups/$groupId/')({
   component: GroupEventsPage,
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/groups/$groupId/')({
 
 function GroupEventsPage() {
   const { groupId } = useParams({ from: '/groups/$groupId/' })
+  const meQuery = useMe()
   const { data, isPending } = useGroupEvents(Number(groupId), {})
   const scrollRef = useRef<{ scrollToToday: () => void }>(null)
   const navigate = useNavigate()
@@ -23,9 +25,10 @@ function GroupEventsPage() {
   const start = new Date(now.getFullYear(), now.getMonth() - 2, now.getDate())
   const end = new Date(now.getFullYear(), now.getMonth() + 2, now.getDate())
 
-  const formatted = data?.events
-    ? expandCronEvents(data.events, start, end)
-    : []
+  const formatted =
+    data?.events && meQuery.data?.timezone
+      ? expandCronEvents(data.events, start, end, meQuery.data.timezone)
+      : []
 
   useEffect(() => {
     if (scrollRef.current) {

@@ -12,6 +12,7 @@ import {
 } from '@/lib/api/events/events'
 import {
   getPersonalGroupRouteUsersMeGroupsPersonalGet,
+  getUserByIdRouteUsersMeGet,
   listPersonalEventsRouteUsersMeEventsGet,
 } from '@/lib/api/users/users'
 
@@ -23,14 +24,15 @@ export function usePersonalEvents({
   return useQuery({
     queryKey: ['events', 'me', tag_ids.join(',')],
     queryFn: async () => {
-      const [events, group] = await Promise.all([
+      const [events, group, me] = await Promise.all([
         listPersonalEventsRouteUsersMeEventsGet({ tag_ids: tag_ids.join(',') }),
         getPersonalGroupRouteUsersMeGroupsPersonalGet(),
+        getUserByIdRouteUsersMeGet(),
       ])
 
       return {
-        ...group,
-        events: events,
+        group: { ...group, events: events },
+        ...me,
       }
     },
   })

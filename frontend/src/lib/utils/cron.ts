@@ -1,23 +1,24 @@
 import parser from 'cron-parser'
+
 import type { EventResponse } from '../api/gen.schemas'
 import type { CalendarEvent } from '@/components/event/event-list'
+import { TIMEZONES } from '@/constants'
 
 export function expandCronEvents(
   events: Array<EventResponse>,
   startDate: Date,
   endDate: Date,
+  timezoneOffset: number,
 ): Array<CalendarEvent> {
   const result: Array<CalendarEvent> = []
 
   for (const ev of events) {
     try {
-      const offsetHours = ev.timezone / 60
-
       const options = {
         currentDate: startDate,
         endDate,
         iterator: true,
-        tz: `Etc/GMT${offsetHours > 0 ? '-' : '+'}${Math.abs(offsetHours)}`,
+        tz: TIMEZONES.find((tz) => tz.value === timezoneOffset)?.tz,
       }
 
       const interval = parser.parse(ev.cron, options)
