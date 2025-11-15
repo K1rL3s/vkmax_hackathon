@@ -40,6 +40,7 @@ def main(config: Config) -> fastapi.FastAPI:
     набору ролей. Также, помимо основного набора прав, ограничения могут быть выставлены непосредственно на уровне определённых ролей.
     """
     app = fastapi.FastAPI(
+        root_path="/api",
         title="Таск трекер для МАКС",
         description=description,
         version="0.1.0",
