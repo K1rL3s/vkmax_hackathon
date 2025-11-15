@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, ProgrammingError
 
-from maxhack.core.exceptions import MaxHackError
+from maxhack.core.exceptions import InvalidValue
 from maxhack.core.ids import MaxChatId, MaxId, UserId
 from maxhack.database.models import UserModel
 from maxhack.database.repos.base import BaseAlchemyRepo
@@ -40,7 +40,7 @@ class UserRepo(BaseAlchemyRepo):
             await self._session.flush()
         except (ProgrammingError, IntegrityError) as e:
             # ошибка если дубликат id, max_id итп
-            raise MaxHackError from e  # TODO: Заменить на ошибку из БЛ
+            raise InvalidValue from e
 
         return user
 

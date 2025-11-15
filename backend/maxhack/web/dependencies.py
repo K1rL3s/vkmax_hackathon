@@ -16,6 +16,7 @@ from maxo.utils.webapp import (
 )
 
 from maxhack.config import MaxConfig
+from maxhack.core.ids import MaxId
 from maxhack.core.user.service import UserService
 from maxhack.web.schemas.user import UserResponse
 
@@ -54,7 +55,7 @@ async def get_current_user(
             detail="Невалидная WebAppData",
         )
 
-    user = await user_service.get_user_by_max_id(webapp.user.id)
+    user = await user_service.get_user_by_max_id(MaxId(webapp.user.id))
     return _CurrentUserData(
         ip=webapp.ip,
         query_id=webapp.query_id,
@@ -62,7 +63,7 @@ async def get_current_user(
         hash=webapp.hash,
         chat=webapp.chat,
         max_user=webapp.user,
-        db_user=user,  # TODO: Игнор?)
+        db_user=user,  # type: ignore
     )
 
 

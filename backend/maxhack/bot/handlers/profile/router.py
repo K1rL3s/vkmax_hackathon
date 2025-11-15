@@ -29,7 +29,6 @@ async def request_contact_handler(
     ):
         raise SkipHandler
     if not contact_payload.vcf_info:
-        # TODO: Сообщение что нет данных
         raise SkipHandler
 
     vcf = parse_vcard(contact_payload.vcf_info)

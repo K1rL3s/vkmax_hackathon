@@ -3,7 +3,7 @@ from typing import Any
 
 from dishka import FromDishka
 
-from maxo.dialogs import DialogManager, ShowMode
+from maxo.dialogs import DialogManager, ShowMode, StartMode
 from maxo.dialogs.integrations.dishka import inject
 from maxo.enums import UploadType
 from maxo.utils.facades import MessageCreatedFacade
@@ -39,12 +39,14 @@ async def on_join_group(
 
     try:
         await group_service.join_group(current_user.id, invite_key)
-    except MaxHackError as e:
-        # TODO: Сообщение что инвайт истёк
-        raise e
-
-    # TODO: Сообщение с стартапп в группу
-    await dialog_manager.switch_to(state=Menu.menu, show_mode=ShowMode.EDIT)
+    except MaxHackError:
+        await dialog_manager.start(
+            state=Menu.menu,
+            show_mode=ShowMode.DELETE_AND_SEND,
+            mode=StartMode.RESET_STACK,
+        )
+    else:
+        await dialog_manager.switch_to(state=Groups.one, show_mode=ShowMode.EDIT)
 
 
 @inject

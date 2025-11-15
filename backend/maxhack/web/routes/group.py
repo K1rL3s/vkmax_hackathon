@@ -95,8 +95,6 @@ async def update_group_membership_route(
 
     return GroupMemberResponse.model_validate(membership)
 
-    # TODO: Вернуть схему
-
 
 @group_router.get(
     "/{group_id}",

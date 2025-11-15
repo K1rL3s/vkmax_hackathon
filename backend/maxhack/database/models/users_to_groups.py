@@ -1,25 +1,33 @@
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from maxhack.core.enums.notify_mode import NotifyMode
 from maxhack.core.ids import GroupId, InviteId, RoleId, UserId
 from maxhack.database.models import UserModel
+from maxhack.database.models._mixins import IdMixin
 from maxhack.database.models.base import BaseAlchemyModel
 from maxhack.database.models.role import RoleModel
 
 
-class UsersToGroupsModel(BaseAlchemyModel):
+class UsersToGroupsModel(BaseAlchemyModel, IdMixin[int]):
     __tablename__ = "users_to_groups"
+    __table_args__ = (
+        Index(
+            None,
+            "user_id",
+            "group_id",
+            unique=True,
+            postgresql_where="users_to_groups.deleted_at IS NULL",
+        ),
+    )
 
     user_id: Mapped[UserId] = mapped_column(
         ForeignKey("users.id"),
         nullable=False,
-        primary_key=True,
     )
     group_id: Mapped[GroupId] = mapped_column(
         ForeignKey("groups.id"),
         nullable=False,
-        primary_key=True,
     )
     role_id: Mapped[RoleId] = mapped_column(
         ForeignKey("roles.id"),

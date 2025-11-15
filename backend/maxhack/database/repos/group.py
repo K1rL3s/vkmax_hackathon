@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError, ProgrammingError
 
-from maxhack.core.exceptions import MaxHackError
+from maxhack.core.exceptions import InvalidValue
 from maxhack.core.ids import GroupId, UserId
 from maxhack.core.role.ids import CREATOR_ROLE_ID
 from maxhack.database.models import (
@@ -39,7 +39,7 @@ class GroupRepo(BaseAlchemyRepo):
             self._session.add(group)
             await self._session.flush()
         except (ProgrammingError, IntegrityError) as e:
-            raise MaxHackError from e  # TODO: Заменить на ошибку из БЛ
+            raise InvalidValue from e
 
         role = UsersToGroupsModel(
             user_id=creator_id,
@@ -51,7 +51,7 @@ class GroupRepo(BaseAlchemyRepo):
             self._session.add(role)
             await self._session.flush()
         except (ProgrammingError, IntegrityError) as e:
-            raise MaxHackError from e  # TODO: Заменить на ошибку из БЛ
+            raise InvalidValue from e
 
         return group
 
@@ -66,7 +66,7 @@ class GroupRepo(BaseAlchemyRepo):
             group = await self._session.scalar(stmt)
             await self._session.flush()
         except (ProgrammingError, IntegrityError) as e:
-            raise MaxHackError from e  # TODO: Заменить на ошибку из БЛ
+            raise InvalidValue from e
 
         return group
 
