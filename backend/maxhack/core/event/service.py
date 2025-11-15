@@ -16,7 +16,7 @@ from maxhack.core.responds.service import RespondService
 from maxhack.core.role.ids import CREATOR_ROLE_ID, EDITOR_ROLE_ID
 from maxhack.core.service import BaseService
 from maxhack.core.tag.service import TagService
-from maxhack.core.utils.datehelp import datetime_now
+from maxhack.core.utils.datehelp import datetime_now, UTC_TIMEZONE
 from maxhack.database.models import (
     EventModel,
     EventNotifyModel,
@@ -123,10 +123,15 @@ class EventService(BaseService):
                 )
                 raise NotEnoughRights
 
-        if event_create_scheme.timezone:
-            event_create_scheme.cron.date = event_create_scheme.cron.date.astimezone(
-                tz=timezone(offset=timedelta(minutes=event_create_scheme.timezone)),
-            )
+        if event_create_scheme.cron.date.tzinfo is None:
+            if event_create_scheme.timezone:
+                event_create_scheme.cron.date = event_create_scheme.cron.date.replace(
+                    tzinfo=timezone(offset=timedelta(minutes=event_create_scheme.timezone)),
+                )
+            else:
+                event_create_scheme.cron.date = event_create_scheme.cron.date.replace(
+                    tzinfo=UTC_TIMEZONE,
+                )
 
         event = await self._event_repo.create(
             title=event_create_scheme.title,
