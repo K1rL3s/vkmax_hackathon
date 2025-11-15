@@ -108,6 +108,9 @@ class EventService(BaseService):
         logger.debug(f"Creating event with data: {event_create_scheme}")
         creator = await self._ensure_user_exists(event_create_scheme.creator_id)
 
+        if any(minutes < 0 for minutes in event_create_scheme.minutes_before):
+            raise InvalidValue
+
         is_cycle = event_create_scheme.cron.is_cycle
 
         if event_create_scheme.group_id:

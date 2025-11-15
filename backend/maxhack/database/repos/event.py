@@ -466,8 +466,8 @@ class EventRepo(BaseAlchemyRepo):
         event_id: EventId,
         minutes_before: list[int],
     ) -> list[EventNotifyModel]:
-        minutes_before.append(0)
         minutes_before = set(minutes_before)
+        minutes_before.add(0)
         notifies = [
             EventNotifyModel(event_id=event_id, minutes_before=minutes)
             for minutes in minutes_before
