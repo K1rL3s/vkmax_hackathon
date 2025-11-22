@@ -89,8 +89,8 @@
 
 1. Склонировать репозиторий и перейти в него:
     ```commandline
-    git clone https://github.com/K1rL3s/vkmax_hackathon.git
-    cd ./vkmax_hackathon
+    git clone https://github.com/K1rL3s/vkmax-hackathon.git
+    cd ./vkmax-hackathon
     ```
 
 2. Создать и заполнить файл `.env` в корневой папке (пример: `.env.example`).\

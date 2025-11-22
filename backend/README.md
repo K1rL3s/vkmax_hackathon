@@ -136,7 +136,7 @@ migrations - Миграции
         docker compose --env-file=.env run --remove-orphans -d -p 5432:5432 database
         docker compose --env-file=.env run --remove-orphans -d -p 6379:6379 redis
         ```
-    2. Запускать из `vkmax_hackathon/backend`:
+    2. Запускать из `vkmax-hackathon/backend`:
         ```bash
         python -m maxhack.bot
         python -m maxhack.web
